@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 use sqlx::types::time::OffsetDateTime;
 use sqlx::FromRow;
+use ts_rs::TS;
 
 // region:    --- Org Types
 
@@ -24,7 +25,10 @@ pub trait OrgScoped {
 	fn org_id(&self) -> i64;
 }
 
-#[derive(Debug, Clone, sqlx::Type, derive_more::Display, Deserialize, Serialize)]
+#[derive(
+	Debug, Clone, sqlx::Type, derive_more::Display, Deserialize, Serialize, TS,
+)]
+#[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 #[sqlx(type_name = "org_kind")]
 #[cfg_attr(test, derive(PartialEq))]
 pub enum OrgKind {
@@ -52,7 +56,8 @@ impl Nullable for OrgKind {
 }
 
 #[serde_as]
-#[derive(Debug, Clone, Fields, FromRow, Serialize)]
+#[derive(Debug, Clone, Fields, FromRow, Serialize, TS)]
+#[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 pub struct Org {
 	pub id: i64,
 
@@ -64,10 +69,12 @@ pub struct Org {
 	// creator user_id and time
 	pub cid: i64,
 	#[serde_as(as = "Rfc3339")]
+	#[ts(type = "string")]
 	pub ctime: OffsetDateTime,
 	// last modifier user_id and time
 	pub mid: i64,
 	#[serde_as(as = "Rfc3339")]
+	#[ts(type = "string")]
 	pub mtime: OffsetDateTime,
 }
 

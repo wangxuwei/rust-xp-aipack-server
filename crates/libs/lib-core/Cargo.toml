@@ -33,6 +33,8 @@ tracing = "0.1"
 uuid = {version = "1", features = ["v4","fast-rng","serde"]}
 time = { workspace = true }
 derive_more = { workspace = true }
+ts-rs = { version = "7.1.1", features=["uuid-impl", "serde-compat", "no-serde-warnings"]}
+
 
 # -- Feature: with-rpc
 rpc-router = { workspace = true, optional = true }

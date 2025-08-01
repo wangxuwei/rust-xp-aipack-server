@@ -13,10 +13,14 @@ use sea_query_binder::SqlxBinder;
 use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgRow;
 use sqlx::FromRow;
+use ts_rs::TS;
 use uuid::Uuid;
 
 // region:    --- User Types
-#[derive(Clone, Debug, sqlx::Type, derive_more::Display, Deserialize, Serialize)]
+#[derive(
+	Clone, Debug, sqlx::Type, derive_more::Display, Deserialize, Serialize, TS,
+)]
+#[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 #[sqlx(type_name = "user_typ")]
 pub enum UserTyp {
 	Sys,
@@ -28,7 +32,8 @@ impl From<UserTyp> for sea_query::Value {
 	}
 }
 
-#[derive(Clone, Fields, FromRow, Debug, Serialize)]
+#[derive(Clone, Fields, FromRow, Debug, Serialize, TS)]
+#[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 pub struct User {
 	pub id: i64,
 	pub username: String,
