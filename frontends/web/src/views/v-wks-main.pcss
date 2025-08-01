@@ -1,0 +1,25 @@
+
+v-wks-main{
+	display: grid;
+	grid-template-columns: 15rem auto;
+	grid-template-rows: 1fr;
+	padding: 0;
+	& > nav{
+		background-color: var(--bkg-nav);
+		display: flex;
+		overflow: hidden;
+	}
+
+	& > .screen{
+		display: flex;
+		flex-direction: column;
+		& > header{
+			padding-left: 2rem;
+			height: 5rem;
+			display: flex;
+			align-items: center;
+		}
+	}
+
+
+}

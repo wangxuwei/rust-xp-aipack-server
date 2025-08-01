@@ -89,3 +89,6 @@ __pycache__/
 
 # Allow vscode
 # !.vscode # Commented by default
+
+web-folder/js/*
+web-folder/css/*

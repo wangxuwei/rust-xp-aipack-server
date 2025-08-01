@@ -1,0 +1,49 @@
+{
+  "name": "rust-xp-server",
+  "type": "module",
+  "version": "0.0.0",
+  "__version__": "DROP-001",
+  "description": "rust-xp-server",
+  "main": "start.js",
+  "dependencies": {
+    "@dom-native/draggable": "^0.2.0",
+    "@dom-native/ui": "0.3.0-alpha.3",
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-multi-entry": "^6.0.1",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@types/lodash.debounce": "^4.0.6",
+    "@types/node": "^24.1.0",
+    "dom-native": "^0.11.0",
+    "execa": "^9.6.0",
+    "fs-extra-plus": "^0.6.0",
+    "handlebars": "^4.7.7",
+    "lodash.debounce": "^4.0.8",
+    "mocha": "^11.7.1",
+    "moment": "^2.29.1",
+    "p-spawn": "^0.5.5",
+    "pcss-cli": "^0.2.1",
+    "postcss-mixins": "^12.1.2",
+    "qs": "^6.10.3",
+    "rollup": "^4.46.2",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "ts-node": "^10.7.0",
+    "tslib": "^2.3.1",
+    "typescript": "^5.9.2",
+    "utils-min": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/qs": "^6.9.7",
+    "cmdrouter": "^0.3.1",
+    "ts-json-schema-generator": "^2.4.0",
+    "typescript-styled-plugin": "^0.18.2"
+  },
+  "scripts": {
+    "build": "node --loader ts-node/esm scripts/cmd-build.ts",
+    "watch": "node --loader ts-node/esm scripts/cmd-build.ts watch"
+  },
+  "engines": {
+    "node": ">=16.13.0"
+  },
+  "author": "BriteSnow",
+  "license": "MIT"
+}
