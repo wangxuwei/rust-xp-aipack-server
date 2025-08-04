@@ -12,7 +12,7 @@ pub struct Ctx {
 	user_id: i64,
 
 	/// Note: For the future ACS (Access Control System)
-	conv_id: Option<i64>,
+	org_id: Option<i64>,
 }
 
 // Constructors.
@@ -20,7 +20,7 @@ impl Ctx {
 	pub fn root_ctx() -> Self {
 		Ctx {
 			user_id: 0,
-			conv_id: None,
+			org_id: None,
 		}
 	}
 
@@ -30,15 +30,15 @@ impl Ctx {
 		} else {
 			Ok(Self {
 				user_id,
-				conv_id: None,
+				org_id: None,
 			})
 		}
 	}
 
 	/// Note: For the future ACS (Access Control System)
-	pub fn add_conv_id(&self, conv_id: i64) -> Ctx {
+	pub fn add_org_id(&self, org_id: i64) -> Ctx {
 		let mut ctx = self.clone();
-		ctx.conv_id = Some(conv_id);
+		ctx.org_id = Some(org_id);
 		ctx
 	}
 }
@@ -50,7 +50,7 @@ impl Ctx {
 	}
 
 	//. /// Note: For the future ACS (Access Control System)
-	pub fn conv_id(&self) -> Option<i64> {
-		self.conv_id
+	pub fn org_id(&self) -> Option<i64> {
+		self.org_id
 	}
 }

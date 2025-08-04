@@ -12,7 +12,7 @@ use lib_web::middleware::mw_req_stamp::mw_req_stamp_resolver;
 use lib_web::middleware::mw_res_map::mw_reponse_map;
 use lib_web::routes::routes_static;
 
-use crate::web::routes_login;
+use crate::web::{routes_login, routes_user};
 
 use axum::{middleware, Router};
 use lib_core::_dev_utils;
@@ -43,6 +43,7 @@ async fn main() -> Result<()> {
 
 	let routes_all = Router::new()
 		.merge(routes_login::routes(mm.clone()))
+		.merge(routes_user::routes(mm.clone()))
 		.nest("/api", routes_rpc)
 		.layer(middleware::map_response(mw_reponse_map))
 		.layer(middleware::from_fn_with_state(mm.clone(), mw_ctx_resolver))
