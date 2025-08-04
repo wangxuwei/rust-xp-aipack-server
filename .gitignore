@@ -2,7 +2,6 @@
 .*
 !.gitignore
 
-_*
 # '_' in pro dir, ok.
 !**/pro/**/_*
 

@@ -1,14 +1,11 @@
 import { pathAt } from 'common/route.js';
 import { BaseViewElement } from 'common/v-base.js';
 import { all, customElement, onHub } from 'dom-native';
-import { WksMainView } from './v-wks-main.js';
 
 const defaultPath = '';
 
 @customElement('v-nav')
 export class NavView extends BaseViewElement {
-
-	get wksId() { return (<WksMainView>this.closest('v-wks-main'))?.wksId }
 
 	//#region    ---------- Element & Hub Events ---------- 
 	@onHub('routeHub', 'CHANGE')
@@ -19,7 +16,7 @@ export class NavView extends BaseViewElement {
 
 	init() {
 		super.init();
-		this.innerHTML = _render(this.wksId);
+		this.innerHTML = _render();
 		this.refresh();
 	}
 
@@ -41,9 +38,9 @@ export class NavView extends BaseViewElement {
 }
 
 //// HTML
-function _render(wksId: number | null) {
-	return `<a href="/${wksId}/images"><span class='bar'></span><d-ico name="ico-images"></d-ico><label>Images</label></a>
-			<a href="/${wksId}/videos"><span class='bar'></span><d-ico name="ico-videos"></d-ico><label>Videos</label></a>
-			<a href="/${wksId}/timelines"><span class='bar'></span><d-ico name="ico-videos"></d-ico><label>Timelines</label></a>
+function _render() {
+	return `<a href="images"><span class='bar'></span><d-ico name="ico-images"></d-ico><label>Images</label></a>
+			<a href="/videos"><span class='bar'></span><d-ico name="ico-videos"></d-ico><label>Videos</label></a>
+			<a href="/timelines"><span class='bar'></span><d-ico name="ico-videos"></d-ico><label>Timelines</label></a>
 			`;
 }
