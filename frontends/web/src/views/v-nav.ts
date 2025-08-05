@@ -1,32 +1,35 @@
 import { pathAt } from 'common/route.js';
 import { BaseViewElement } from 'common/v-base.js';
 import { all, customElement, onHub } from 'dom-native';
-
-const defaultPath = '';
+import { Wks } from '../bindings/entities.js';
 
 @customElement('v-nav')
 export class NavView extends BaseViewElement {
 
-	//#region    ---------- Element & Hub Events ---------- 
+	//#region    ---------- Events---------- 
+	//#endregion ---------- /Events---------- 
+
+	//#region    ---------- Hub Events ---------- 
 	@onHub('routeHub', 'CHANGE')
-	routeChange() {
-		this.refresh();
+	routChange() {
+		this.refresh()
 	}
-	//#endregion ---------- /Element & Hub Events ---------- 
+	//#endregion ---------- /Hub Events ---------- 
+
 
 	init() {
 		super.init();
-		this.innerHTML = _render();
 		this.refresh();
 	}
 
-	refresh() {
-		const idx = 1; // path ind
-		let urlName = pathAt(idx) ?? 'videos';
+	async refresh() {
+		this.innerHTML = _render();
+		const idx = 0;
+		let urlName = pathAt(0) ?? 'users';
 
 		for (const a of all(this, 'a')) {
 			let href = a.getAttribute('href');
-			let linkName = href?.split('/')[idx + 1] ?? ''; // has an extra / at start
+			let linkName = href?.split('/')[1] ?? ''; // has an extra / at start
 			if (linkName === urlName) {
 				a.classList.add('sel');
 			} else if (a.classList.contains('sel')) {
@@ -34,13 +37,18 @@ export class NavView extends BaseViewElement {
 			}
 		}
 	}
+}
+
+//// HTMLs
+
+function _render(wksList: Wks[] = []) {
+	let html = `
+			<a class="nav-item" href="/users">Users</a>
+			<a class="nav-item" href="/orgs">Organizations</a>`;
+
+	return html;
 
 }
 
-//// HTML
-function _render() {
-	return `<a href="images"><span class='bar'></span><d-ico name="ico-images"></d-ico><label>Images</label></a>
-			<a href="/videos"><span class='bar'></span><d-ico name="ico-videos"></d-ico><label>Videos</label></a>
-			<a href="/timelines"><span class='bar'></span><d-ico name="ico-videos"></d-ico><label>Timelines</label></a>
-			`;
-}
+
+

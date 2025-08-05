@@ -1,6 +1,6 @@
 import { position } from '@dom-native/draggable';
 import { pathAt } from 'common/route.js';
-import { logoff, UserContext } from 'common/user-ctx.js';
+import { getUserContext, logoff, UserContext } from 'common/user-ctx.js';
 import { BaseViewElement } from 'common/v-base.js';
 import { append, customElement, first, html, on, onEvent, onHub, push } from 'dom-native';
 import { isNotEmpty } from 'utils-min';
@@ -9,6 +9,8 @@ const defaultPath = "";
 
 const tagNameByPath: { [name: string]: string } = {
 	"": 'v-home',
+	"users": 'v-users',
+	"orgs": 'v-orgs',
 };
 
 
@@ -57,8 +59,10 @@ export class MainView extends BaseViewElement {
 
 	init() {
 		super.init();
-		this.innerHTML = _render();
-		this.refresh();
+		getUserContext().then((user:UserContext | null) => {
+			this.innerHTML = _render(user!.username);
+			this.refresh();
+		});
 	}
 
 	refresh() {
@@ -74,14 +78,15 @@ export class MainView extends BaseViewElement {
 }
 
 //// HTML
-function _render() {
+function _render(username: string) {
 	return `
 	<header>
 		<d-ico name="ico-menu">menu</d-ico>
-		<a href='/'><h3>CLOUD BIGAPP</h3></a>
+		<a href='/'><h3>AIPACK</h3></a>
+		<v-nav></v-nav>
 		<aside class="toogle-user-menu">
 			<c-ico>user</c-ico>
-			<div class="dx dx-name">Some name</div>
+			<div class="dx dx-name">${username}</div>
 		</aside>
 	</header>
 
