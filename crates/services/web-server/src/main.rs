@@ -17,7 +17,7 @@ use crate::web::{routes_login, routes_user};
 use axum::{middleware, Router};
 use lib_core::_dev_utils;
 use lib_core::model::ModelManager;
-use lib_web::middleware::mw_res_headers::{self, mw_res_header};
+use lib_web::middleware::mw_res_headers::mw_res_header;
 use tokio::net::TcpListener;
 use tower_cookies::CookieManagerLayer;
 use tracing::info;

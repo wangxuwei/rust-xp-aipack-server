@@ -134,40 +134,27 @@ button.main-button{
 		@mixin elev-1{};
 		background: var(--clr-prime);
 		color: red;
-	} 
-	
-
+	}
 }
 
-
-button.danger{
-	@mixin elev-4{};
-	background: var(--clr-other-purple-red);
+button.prime{		
+	background: var(--clr-prime);
 	color: white;
-	width: 5rem;
-	height: 5rem;
-	border-radius: 5rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	justify-items: center;
-
-	c-ico{
-		margin: 0;
-		fill: white;
-		width: 2.5rem;
-		height: 2.5rem;
-	}
-	
 	&:hover:not(:disabled):not(.disabled){
-		background: var(--clr-other-purple-red);
-		@mixin elev-8{};
+		background: var(--clr-prime);
 	}
 	&:active:not(:disabled):not(.disabled){
-		@mixin elev-1{};
-		background: var(--clr-other-purple-red);
-		color: red;
-	} 
-	
+		background: var(--clr-prime);
+	}
+}
 
+button.danger{
+	background: var(--clr-other-purple-red);
+	color: white;
+	&:hover:not(:disabled):not(.disabled){
+		background: var(--clr-other-purple-red);
+	}
+	&:active:not(:disabled):not(.disabled){
+		background: var(--clr-other-purple-red);
+	}
 }

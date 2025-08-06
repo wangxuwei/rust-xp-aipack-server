@@ -25,7 +25,7 @@ export class UsersView extends BaseViewElement {
 	//#endn pregion ---------- /Data Setters ---------- 
 
 	//#region    ---------- Events---------- 
-  @onEvent('click', 'button.do')
+  @onEvent('click', 'btn-do')
 	headerClicked(evt: MouseEvent & OnEvent) {
 		this.doLogin();
 	}
@@ -70,7 +70,7 @@ export class UsersView extends BaseViewElement {
 function _render(wksList: Wks[] = []) {
 	let html = `
     <div>demo codes here</div>
-    <button class="do">click me</button>
+    <button class="btn-do">click me</button>
   `;
 
 	return html;

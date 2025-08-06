@@ -1,70 +1,51 @@
 v-users {
-	display: grid;
-	grid-template-rows: auto 1fr;
-	gap: 1rem;
-	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: 3rem;
 
 	.header {
-		display: flex;
-		justify-content: flex-end;
+		margin-bottom: 1rem;
+	}
+
+	.table-container {
+		flex: 1;
+		overflow: hidden;
+		display: grid;
 	}
 
 	.table {
 		display: grid;
-		border: 1px solid var(--bkg-lighter);
-		border-radius: 4px;
+		grid-template-rows: auto 1fr;
+		border: 1px solid var(--clr-gray-300);
 		overflow: hidden;
 
 		.thead {
-			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-			background-color: var(--bkg-lighter);
-			padding: 0.5rem;
-			font-weight: bold;
+			background-color: var(--clr-gray-200);
+			color: var(--clr-gray-800);
 		}
 
 		.tbody {
-			display: grid;
 			overflow-y: auto;
-			max-height: 60vh;
+		}
 
-			.rows {
-				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-				padding: 0.5rem;
-				border-top: 1px solid var(--bkg-lighter);
+		.row {
+			display: grid;
+			grid-template-columns: 1fr auto;
+			border-bottom: 1px solid var(--clr-gray-300);
 
-				&:hover {
-					background-color: var(--bkg-lightest);
-				}
+			&:last-child {
+				border-bottom: none;
 			}
 		}
 
-		.actions {
+		.cell {
+			padding: 1rem;
 			display: flex;
-			gap: 0.5rem;
+			align-items: center;
 
-			button {
-				padding: 0.25rem 0.5rem;
-				border: none;
-				border-radius: 3px;
-				cursor: pointer;
-
-				&.main-button {
-					background-color: var(--color-primary);
-					color: white;
-				}
-
-				&.danger {
-					background-color: var(--color-error);
-					color: white;
-				}
-
-				&.add {
-					background-color: var(--color-success);
-					color: white;
-					padding: 0.5rem 1rem;
-				}
+			&.actions {
+				gap: 0.5rem;
 			}
 		}
 	}

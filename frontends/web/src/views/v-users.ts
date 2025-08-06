@@ -11,7 +11,7 @@ export class UsersView extends BaseViewElement {
 	private get addBtnEl(): HTMLButtonElement { return first(this, 'button.add') as HTMLButtonElement };
 
 	//#region    ---------- Events ---------- 
-	@onEvent('click', 'button.update')
+	@onEvent('click', '.btn-update')
 	onUpdateClick(evt: MouseEvent & OnEvent) {
 		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
 		const userId = asNum(rowEl.dataset.id);
@@ -20,7 +20,7 @@ export class UsersView extends BaseViewElement {
 		}
 	}
 
-	@onEvent('click', 'button.delete')
+	@onEvent('click', '.btn-delete')
 	onDeleteClick(evt: MouseEvent & OnEvent) {
 		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
 		const userId = asNum(rowEl.dataset.id);
@@ -71,10 +71,10 @@ export class UsersView extends BaseViewElement {
 function _render(users: User[]) {
 	const rows = users.map(user => `
 		<div class="row" data-id="${user.id}">
-			<div>${user.username}</div>
-			<div class="actions">
-				<button class="update main-button">Update</button>
-				<button class="delete danger">Delete</button>
+			<div class="cell">${user.username}</div>
+			<div class="cell actions">
+				<button class="btn-update prime">Update</button>
+				<button class="btn-delete danger">Delete</button>
 			</div>
 		</div>
 	`).join('');
@@ -83,15 +83,15 @@ function _render(users: User[]) {
 		<div class="header">
 			<button class="add">Add User</button>
 		</div>
-		<div class="table">
-			<div class="thead">
-				<div class="row">
-					<div>Username</div>
-					<div>Actions</div>
+		<div class="table-container">
+			<div class="table">
+				<div class="thead row">
+					<div class="cell">Username</div>
+					<div class="cell">Actions</div>
 				</div>
-			</div>
-			<div class="tbody">
-				${rows}
+				<div class="tbody">
+					${rows}
+				</div>
 			</div>
 		</div>
 	`;
