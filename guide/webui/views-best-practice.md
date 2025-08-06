@@ -92,3 +92,4 @@ function _render(wksList: Wks[] = []) {
 - for ````//// Key elements```` is only start tag and place it before the key elements function
 - all views should be in views/, or views/subfolder../
 - the dcoHub event is for some objects change
+- if the pcss file name match a view for examples, v-users.pcss match the name v-users.ts, all css codes with pcss best practice will wrote in the pcss file

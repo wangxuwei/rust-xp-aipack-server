@@ -7,13 +7,14 @@ import { User } from '../bindings/User.js';
 @customElement('v-users')
 export class UsersView extends BaseViewElement {
 	//#region    ---------- Key Elements ---------- 
-	private get tableEl(): HTMLTableElement { return first(this, 'table')! };
+	private get tableEl(): HTMLElement { return first(this, '.table') as HTMLElement };
 	private get addBtnEl(): HTMLButtonElement { return first(this, 'button.add') as HTMLButtonElement };
 
 	//#region    ---------- Events ---------- 
 	@onEvent('click', 'button.update')
 	onUpdateClick(evt: MouseEvent & OnEvent) {
-		const userId = asNum(evt.selectTarget.closest('tr')?.dataset.id);
+		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
+		const userId = asNum(rowEl.dataset.id);
 		if (userId) {
 			this.showUserDialog(userId);
 		}
@@ -21,7 +22,8 @@ export class UsersView extends BaseViewElement {
 
 	@onEvent('click', 'button.delete')
 	onDeleteClick(evt: MouseEvent & OnEvent) {
-		const userId = asNum(evt.selectTarget.closest('tr')?.dataset.id);
+		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
+		const userId = asNum(rowEl.dataset.id);
 		if (userId) {
 			userDco.delete(userId).then(() => this.refresh());
 		}
@@ -68,29 +70,29 @@ export class UsersView extends BaseViewElement {
 
 function _render(users: User[]) {
 	const rows = users.map(user => `
-		<tr data-id="${user.id}">
-			<td>${user.username}</td>
-			<td class="actions">
-				<button class="update">Update</button>
-				<button class="delete">Delete</button>
-			</td>
-		</tr>
+		<div class="row" data-id="${user.id}">
+			<div>${user.username}</div>
+			<div class="actions">
+				<button class="update main-button">Update</button>
+				<button class="delete danger">Delete</button>
+			</div>
+		</div>
 	`).join('');
 
 	return `
 		<div class="header">
 			<button class="add">Add User</button>
 		</div>
-		<table>
-			<thead>
-				<tr>
-					<th>Username</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
+		<div class="table">
+			<div class="thead">
+				<div class="row">
+					<div>Username</div>
+					<div>Actions</div>
+				</div>
+			</div>
+			<div class="tbody">
 				${rows}
-			</tbody>
-		</table>
+			</div>
+		</div>
 	`;
 }

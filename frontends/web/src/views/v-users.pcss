@@ -9,45 +9,62 @@ v-users {
 		justify-content: flex-end;
 	}
 
-	table {
-		width: 100%;
-		border-collapse: collapse;
+	.table {
+		display: grid;
+		border: 1px solid var(--bkg-lighter);
+		border-radius: 4px;
+		overflow: hidden;
 
-		th, td {
+		.thead {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+			background-color: var(--bkg-lighter);
 			padding: 0.5rem;
-			border: 1px solid var(--bkg-lighter);
-			text-align: left;
+			font-weight: bold;
 		}
 
-		th {
-			background-color: var(--bkg-lighter);
+		.tbody {
+			display: grid;
+			overflow-y: auto;
+			max-height: 60vh;
+
+			.rows {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+				padding: 0.5rem;
+				border-top: 1px solid var(--bkg-lighter);
+
+				&:hover {
+					background-color: var(--bkg-lightest);
+				}
+			}
 		}
 
 		.actions {
 			display: flex;
 			gap: 0.5rem;
-		}
 
-		button {
-			padding: 0.25rem 0.5rem;
-			border: none;
-			border-radius: 3px;
-			cursor: pointer;
+			button {
+				padding: 0.25rem 0.5rem;
+				border: none;
+				border-radius: 3px;
+				cursor: pointer;
 
-			&.update {
-				background-color: var(--color-primary);
-				color: white;
-			}
+				&.main-button {
+					background-color: var(--color-primary);
+					color: white;
+				}
 
-			&.delete {
-				background-color: var(--color-error);
-				color: white;
-			}
+				&.danger {
+					background-color: var(--color-error);
+					color: white;
+				}
 
-			&.add {
-				background-color: var(--color-success);
-				color: white;
-				padding: 0.5rem 1rem;
+				&.add {
+					background-color: var(--color-success);
+					color: white;
+					padding: 0.5rem 1rem;
+				}
 			}
 		}
 	}
