@@ -1,70 +1,47 @@
 // <origin src="https://raw.githubusercontent.com/BriteSnow/cloud-starter/master/frontends/web/src/ts/dco-base.ts" />
 // (c) 2019 BriteSnow, inc - This code is licensed under MIT license (see LICENSE for details)
 
-import { webDelete, webGet, webPatch, webPost } from 'common/web-request.js';
-import { hub } from 'dom-native';
+import { rpc_invoke } from 'common/rpc';
 
-
-export const dcoHub = hub('dcoHub');
 
 export class BaseDco<E, F> {
+	#cmd_suffix: string;
+	#plural?: string;
+	get cmd_suffix() { return this.#cmd_suffix; }
+	get plural() { return this.#plural ? this.#plural : `${this.#cmd_suffix}s` }
 
-	protected _entityType: string;
-
-	constructor(type: string) {
-		this._entityType = type;
+	constructor(cmd_suffix: string, plural?: string) {
+		this.#cmd_suffix = cmd_suffix;
+		this.#plural = plural;
 	}
 
 	//#region    ---------- Utils ---------- 
 
 	//#endregion ---------- /Utils ---------- 
 	async get(id: number): Promise<E> {
-		const result = await webGet(`/api/dse/${this._entityType}/${id}`);
-		if (result.success) {
-			return result.data;
-		} else {
-			throw result;
-		}
+		const result = await rpc_invoke(`get_${this.#cmd_suffix}`, { id });
+		return result.data;
 	}
 
-	async list(filter?: F): Promise<E[]> {
-		const result = await webGet(`/api/dse/${this._entityType}`, { params: filter });
-		if (result.success) {
-			return result.data as any[];
-		} else {
-			throw result;
-		}
+	async list(qo?: F): Promise<E[]> {
+		const result = await rpc_invoke(`list_${this.plural}`, { ...qo });
+		return result.data;
 	}
 
-	async create(props: any): Promise<E> {
-		const result = await webPost(`/api/dse/${this._entityType}`, { body: props });
+	async create(data: any): Promise<E> {
+		const result = await rpc_invoke(`create_${this.#cmd_suffix}`, { data });
 		const entity = result.data;
-		if (result.success) {
-			dcoHub.pub(this._entityType, 'create', entity);
-			return entity;
-		} else {
-			throw result;
-		}
+		return entity;
 	}
 
-	async update(id: number, props: Partial<E>): Promise<any> {
-		const result = await webPatch(`/api/dse/${this._entityType}/${id}`, { body: props });
+	async update(id: number, data: Partial<E>): Promise<any> {
+		const result = await rpc_invoke(`update_${this.#cmd_suffix}`, { id, data });
 		const entity = result.data;
-		if (result.success) {
-			dcoHub.pub(this._entityType, 'update', entity);
-			return entity;
-		} else {
-			throw result;
-		}
+		return entity;
 	}
 
-	async remove(id: number): Promise<boolean> {
-		const result = await webDelete(`/api/dse/${this._entityType}/${id}`);
-		if (result.success) {
-			dcoHub.pub(this._entityType, 'remove', id);
-			return true;
-		} else {
-			throw result;
-		}
+	async delete(id: number): Promise<boolean> {
+		const result = await rpc_invoke(`delete_${this.#cmd_suffix}`, { id });
+		return true;
 	}
 }
