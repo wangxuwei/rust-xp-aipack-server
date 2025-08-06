@@ -17,6 +17,7 @@ use crate::web::{routes_login, routes_user};
 use axum::{middleware, Router};
 use lib_core::_dev_utils;
 use lib_core::model::ModelManager;
+use lib_web::middleware::mw_res_headers::{self, mw_res_header};
 use tokio::net::TcpListener;
 use tower_cookies::CookieManagerLayer;
 use tracing::info;
@@ -49,7 +50,8 @@ async fn main() -> Result<()> {
 		.layer(middleware::from_fn_with_state(mm.clone(), mw_ctx_resolver))
 		.layer(CookieManagerLayer::new())
 		.layer(middleware::from_fn(mw_req_stamp_resolver))
-		.fallback_service(routes_static::serve_dir(&web_config().WEB_FOLDER));
+		.fallback_service(routes_static::serve_dir(&web_config().WEB_FOLDER))
+		.layer(middleware::from_fn(mw_res_header));
 
 	// region:    --- Start Server
 	// Note: For this block, ok to unwrap.
