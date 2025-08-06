@@ -1,2 +1,54 @@
-v-users{
+v-users {
+	display: grid;
+	grid-template-rows: auto 1fr;
+	gap: 1rem;
+	padding: 1rem;
+
+	.header {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+
+		th, td {
+			padding: 0.5rem;
+			border: 1px solid var(--bkg-lighter);
+			text-align: left;
+		}
+
+		th {
+			background-color: var(--bkg-lighter);
+		}
+
+		.actions {
+			display: flex;
+			gap: 0.5rem;
+		}
+
+		button {
+			padding: 0.25rem 0.5rem;
+			border: none;
+			border-radius: 3px;
+			cursor: pointer;
+
+			&.update {
+				background-color: var(--color-primary);
+				color: white;
+			}
+
+			&.delete {
+				background-color: var(--color-error);
+				color: white;
+			}
+
+			&.add {
+				background-color: var(--color-success);
+				color: white;
+				padding: 0.5rem 1rem;
+			}
+		}
+	}
 }

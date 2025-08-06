@@ -51,6 +51,11 @@ pub struct UserForInsert {
 	pub username: String,
 }
 
+#[derive(Fields, Deserialize, Default)]
+pub struct UserForUpdate {
+	pub username: Option<String>,
+}
+
 #[derive(Clone, FromRow, Fields, Debug)]
 pub struct UserForLogin {
 	pub id: i64,
@@ -195,6 +200,15 @@ impl UserBmc {
 		list_options: Option<ListOptions>,
 	) -> Result<Vec<User>> {
 		base::list::<Self, _, _>(ctx, mm, filter, list_options).await
+	}
+
+	pub async fn update(
+		ctx: &Ctx,
+		mm: &ModelManager,
+		id: i64,
+		entity_u: UserForUpdate,
+	) -> Result<()> {
+		base::update::<Self, _>(ctx, mm, id, entity_u).await
 	}
 
 	pub async fn update_pwd(

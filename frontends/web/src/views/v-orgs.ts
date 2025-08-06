@@ -1,6 +1,5 @@
 import { BaseViewElement } from 'common/v-base.js';
 import { customElement } from 'dom-native';
-import { Wks } from '../bindings/entities.js';
 
 @customElement('v-orgs')
 export class OrgsView extends BaseViewElement {
@@ -24,7 +23,7 @@ export class OrgsView extends BaseViewElement {
 
 //// HTMLs
 
-function _render(wksList: Wks[] = []) {
+function _render() {
 	let html = `Orgs`;
 
 	return html;

@@ -39,6 +39,14 @@ export class UsersView extends BaseViewElement {
 	//#endregion ---------- /Hub Events ---------- 
 
 
+	//#region    ---------- Data Event ---------- 
+	@onHub('dcoHub', 'User', 'create,update,delete')
+	onUserChange() {
+		this.refresh();
+	}
+	//#endregion ---------- /Data Event ---------- 
+
+
 	//#region ---------- Lifecycle ---------- 
 	init() {
 		super.init();
@@ -81,4 +89,6 @@ function _render(wksList: Wks[] = []) {
 - the key elements can be some child dom object, and should be at top, unless there are some private views
 - for private fields, should be start with #, and it is camel case
 - all codes should be organized with region comments by itself
+- for ````//// Key elements```` is only start tag and place it before the key elements function
 - all views should be in views/, or views/subfolder../
+- the dcoHub event is for some objects change

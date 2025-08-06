@@ -5,7 +5,7 @@ import { webPost } from './web-request';
 const apiPrx = "/api";
 
 export async function rpc_invoke(method: string, params?: object, id?: any, apiPrx?: string): Promise<any> {
-	apiPrx = apiPrx ?? "/api";
+	apiPrx = apiPrx ?? "/api/rpc";
 	const data = { id: id ?? randomString(), method, params, jsonrpc: "2.0" };
 	const response: any = await webPost(`${apiPrx}`, { body: data });
 	if (response.error != null) {

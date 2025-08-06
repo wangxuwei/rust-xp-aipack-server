@@ -1,6 +1,5 @@
 import { BaseViewElement } from 'common/v-base.js';
 import { customElement } from 'dom-native';
-import { Wks } from '../bindings/entities.js';
 
 @customElement('v-home')
 export class wksListView extends BaseViewElement {
@@ -27,8 +26,8 @@ export class wksListView extends BaseViewElement {
 
 //// HTMLs
 
-function _render(wksList: Wks[] = []) {
-	let html = `<header><h1></h1></header>
+function _render() {
+	let html = `<header><h1>Home</h1></header>
 	<section>
 	`;
 	html += `</section>`;

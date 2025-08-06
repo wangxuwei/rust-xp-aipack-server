@@ -1,7 +1,6 @@
 import { pathAt } from 'common/route.js';
 import { BaseViewElement } from 'common/v-base.js';
 import { all, customElement, onHub } from 'dom-native';
-import { Wks } from '../bindings/entities.js';
 
 @customElement('v-nav')
 export class NavView extends BaseViewElement {
@@ -25,7 +24,7 @@ export class NavView extends BaseViewElement {
 	async refresh() {
 		this.innerHTML = _render();
 		const idx = 0;
-		let urlName = pathAt(0) ?? 'users';
+		let urlName = pathAt(0) ?? '';
 
 		for (const a of all(this, 'a')) {
 			let href = a.getAttribute('href');
@@ -41,7 +40,7 @@ export class NavView extends BaseViewElement {
 
 //// HTMLs
 
-function _render(wksList: Wks[] = []) {
+function _render() {
 	let html = `
 			<a class="nav-item" href="/users">Users</a>
 			<a class="nav-item" href="/orgs">Organizations</a>`;
