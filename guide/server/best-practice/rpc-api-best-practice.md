@@ -95,3 +95,14 @@ let's say the Entity is "Org", it is template above, then similar with others
 - when we need an api for "delete" records, just use delete_org as template
 - when we need an api for "list" records, just use list_orgs as template
 - when we need an api for "get" an record, just use get_org as template
+- for the params custom added, need to implement like: 
+	```
+	#[derive(Debug, Deserialize)]
+	pub struct ParamsForUserOrg {
+		pub user_id: i64,
+		pub org_id: i64,
+	}
+	impl IntoParams for ParamsForUserOrg {}
+
+	impl IntoParams for ParamsForUserOrg {}
+	```
