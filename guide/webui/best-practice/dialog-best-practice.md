@@ -79,4 +79,5 @@ export class DgUserAdd extends DgDialog {
 - use _compCss to style slot elements
 - for button, if there is a ui-form, bind .do-ok event do prcess form to pull all form data and trigger event _ADD with subffix
 - the dialog view file name should have dg- as prefix
+- then name "dg-user-add" in ```@customElement('dg-user-add')```, should be start with "dg-"
 - the view name for the class should have Dg as prefix
