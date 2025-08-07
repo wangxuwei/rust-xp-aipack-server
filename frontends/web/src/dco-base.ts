@@ -2,7 +2,9 @@
 // (c) 2019 BriteSnow, inc - This code is licensed under MIT license (see LICENSE for details)
 
 import { rpc_invoke } from 'common/rpc';
+import { hub } from 'dom-native';
 
+export const dcoHub = hub('dcoHub');
 
 export class BaseDco<E, F> {
 	#cmd_suffix: string;
@@ -20,28 +22,49 @@ export class BaseDco<E, F> {
 	//#endregion ---------- /Utils ---------- 
 	async get(id: number): Promise<E> {
 		const result = await rpc_invoke(`get_${this.#cmd_suffix}`, { id });
-		return result.data;
+		if (result.data) {
+			return result.data;
+		} else {
+			throw result;
+		}
 	}
 
 	async list(qo?: F): Promise<E[]> {
 		const result = await rpc_invoke(`list_${this.plural}`, { ...qo });
-		return result.data;
+		if (result.data) {
+			return result.data;
+		} else {
+			throw result;
+		}
 	}
 
 	async create(data: any): Promise<E> {
 		const result = await rpc_invoke(`create_${this.#cmd_suffix}`, { data });
-		const entity = result.data;
-		return entity;
+		if (result.data) {
+			dcoHub.pub(this.#cmd_suffix, 'create', result.data);
+			return result.data;
+		} else {
+			throw result;
+		}
 	}
 
 	async update(id: number, data: Partial<E>): Promise<any> {
 		const result = await rpc_invoke(`update_${this.#cmd_suffix}`, { id, data });
-		const entity = result.data;
-		return entity;
+		if (result.data) {
+			dcoHub.pub(this.#cmd_suffix, 'update', result.data);
+			return result.data;
+		} else {
+			throw result;
+		}
 	}
 
-	async delete(id: number): Promise<boolean> {
+	async delete(id: number): Promise<any> {
 		const result = await rpc_invoke(`delete_${this.#cmd_suffix}`, { id });
-		return true;
+		if (result.data) {
+			dcoHub.pub(this.#cmd_suffix, 'delete', result.data);
+			return result.data;
+		} else {
+			throw result;
+		}
 	}
 }

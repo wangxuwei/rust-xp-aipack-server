@@ -34,7 +34,7 @@ export class UsersView extends BaseViewElement {
 	//#endregion ---------- /Events ----------
 
 	//#region    ---------- Hub Events ---------- 
-	@onHub('dcoHub', 'User', 'create,update,delete')
+	@onHub('dcoHub', 'user', 'create,update,delete')
 	onUserChange() {
 		this.refresh();
 	}

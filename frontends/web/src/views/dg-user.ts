@@ -53,6 +53,13 @@ function _render(user?: User) {
 	const title = user ? 'Update User' : 'Add User';
 	const username = user?.username ?? '';
 
+	const pwdClearHtml = user ? `` : `
+		<div class="ui-form-row">
+			<label class="ui-form-lbl">Password:</label>
+			<d-input class="ui-form-val" name="pwd_clear" value="" placeholder="Enter password" ></d-input>
+		</div>
+	`;
+
 	return `
 		<div slot="title">${title}</div>
 
@@ -60,8 +67,9 @@ function _render(user?: User) {
 			<div class="ui-form">
 				<div class="ui-form-row">
 					<label class="ui-form-lbl">Username:</label>
-					<input class="ui-form-val" name="username" value="${username}" placeholder="Enter username" />
+					<d-input class="ui-form-val" name="username" value="${username}" placeholder="Enter username" ></d-input>
 				</div>
+				${pwdClearHtml}
 			</div>
 		</div>
 		
