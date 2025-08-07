@@ -1,34 +1,93 @@
 import { BaseViewElement } from 'common/v-base.js';
-import { customElement } from 'dom-native';
+import { orgDco } from 'dcos.js';
+import { OnEvent, customElement, onEvent, onHub } from 'dom-native';
+import { asNum, isEmpty } from 'utils-min';
+import { Org } from '../bindings/Org.js';
+import { DgOrg } from './dg-org.js';
 
 @customElement('v-orgs')
 export class OrgsView extends BaseViewElement {
 
-	//#region    ---------- Events---------- 
-	//#endregion ---------- /Events---------- 
+	//#region    ---------- Events ---------- 
+	@onEvent('click', '.btn-edit')
+	onEditClick(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
+		const orgId = asNum(rowEl.dataset.id);
+		if (!isEmpty(orgId)) {
+			this.showOrgDialog(orgId!);
+		}
+	}
+
+	@onEvent('click', '.btn-delete')
+	onDeleteClick(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
+		const orgId = asNum(rowEl.dataset.id);
+		if (!isEmpty(orgId)) {
+			orgDco.delete(orgId!).then(() => this.refresh());
+		}
+	}
+
+	@onEvent('click', 'button.add')
+	onAddClick() {
+		this.showOrgDialog();
+	}
+	//#endregion ---------- /Events ----------
 
 	//#region    ---------- Hub Events ---------- 
-	//#endregion ---------- /Hub Events ---------- 
+	@onHub('dcoHub', 'org', 'create,update,delete')
+	onOrgChange() {
+		this.refresh();
+	}
+	//#endregion ---------- /Hub Events ----------
 
-
+	//#region    ---------- Lifecycle ---------- 
 	init() {
 		super.init();
 		this.refresh();
 	}
 
 	async refresh() {
-		this.innerHTML = _render();
+		const orgs = await orgDco.list();
+		this.innerHTML = _render(orgs);
 	}
+	//#endregion ---------- /Lifecycle ----------
+
+	//#region    ---------- Private Functions ---------- 
+	private showOrgDialog(orgId?: number) {
+		const dialog = document.createElement('dg-org') as DgOrg;
+		dialog.orgId = orgId;
+		this.appendChild(dialog);
+	}
+	//#endregion ---------- /Private Functions ----------
 }
 
-//// HTMLs
+function _render(orgs: Org[]) {
+	const rows = orgs.map(org => `
+		<div class="row" data-id="${org.id}">
+			<div class="cell">${org.name}</div>
+			<div class="cell">${org.kind}</div>
+			<div class="cell actions">
+				<button class="btn-edit prime">Edit</button>
+				<button class="btn-delete danger">Delete</button>
+			</div>
+		</div>
+	`).join('');
 
-function _render() {
-	let html = `Orgs`;
-
-	return html;
-
+	return `
+		<div class="header">
+			<button class="add">Add Organization</button>
+		</div>
+		<div class="table-container">
+			<div class="table">
+				<div class="thead row">
+					<div class="cell">Name</div>
+					<div class="cell">Kind</div>
+					<div class="cell actions">Actions</div>
+				</div>
+				<div class="tbody">
+					${rows}
+				</div>
+			</div>
+		</div>
+	`;
 }
-
-
-

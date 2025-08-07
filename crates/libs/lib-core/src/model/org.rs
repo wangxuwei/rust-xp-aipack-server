@@ -118,10 +118,6 @@ pub struct OrgBmc;
 
 impl DbBmc for OrgBmc {
 	const TABLE: &'static str = "org";
-
-	fn has_owner_id() -> bool {
-		true
-	}
 }
 
 // This will generate the `impl OrgBmc {...}` with the default CRUD functions.
