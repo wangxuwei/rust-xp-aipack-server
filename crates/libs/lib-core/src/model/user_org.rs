@@ -2,11 +2,14 @@ use crate::{
 	ctx::Ctx,
 	model::{
 		base::{self, DbBmc},
-		ModelManager, Result,
+		Error, ModelManager, Result,
 	},
 };
 use lib_utils::time::Rfc3339;
-use modql::field::Fields;
+use modql::{
+	field::Fields,
+	filter::{FilterNodes, OpValInt64, OpValsInt64},
+};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 use sqlx::FromRow;
@@ -44,6 +47,12 @@ pub struct UserOrgForCreate {
 	pub user_id: i64,
 }
 
+#[derive(FilterNodes, Deserialize, Default, Debug)]
+pub struct UserOrgFilter {
+	pub user_id: Option<OpValsInt64>,
+	pub org_id: Option<OpValsInt64>,
+}
+
 // endregion: --- Types
 
 // region:    --- UserOrg
@@ -73,6 +82,25 @@ impl UserOrgBmc {
 
 	pub async fn get(ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<UserOrg> {
 		base::get::<Self, _>(ctx, mm, id).await
+	}
+
+	pub async fn get_by_user_org(
+		ctx: &Ctx,
+		mm: &ModelManager,
+		user_id: i64,
+		org_id: i64,
+	) -> Result<UserOrg> {
+		base::first::<Self, _, _>(
+			ctx,
+			mm,
+			Some(vec![UserOrgFilter {
+				user_id: Some(OpValInt64::Eq(user_id).into()),
+				org_id: Some(OpValInt64::Eq(org_id).into()),
+			}]),
+			None,
+		)
+		.await?
+		.ok_or(Error::UserOrgNotFound { user_id, org_id })
 	}
 
 	pub async fn delete(ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<()> {

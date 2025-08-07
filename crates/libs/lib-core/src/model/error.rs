@@ -31,6 +31,11 @@ pub enum Error {
 		constraint: String,
 	},
 
+	UserOrgNotFound {
+		user_id: i64,
+		org_id: i64,
+	},
+
 	// -- ModelManager
 	CantCreateModelManagerProvider(String),
 

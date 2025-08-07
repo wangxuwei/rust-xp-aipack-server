@@ -13,7 +13,8 @@ pub fn rpc_router_builder() -> RouterBuilder {
 		list_users,
 		update_user,
 		delete_user,
-		add_user_to_org
+		add_user_to_org,
+		delete_user_from_org
 	)
 }
 
@@ -98,4 +99,14 @@ pub async fn add_user_to_org(
 	Ok(entity.into())
 }
 
+pub async fn delete_user_from_org(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsForUserOrg,
+) -> Result<DataRpcResult<UserOrg>> {
+	let ParamsForUserOrg { user_id, org_id } = params;
+	let entity = UserOrgBmc::get_by_user_org(&ctx, &mm, user_id, org_id).await?;
+	UserOrgBmc::delete(&ctx, &mm, entity.id).await?;
+	Ok(entity.into())
+}
 // endregion: --- RPC Functions
