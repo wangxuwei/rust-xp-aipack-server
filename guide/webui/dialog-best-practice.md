@@ -7,6 +7,7 @@ These are the best practices for UI dialog
 ````ts
 import { adoptStyleSheets, css, customElement, first, onEvent, pull, trigger } from 'dom-native';
 import { DgDialog } from '../dialog/dg-dialog.js';
+import { userDco } from 'dcos.js';
 const { assign } = Object;
 
 
@@ -22,6 +23,12 @@ const _compCss = css`
 
 @customElement('dg-user-add')
 export class DgUserAdd extends DgDialog {
+	#userId?: number;
+
+	set userId(v: number | undefined) {
+		this.#userId = v;
+		this.refresh();
+	}
 
 	constructor() {
 		super();
@@ -32,7 +39,11 @@ export class DgUserAdd extends DgDialog {
 	doOk() {
 		super.doOk();
 		const detail = pull(this);
-		trigger(this, 'USER_ADD', { detail });
+		if(this.#userId){
+			await userDco.create(detail);
+		}else{
+			await userDco.update(this.#userId, detail);
+		}
 	}
 
 
@@ -67,3 +78,5 @@ export class DgUserAdd extends DgDialog {
 - use slot to add dialog header, content and footer
 - use _compCss to style slot elements
 - for button, if there is a ui-form, bind .do-ok event do prcess form to pull all form data and trigger event _ADD with subffix
+- the dialog view file name should have dg- as prefix
+- the view name for the class should have Dg as prefix

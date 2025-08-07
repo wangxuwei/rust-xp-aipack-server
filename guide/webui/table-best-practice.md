@@ -22,7 +22,7 @@ These are the best practices for buttons
 requires: 
 - tbody should scroll vertically
 - use css ```display: grid``` as much as you can
-- for button, class prime for update, class danger for delete
+- for button, class prime for edit, class danger for delete
 - use gray border color --clr-gray-200, and border with --clr-gray-300, 
 - the header text color is --clr-gray-800, body text color --clr-gray-900
 - and the table is fix parent container with padding: 3rem;

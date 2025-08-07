@@ -1,22 +1,20 @@
 import { BaseViewElement } from 'common/v-base.js';
 import { userDco } from 'dcos.js';
-import { OnEvent, customElement, first, onEvent, onHub } from 'dom-native';
-import { asNum } from 'utils-min';
+import { OnEvent, customElement, onEvent, onHub } from 'dom-native';
+import { asNum, isEmpty } from 'utils-min';
 import { User } from '../bindings/User.js';
+import { DgUser } from './dg-user.js';
 
 @customElement('v-users')
 export class UsersView extends BaseViewElement {
-	//#region    ---------- Key Elements ---------- 
-	private get tableEl(): HTMLElement { return first(this, '.table') as HTMLElement };
-	private get addBtnEl(): HTMLButtonElement { return first(this, 'button.add') as HTMLButtonElement };
 
 	//#region    ---------- Events ---------- 
-	@onEvent('click', '.btn-update')
-	onUpdateClick(evt: MouseEvent & OnEvent) {
+	@onEvent('click', '.btn-edit')
+	onEditClick(evt: MouseEvent & OnEvent) {
 		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
 		const userId = asNum(rowEl.dataset.id);
-		if (userId) {
-			this.showUserDialog(userId);
+		if (!isEmpty(userId)) {
+			this.showUserDialog(userId!);
 		}
 	}
 
@@ -24,8 +22,8 @@ export class UsersView extends BaseViewElement {
 	onDeleteClick(evt: MouseEvent & OnEvent) {
 		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
 		const userId = asNum(rowEl.dataset.id);
-		if (userId) {
-			userDco.delete(userId).then(() => this.refresh());
+		if (!isEmpty(userId)) {
+			userDco.delete(userId!).then(() => this.refresh());
 		}
 	}
 
@@ -56,13 +54,8 @@ export class UsersView extends BaseViewElement {
 
 	//#region    ---------- Private Functions ---------- 
 	private showUserDialog(userId?: number) {
-		const dialog = document.createElement('d-user');
-		// dialog.userId = userId;
-		// dialog.addEventListener('close', () => {
-		// 	if (dialog.returnValue === 'save') {
-		// 		this.refresh();
-		// 	}
-		// });
+		const dialog = document.createElement('d-user') as DgUser;
+		dialog.userId = userId;
 		this.appendChild(dialog);
 	}
 	//#endregion ---------- /Private Functions ----------
@@ -73,7 +66,7 @@ function _render(users: User[]) {
 		<div class="row" data-id="${user.id}">
 			<div class="cell">${user.username}</div>
 			<div class="cell actions">
-				<button class="btn-update prime">Update</button>
+				<button class="btn-edit prime">Edit</button>
 				<button class="btn-delete danger">Delete</button>
 			</div>
 		</div>

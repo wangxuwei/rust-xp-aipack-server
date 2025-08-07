@@ -86,7 +86,7 @@ function _render(wksList: Wks[] = []) {
 - the _render() will return the html codes which be rendered to the view
 - for the event binding, the ```@onEvent('click', 'button.do')``` will be triggered when the "click me" clicked
 - for the hub event ```@onHub('routeHub', 'CHANGE')```, will be triggered when call ```hub("routeHub").pub("Change", { some_data: {}})```
-- the key elements can be some child dom object, and should be at top, unless there are some private views
+- the key elements can be some child dom object, and should be at top, unless there are some private views, do not have this part if not need
 - for private fields, should be start with #, and it is camel case
 - all codes should be organized with region comments by itself
 - for ````//// Key elements```` is only start tag and place it before the key elements function
