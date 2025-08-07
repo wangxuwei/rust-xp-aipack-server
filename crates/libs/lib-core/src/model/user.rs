@@ -1,6 +1,8 @@
 use crate::ctx::Ctx;
 use crate::model::base::{self, prep_fields_for_update, DbBmc};
 use crate::model::modql_utils::time_to_sea_value;
+use crate::model::org::{OrgBmc, OrgForCreate, OrgKind};
+use crate::model::user_org::{UserOrgBmc, UserOrgForCreate};
 use crate::model::ModelManager;
 use crate::model::{Error, Result};
 use lib_auth::pwd::{self, ContentToHash};
@@ -144,7 +146,9 @@ impl UserBmc {
 					model_error,
 					Some(|table: &str, constraint: &str| {
 						if table == "user" && constraint.contains("username") {
-							Some(Error::UserAlreadyExists { username })
+							Some(Error::UserAlreadyExists {
+								username: username.clone(),
+							})
 						} else {
 							None // Error::UniqueViolation will be created by resolve_unique_violation
 						}
@@ -155,6 +159,18 @@ impl UserBmc {
 
 		// -- Update the database
 		Self::update_pwd(ctx, &mm, user_id, &pwd_clear).await?;
+
+		let org_id = OrgBmc::create(
+			ctx,
+			&mm,
+			OrgForCreate {
+				name: format!("{username}_org"),
+				kind: OrgKind::Personal,
+			},
+		)
+		.await?;
+
+		UserOrgBmc::create(ctx, &mm, UserOrgForCreate { org_id, user_id }).await?;
 
 		// Commit the transaction
 		mm.dbx().commit_txn().await?;

@@ -130,7 +130,7 @@ pub async fn seed_org(
 		ctx,
 		mm,
 		OrgForCreate {
-			name: Some(name.to_string()),
+			name: name.to_string(),
 			..Default::default()
 		},
 	)

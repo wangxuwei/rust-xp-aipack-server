@@ -33,12 +33,20 @@ pub trait OrgScoped {
 }
 
 #[derive(
-	Debug, Clone, sqlx::Type, derive_more::Display, Deserialize, Serialize, TS,
+	Debug,
+	Clone,
+	sqlx::Type,
+	derive_more::Display,
+	Deserialize,
+	Serialize,
+	TS,
+	Default,
 )]
 #[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 #[sqlx(type_name = "org_kind")]
 #[cfg_attr(test, derive(PartialEq))]
 pub enum OrgKind {
+	#[default]
 	Personal,
 	Corporate,
 }
@@ -87,10 +95,10 @@ pub struct Org {
 
 #[derive(Fields, Deserialize, Default)]
 pub struct OrgForCreate {
-	pub name: Option<String>,
+	pub name: String,
 
 	#[field(cast_as = "org_kind")]
-	pub kind: Option<OrgKind>,
+	pub kind: OrgKind,
 }
 
 #[derive(Fields, Deserialize, Default)]
@@ -125,10 +133,6 @@ pub struct OrgBmc;
 
 impl DbBmc for OrgBmc {
 	const TABLE: &'static str = "org";
-
-	fn has_owner_id() -> bool {
-		true
-	}
 }
 
 // This will generate the `impl OrgBmc {...}` with the default CRUD functions.
@@ -169,8 +173,8 @@ mod tests {
 			&ctx,
 			&mm,
 			OrgForCreate {
-				name: Some(fx_title.to_string()),
-				kind: Some(fx_kind.clone()),
+				name: fx_title.to_string(),
+				kind: fx_kind.clone(),
 			},
 		)
 		.await?;
@@ -205,8 +209,8 @@ mod tests {
 				&ctx,
 				&mm,
 				OrgForCreate {
-					name: Some(format!("{fx_title_prefix}{i:<02}")),
-					kind: Some(kind),
+					name: format!("{fx_title_prefix}{i:<02}"),
+					kind,
 				},
 			)
 			.await?;
