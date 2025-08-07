@@ -54,7 +54,7 @@ export class UsersView extends BaseViewElement {
 
 	//#region    ---------- Private Functions ---------- 
 	private showUserDialog(userId?: number) {
-		const dialog = document.createElement('d-user') as DgUser;
+		const dialog = document.createElement('dg-user') as DgUser;
 		dialog.userId = userId;
 		this.appendChild(dialog);
 	}

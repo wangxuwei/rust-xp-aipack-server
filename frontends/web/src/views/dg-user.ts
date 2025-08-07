@@ -13,7 +13,7 @@ const _compCss = css`
 	}
 `;
 
-@customElement('d-user')
+@customElement('dg-user')
 export class DgUser extends DgDialog {
 	#userId?: number;
 
