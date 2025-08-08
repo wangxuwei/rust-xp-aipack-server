@@ -89,7 +89,8 @@ impl UserBy for UserForAuth {}
 //       UserIden does not have to be exhaustive, but just have the columns
 //       we use in our specific code.
 #[derive(Iden)]
-enum UserIden {
+pub enum UserIden {
+	User,
 	Id,
 	Username,
 	Pwd,

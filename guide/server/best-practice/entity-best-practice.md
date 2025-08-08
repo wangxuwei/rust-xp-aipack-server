@@ -17,6 +17,7 @@ use modql::filter::{
 	FilterNodes, ListOptions, OpValsInt64, OpValsString, OpValsValue,
 };
 use sea_query::Nullable;
+use sea_query::{enum_def, Nullable};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 use sqlx::types::time::OffsetDateTime;
@@ -73,6 +74,7 @@ impl Nullable for OrgKind {
 #[serde_as]
 #[derive(Debug, Clone, Fields, FromRow, Serialize, TS)]
 #[ts(export, export_to = "../../../frontends/web/src/bindings/")]
+#[enum_def]
 pub struct Org {
 	pub id: i64,
 

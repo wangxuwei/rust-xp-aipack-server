@@ -4,11 +4,21 @@ import { OnEvent, customElement, onEvent, onHub } from 'dom-native';
 import { asNum, isEmpty } from 'utils-min';
 import { Org } from '../bindings/Org.js';
 import { DgOrg } from './dg-org.js';
+import { DrOrgUsers } from './dr-org-users.js';
 
 @customElement('v-orgs')
 export class OrgsView extends BaseViewElement {
 
 	//#region    ---------- Events ---------- 
+	@onEvent('click', '.btn-manage-users')
+	onManageUsersClick(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
+		const orgId = asNum(rowEl.dataset.id);
+		if (!isEmpty(orgId)) {
+			this.showOrgUsersDrawer(orgId!);
+		}
+	}
+
 	@onEvent('click', '.btn-edit')
 	onEditClick(evt: MouseEvent & OnEvent) {
 		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
@@ -58,6 +68,12 @@ export class OrgsView extends BaseViewElement {
 		dialog.orgId = orgId;
 		this.appendChild(dialog);
 	}
+
+	private showOrgUsersDrawer(orgId?: number) {
+		const drawer = document.createElement('dr-org-users') as DrOrgUsers;
+		drawer.orgId = orgId;
+		this.appendChild(drawer);
+	}
 	//#endregion ---------- /Private Functions ----------
 }
 
@@ -68,6 +84,7 @@ function _render(orgs: Org[]) {
 			<div class="cell">${org.kind}</div>
 			<div class="cell actions">
 				<button class="btn-edit prime">Edit</button>
+				<button class="btn-manage-users prime">Manage Users</button>
 				<button class="btn-delete danger">Delete</button>
 			</div>
 		</div>
