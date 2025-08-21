@@ -166,7 +166,7 @@ mod tests {
 	async fn test_create_ok() -> Result<()> {
 		// -- Setup & Fixtures
 		let mm = _dev_utils::init_test().await;
-		let ctx = Ctx::root_ctx();
+		let ctx = Ctx::root_ctx(None);
 		let fx_title = "test_create_ok org 01";
 		let fx_kind = OrgKind::Personal;
 
@@ -197,7 +197,7 @@ mod tests {
 	async fn test_list_ok() -> Result<()> {
 		// -- Setup & Fixtures
 		let mm = _dev_utils::init_test().await;
-		let ctx = Ctx::root_ctx();
+		let ctx = Ctx::root_ctx(None);
 		let fx_title_prefix = "test_list_ok org - ";
 
 		for i in 1..=6 {

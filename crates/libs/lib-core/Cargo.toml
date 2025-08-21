@@ -16,6 +16,7 @@ with-rpc = ["rpc-router"]
 # -- App Libs
 lib-utils = { path = "../../libs/lib-utils"}
 lib-auth = { path = "../../libs/lib-auth"}
+lib-acs-macros = { path = "../../libs/lib-acs-macros"}
 # -- Async
 tokio = { version = "1", features = ["full"] }
 # -- Json
@@ -27,6 +28,9 @@ sqlx = { workspace = true }
 sea-query = { workspace = true }
 sea-query-binder = { workspace = true }
 modql = { workspace = true }
+strum = { workspace = true }
+strum_macros = { workspace = true }
+
 # -- Tracing
 tracing = "0.1"
 # -- Others

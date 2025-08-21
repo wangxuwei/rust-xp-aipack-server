@@ -23,7 +23,7 @@ pub async fn api_login_handler(
 		username,
 		pwd: pwd_clear,
 	} = payload;
-	let root_ctx = Ctx::root_ctx();
+	let root_ctx = Ctx::root_ctx(None);
 
 	// -- Get the user.
 	let user: UserForLogin = UserBmc::first_by_username(&root_ctx, &mm, &username)

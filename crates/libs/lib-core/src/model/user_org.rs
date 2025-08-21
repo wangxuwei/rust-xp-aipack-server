@@ -23,12 +23,44 @@ use ts_rs::TS;
 
 // region:    --- Types
 
+#[derive(
+	Clone,
+	Debug,
+	sqlx::Type,
+	derive_more::Display,
+	Deserialize,
+	Serialize,
+	TS,
+	PartialEq,
+	std::cmp::Eq,
+	Hash,
+	Copy,
+)]
+#[ts(export, export_to = "../../../frontends/web/src/bindings/")]
+#[sqlx(type_name = "orole_name")]
+pub enum ORoleName {
+	#[sqlx(rename = "or_owner")]
+	Owner,
+	#[sqlx(rename = "or_admin")]
+	Admin,
+	#[sqlx(rename = "or_editor")]
+	Editor,
+	#[sqlx(rename = "or_viewer")]
+	Viewer,
+}
+impl From<ORoleName> for sea_query::Value {
+	fn from(val: ORoleName) -> Self {
+		val.to_string().into()
+	}
+}
+
 #[serde_as]
 #[derive(Debug, Clone, Fields, FromRow, Serialize, TS)]
 #[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 #[enum_def]
 pub struct UserOrg {
 	pub id: i64,
+	pub role: ORoleName,
 
 	// -- FK
 	pub org_id: i64,
@@ -47,10 +79,11 @@ pub struct UserOrg {
 	pub mtime: OffsetDateTime,
 }
 
-#[derive(Fields, Deserialize)]
+#[derive(Fields, Serialize, Deserialize)]
 pub struct UserOrgForCreate {
 	pub org_id: i64,
 	pub user_id: i64,
+	pub role: ORoleName,
 }
 
 #[derive(FilterNodes, Deserialize, Default, Debug)]
@@ -205,6 +238,7 @@ impl UserOrgBmc {
 				.map(|f| UserOrgForCreate {
 					user_id: *f,
 					org_id,
+					role: ORoleName::Owner,
 				})
 				.collect::<Vec<_>>();
 			Self::create_many(ctx, &mm, to_adds).await?;

@@ -66,7 +66,7 @@ async fn ctx_resolve(mm: ModelManager, cookies: &Cookies) -> CtxExtResult {
 
 	// -- Get UserForAuth
 	let user: UserForAuth =
-		UserBmc::first_by_username(&Ctx::root_ctx(), &mm, &token.ident)
+		UserBmc::first_by_username(&Ctx::root_ctx(None), &mm, &token.ident)
 			.await
 			.map_err(|ex| CtxExtError::ModelAccessError(ex.to_string()))?
 			.ok_or(CtxExtError::UserNotFound)?;
@@ -80,7 +80,7 @@ async fn ctx_resolve(mm: ModelManager, cookies: &Cookies) -> CtxExtResult {
 		.map_err(|_| CtxExtError::CannotSetTokenCookie)?;
 
 	// -- Create CtxExtResult
-	Ctx::new(user.id)
+	Ctx::new(user)
 		.map(CtxW)
 		.map_err(|ex| CtxExtError::CtxCreateFail(ex.to_string()))
 }

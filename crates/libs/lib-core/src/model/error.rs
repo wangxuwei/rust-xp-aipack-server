@@ -51,6 +51,11 @@ pub enum Error {
 
 	#[from]
 	ModqlIntoSea(#[serde_as(as = "DisplayFromStr")] modql::filter::IntoSeaError),
+
+	OrgAddRole,
+	AccessForJsonConvert,
+	AccessGetEntity,
+	AccessFail(String),
 }
 
 impl Error {

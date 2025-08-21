@@ -19,7 +19,7 @@
 
 // region:    --- Modules
 
-mod acs;
+pub mod acs;
 mod base;
 mod error;
 mod store;

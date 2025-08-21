@@ -1,10 +1,14 @@
 use crate::ctx::Ctx;
+use crate::model::acs::prelude::*;
+use crate::model::acs::Ema;
+use crate::model::acs::Ga;
 use crate::model::base::{self, prep_fields_for_update, DbBmc};
 use crate::model::modql_utils::time_to_sea_value;
 use crate::model::org::{OrgBmc, OrgForCreate, OrgKind};
+use crate::model::user_org::ORoleName;
 use crate::model::user_org::{UserOrgBmc, UserOrgForCreate};
-use crate::model::ModelManager;
-use crate::model::{Error, Result};
+use crate::model::Result;
+use crate::model::{Error, ModelManager};
 use lib_auth::pwd::{self, ContentToHash};
 use modql::field::{Fields, HasSeaFields, SeaField, SeaFields};
 use modql::filter::{
@@ -20,7 +24,16 @@ use uuid::Uuid;
 
 // region:    --- User Types
 #[derive(
-	Clone, Debug, sqlx::Type, derive_more::Display, Deserialize, Serialize, TS,
+	Clone,
+	Debug,
+	sqlx::Type,
+	derive_more::Display,
+	Deserialize,
+	Serialize,
+	TS,
+	PartialEq,
+	Eq,
+	Hash,
 )]
 #[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 #[sqlx(type_name = "user_typ")]
@@ -42,7 +55,7 @@ pub struct User {
 	pub typ: UserTyp,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct UserForCreate {
 	pub username: String,
 	pub pwd_clear: String,
@@ -72,8 +85,11 @@ pub struct UserForLogin {
 #[derive(Clone, FromRow, Fields, Debug)]
 pub struct UserForAuth {
 	pub id: i64,
+	pub typ: UserTyp,
 	pub username: String,
 
+	#[field(cast_as = "user_access[]")]
+	pub accesses: Option<Vec<GlobalAccess>>,
 	// -- token info
 	pub token_salt: Uuid,
 }
@@ -121,6 +137,7 @@ impl DbBmc for UserBmc {
 }
 
 impl UserBmc {
+	#[privileges(Access::Global(Ga::Admin))]
 	pub async fn create(
 		ctx: &Ctx,
 		mm: &ModelManager,
@@ -171,7 +188,16 @@ impl UserBmc {
 		)
 		.await?;
 
-		UserOrgBmc::create(ctx, &mm, UserOrgForCreate { org_id, user_id }).await?;
+		UserOrgBmc::create(
+			ctx,
+			&mm,
+			UserOrgForCreate {
+				org_id,
+				user_id,
+				role: ORoleName::Owner,
+			},
+		)
+		.await?;
 
 		// Commit the transaction
 		mm.dbx().commit_txn().await?;
@@ -179,6 +205,7 @@ impl UserBmc {
 		Ok(user_id)
 	}
 
+	#[privileges(Access::Global(Ga::Admin), Access::Entity(Ema::Id))]
 	pub async fn get<E>(ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<E>
 	where
 		E: UserBy,
@@ -210,6 +237,7 @@ impl UserBmc {
 		Ok(entity)
 	}
 
+	#[privileges(Access::Global(Ga::User))]
 	pub async fn list(
 		ctx: &Ctx,
 		mm: &ModelManager,
@@ -219,6 +247,7 @@ impl UserBmc {
 		base::list::<Self, _, _>(ctx, mm, filter, list_options).await
 	}
 
+	#[privileges(Access::Global(Ga::Admin))]
 	pub async fn update(
 		ctx: &Ctx,
 		mm: &ModelManager,
@@ -228,6 +257,7 @@ impl UserBmc {
 		base::update::<Self, _>(ctx, mm, id, entity_u).await
 	}
 
+	#[privileges(Access::Global(Ga::Admin))]
 	pub async fn update_pwd(
 		ctx: &Ctx,
 		mm: &ModelManager,
@@ -292,7 +322,7 @@ mod tests {
 	async fn test_create_ok() -> Result<()> {
 		// -- Setup & Fixtures
 		let mm = _dev_utils::init_test().await;
-		let ctx = Ctx::root_ctx();
+		let ctx = Ctx::root_ctx(None);
 		let fx_username = "test_create_ok-user-01";
 		let fx_pwd_clear = "test_create_ok pwd 01";
 
@@ -322,14 +352,13 @@ mod tests {
 	async fn test_first_ok_demo1() -> Result<()> {
 		// -- Setup & Fixtures
 		let mm = _dev_utils::init_test().await;
-		let ctx = Ctx::root_ctx();
+		let ctx = Ctx::root_ctx(None);
 		let fx_username = "demo1";
 
 		// -- Exec
 		let user: User = UserBmc::first_by_username(&ctx, &mm, fx_username)
 			.await?
 			.ok_or("Should have user 'demo1'")?;
-
 		// -- Check
 		assert_eq!(user.username, fx_username);
 

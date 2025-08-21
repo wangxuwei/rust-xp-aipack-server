@@ -1,5 +1,7 @@
 use crate::ctx::Ctx;
 use crate::generate_common_bmc_fns;
+use crate::model::acs::prelude::*;
+use crate::model::acs::Oa;
 use crate::model::base::{self, DbBmc};
 use crate::model::modql_utils::time_to_sea_value;
 use crate::model::ModelManager;
@@ -87,7 +89,7 @@ pub struct Org {
 	pub mtime: OffsetDateTime,
 }
 
-#[derive(Fields, Deserialize, Default)]
+#[derive(Fields, Serialize, Deserialize, Default)]
 pub struct OrgForCreate {
 	pub name: String,
 
@@ -95,7 +97,7 @@ pub struct OrgForCreate {
 	pub kind: OrgKind,
 }
 
-#[derive(Fields, Deserialize, Default)]
+#[derive(Fields, Serialize, Deserialize, Default)]
 pub struct OrgForUpdate {
 	pub name: Option<String>,
 	#[field(cast_as = "org_kind")]
@@ -133,9 +135,11 @@ impl DbBmc for OrgBmc {
 generate_common_bmc_fns!(
 	Bmc: OrgBmc,
 	Entity: Org,
-	ForCreate: OrgForCreate,
-	ForUpdate: OrgForUpdate,
-	Filter: OrgFilter,
+	ForCreate: OrgForCreate, CreatePrivileges: [Access::Org(Oa::Admin)],
+	ForUpdate: OrgForUpdate, UpdatePrivileges: [Access::Org(Oa::Admin)],
+	Filter: OrgFilter, ListPrivileges: [Access::Org(Oa::User)],
+	GetPrivileges: [Access::Org(Oa::User)],
+	DeletePrivileges: [Access::Org(Oa::Admin)]
 );
 
 // endregion: --- OrgBmc
@@ -158,7 +162,7 @@ mod tests {
 	async fn test_create_ok() -> Result<()> {
 		// -- Setup & Fixtures
 		let mm = _dev_utils::init_test().await;
-		let ctx = Ctx::root_ctx();
+		let ctx = Ctx::root_ctx(None);
 		let fx_title = "test_create_ok org 01";
 		let fx_kind = OrgKind::Personal;
 
@@ -189,7 +193,7 @@ mod tests {
 	async fn test_list_ok() -> Result<()> {
 		// -- Setup & Fixtures
 		let mm = _dev_utils::init_test().await;
-		let ctx = Ctx::root_ctx();
+		let ctx = Ctx::root_ctx(None);
 		let fx_title_prefix = "test_list_ok org - ";
 
 		for i in 1..=6 {

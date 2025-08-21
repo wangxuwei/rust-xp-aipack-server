@@ -1,5 +1,12 @@
 ---- Base app schema
 
+-- user access modifiers, with their negatives
+CREATE TYPE user_access AS ENUM (
+  'a_ui',
+  'a_api',
+  'a_admin'
+);
+
 
 -- User
 CREATE TYPE user_typ AS ENUM ('Sys', 'User');
@@ -9,6 +16,9 @@ CREATE TABLE "user" (
 
   username varchar(128) NOT NULL UNIQUE,
   typ user_typ NOT NULL DEFAULT 'User',
+
+  -- access modifiers
+  accesses user_access[],
 
   -- Auth
   pwd varchar(256),
@@ -57,6 +67,12 @@ ALTER TABLE org ADD CONSTRAINT fk_org_mid
   ON DELETE SET NULL;
 
 
+CREATE TYPE orole_name AS ENUM (
+  'or_owner',
+  'or_admin',
+  'or_editor',
+  'or_viewer'
+);
 
 -- Org Participants
 CREATE TABLE user_org (
@@ -66,6 +82,7 @@ CREATE TABLE user_org (
   -- Properties / FKs
   org_id BIGINT NOT NULL,
   user_id BIGINT NOT NULL, 
+  "role" orole_name NOT NULL,
 
   -- Timestamps
   cid bigint NOT NULL,
