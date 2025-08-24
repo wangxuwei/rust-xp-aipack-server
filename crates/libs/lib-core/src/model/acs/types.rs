@@ -40,7 +40,7 @@ impl core::fmt::Display for Access {
 	Hash,
 	Eq,
 )]
-#[ts(export, export_to = "../../frontends/web/src/bindings/")]
+#[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 #[sqlx(type_name = "user_access")]
 pub enum GlobalAccess {
 	#[sqlx(rename = "a_sys")]
@@ -59,6 +59,7 @@ pub type Ga = GlobalAccess;
 
 impl From<GlobalAccess> for sea_query::Value {
 	fn from(val: GlobalAccess) -> Self {
+		let val = format!("a_{}", val.to_string().to_ascii_lowercase());
 		val.to_string().into()
 	}
 }

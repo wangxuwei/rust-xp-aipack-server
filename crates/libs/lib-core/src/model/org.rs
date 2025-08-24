@@ -219,9 +219,9 @@ mod tests {
 			&ctx,
 			&mm,
 			Some(vec![OrgFilter {
-				kind: Some(OpValString::In(vec!["MultiUsers".to_string()]).into()),
+				kind: Some(OpValString::In(vec!["Corporate".to_string()]).into()),
 				// or
-				// kind: Some(OpValString::Eq("MultiUsers".to_string()).into()),
+				// kind: Some(OpValString::Eq("Personal".to_string()).into()),
 				..Default::default()
 			}]),
 			None,

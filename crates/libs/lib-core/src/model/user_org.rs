@@ -50,6 +50,7 @@ pub enum ORoleName {
 }
 impl From<ORoleName> for sea_query::Value {
 	fn from(val: ORoleName) -> Self {
+		let val = format!("or_{}", val.to_string().to_ascii_lowercase());
 		val.to_string().into()
 	}
 }
@@ -83,6 +84,7 @@ pub struct UserOrg {
 pub struct UserOrgForCreate {
 	pub org_id: i64,
 	pub user_id: i64,
+	#[field(cast_as = "orole_name")]
 	pub role: ORoleName,
 }
 
