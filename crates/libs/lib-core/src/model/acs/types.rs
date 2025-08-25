@@ -40,7 +40,7 @@ impl core::fmt::Display for Access {
 	Hash,
 	Eq,
 )]
-#[ts(export, export_to = "../../../frontends/web/src/bindings/")]
+#[ts(export, export_to = "../../../frontends/_common/src/bindings/")]
 #[sqlx(type_name = "user_access")]
 pub enum GlobalAccess {
 	#[sqlx(rename = "a_sys")]
@@ -117,7 +117,19 @@ impl EntityMatchAccess {
 //#endregion ---------- /App Access ----------
 
 //#region    ---------- Org Access ----------
-#[derive(Debug, PartialEq, Clone, Eq, Hash, Copy, derive_more::Display)]
+#[derive(
+	Debug,
+	PartialEq,
+	Clone,
+	Eq,
+	Hash,
+	Copy,
+	derive_more::Display,
+	TS,
+	Serialize,
+	Deserialize,
+)]
+#[ts(export, export_to = "../../../frontends/_common/src/bindings/")]
 pub enum OrgAccess {
 	User,
 	Manage,

@@ -82,6 +82,17 @@ impl Ctx {
 		self.org_id
 	}
 
+	pub fn accesses(&self) -> Option<Vec<GlobalAccess>> {
+		self.user.accesses.clone()
+	}
+
+	pub fn org_accesses(&self, org_id: i64) -> Option<Vec<OrgAccess>> {
+		let map = self.accesses_by_org_id.read().unwrap();
+		// first, get the privileges for this user on this org (from context cache)
+		let privileges = map.get(&org_id);
+		privileges.map(|set| set.iter().cloned().collect())
+	}
+
 	pub fn has_access(&self, access: &GlobalAccess) -> bool {
 		if let Some(ref accesses) = self.user.accesses {
 			accesses.contains(access)

@@ -7,6 +7,7 @@ use std::{
 	collections::{HashMap, HashSet},
 	sync::OnceLock,
 };
+use strum::IntoEnumIterator;
 
 pub struct GlobalRoleConfig {
 	roles: HashMap<UserTyp, HashSet<Ga>>,
@@ -16,7 +17,8 @@ impl GlobalRoleConfig {
 	fn new() -> Self {
 		let user: HashSet<GlobalAccess> = HashSet::from([Ga::User]);
 
-		let admin: HashSet<GlobalAccess> = HashSet::from([Ga::Sys]);
+		let admin: HashSet<GlobalAccess> =
+			GlobalAccess::iter().collect::<HashSet<_>>();
 		let admin = admin.union(&user).cloned().collect();
 
 		let mut roles = HashMap::new();

@@ -22,6 +22,8 @@ members = [
 [workspace.dependencies]
 # -- Serde
 serde_with = {version = "3", features = ["time_0_3"] }
+serde_urlencoded = "0.7.1"
+
 # -- Data
 # Note: we lock modql version during rcs
 modql = { version = "0.4.1", features = ["with-sea-query"]}

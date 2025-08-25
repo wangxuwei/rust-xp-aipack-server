@@ -36,7 +36,6 @@ pub async fn check_access(
 					}
 				}
 				Access::Org(oa) => {
-					// const wksId = utx.wksId ?? ((dao.table === 'wks') ? entityId : undefined);
 					let org_id = ctx.org_id().or_else(|| {
 						if method_ref.table == "org" {
 							first_entity_id

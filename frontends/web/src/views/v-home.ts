@@ -2,7 +2,7 @@ import { BaseViewElement } from 'common/v-base.js';
 import { customElement } from 'dom-native';
 
 @customElement('v-home')
-export class wksListView extends BaseViewElement {
+export class HomeView extends BaseViewElement {
 
 	//#region    ---------- Events---------- 
 	//#endregion ---------- /Events---------- 

@@ -66,7 +66,11 @@ pub async fn init_dev_db() -> Result<(), Box<dyn std::error::Error>> {
 	let mm = ModelManager::new().await?;
 	let ctx = Ctx::root_ctx(None);
 
-	// -- Set demo1 pwd
+	// -- Set pwd
+	let admin_user: User = UserBmc::first_by_username(&ctx, &mm, "admin")
+		.await?
+		.unwrap();
+	UserBmc::update_pwd(&ctx, &mm, admin_user.id, DEMO_PWD).await?;
 	let demo1_user: User = UserBmc::first_by_username(&ctx, &mm, "demo1")
 		.await?
 		.unwrap();

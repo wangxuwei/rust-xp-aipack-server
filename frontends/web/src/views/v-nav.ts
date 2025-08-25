@@ -1,4 +1,5 @@
 import { pathAt } from 'common/route.js';
+import { hasAccess } from 'common/user-ctx';
 import { BaseViewElement } from 'common/v-base.js';
 import { all, customElement, onHub } from 'dom-native';
 
@@ -42,8 +43,11 @@ export class NavView extends BaseViewElement {
 
 function _render() {
 	let html = `
-			<a class="nav-item" href="/users">Users</a>
+			<a class="nav-item" href="/users">Users</a>`;
+	if(hasAccess("Admin")){
+		html += `
 			<a class="nav-item" href="/orgs">Organizations</a>`;
+	}
 
 	return html;
 

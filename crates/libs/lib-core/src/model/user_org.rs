@@ -36,7 +36,7 @@ use ts_rs::TS;
 	Hash,
 	Copy,
 )]
-#[ts(export, export_to = "../../../frontends/web/src/bindings/")]
+#[ts(export, export_to = "../../../frontends/_common/src/bindings/")]
 #[sqlx(type_name = "orole_name")]
 pub enum ORoleName {
 	#[sqlx(rename = "or_owner")]
