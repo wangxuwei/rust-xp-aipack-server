@@ -53,6 +53,13 @@ pub enum GlobalAccess {
 	Admin,
 	#[sqlx(rename = "a_api")]
 	Api,
+
+	#[sqlx(rename = "a_user_manage")]
+	UserManage,
+	#[sqlx(rename = "a_user_pwd_update")]
+	UserPwdUpdate,
+	#[sqlx(rename = "a_org_manage")]
+	OrgManage,
 }
 
 pub type Ga = GlobalAccess;
@@ -134,6 +141,11 @@ pub enum OrgAccess {
 	User,
 	Manage,
 	Admin,
+
+	OrgRename,
+	UserManage,
+	PackPublish,
+	PackYank,
 }
 pub type Oa = OrgAccess;
 

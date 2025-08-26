@@ -1,7 +1,7 @@
 use crate::ctx::Ctx;
 use crate::generate_common_bmc_fns;
 use crate::model::acs::prelude::*;
-use crate::model::acs::Oa;
+use crate::model::acs::Ga;
 use crate::model::base::{self, DbBmc};
 use crate::model::modql_utils::time_to_sea_value;
 use crate::model::ModelManager;
@@ -135,11 +135,11 @@ impl DbBmc for OrgBmc {
 generate_common_bmc_fns!(
 	Bmc: OrgBmc,
 	Entity: Org,
-	ForCreate: OrgForCreate, CreatePrivileges: [Access::Org(Oa::Admin)],
-	ForUpdate: OrgForUpdate, UpdatePrivileges: [Access::Org(Oa::Admin)],
-	Filter: OrgFilter, ListPrivileges: [Access::Org(Oa::User)],
-	GetPrivileges: [Access::Org(Oa::User)],
-	DeletePrivileges: [Access::Org(Oa::Admin)]
+	ForCreate: OrgForCreate, CreatePrivileges: [Access::Global(Ga::OrgManage)],
+	ForUpdate: OrgForUpdate, UpdatePrivileges: [Access::Global(Ga::OrgManage)],
+	Filter: OrgFilter, ListPrivileges: [Access::Global(Ga::OrgManage)],
+	GetPrivileges: [Access::Global(Ga::OrgManage)],
+	DeletePrivileges: [Access::Global(Ga::OrgManage)]
 );
 
 // endregion: --- OrgBmc

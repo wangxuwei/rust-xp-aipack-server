@@ -1,12 +1,15 @@
+use crate::model::acs::prelude::*;
 use crate::{
 	ctx::Ctx,
 	model::{
+		acs::{Access, Oa},
 		base::{self, DbBmc},
 		org::OrgIden,
 		user::{User, UserIden},
 		Error, ModelManager, Result,
 	},
 };
+use lib_acs_macros::privileges;
 use lib_utils::time::Rfc3339;
 use modql::{
 	field::{Fields, HasSeaFields},
@@ -105,6 +108,7 @@ impl DbBmc for UserOrgBmc {
 }
 
 impl UserOrgBmc {
+	#[privileges(Access::Org(Oa::UserManage))]
 	pub async fn create(
 		ctx: &Ctx,
 		mm: &ModelManager,

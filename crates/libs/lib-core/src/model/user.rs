@@ -137,7 +137,7 @@ impl DbBmc for UserBmc {
 }
 
 impl UserBmc {
-	#[privileges(Access::Global(Ga::Admin))]
+	#[privileges(Access::Global(Ga::UserManage))]
 	pub async fn create(
 		ctx: &Ctx,
 		mm: &ModelManager,
@@ -205,7 +205,7 @@ impl UserBmc {
 		Ok(user_id)
 	}
 
-	#[privileges(Access::Global(Ga::Admin), Access::Entity(Ema::Id))]
+	#[privileges(Access::Global(Ga::UserManage), Access::Entity(Ema::Id))]
 	pub async fn get<E>(ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<E>
 	where
 		E: UserBy,
@@ -213,6 +213,7 @@ impl UserBmc {
 		base::get::<Self, _>(ctx, mm, id).await
 	}
 
+	#[privileges(Access::Global(Ga::Sys))]
 	pub async fn first_by_username<E>(
 		_ctx: &Ctx,
 		mm: &ModelManager,
@@ -237,7 +238,7 @@ impl UserBmc {
 		Ok(entity)
 	}
 
-	#[privileges(Access::Global(Ga::User))]
+	#[privileges(Access::Global(Ga::UserManage))]
 	pub async fn list(
 		ctx: &Ctx,
 		mm: &ModelManager,
@@ -247,7 +248,7 @@ impl UserBmc {
 		base::list::<Self, _, _>(ctx, mm, filter, list_options).await
 	}
 
-	#[privileges(Access::Global(Ga::Admin))]
+	#[privileges(Access::Global(Ga::UserManage))]
 	pub async fn update(
 		ctx: &Ctx,
 		mm: &ModelManager,
@@ -257,7 +258,7 @@ impl UserBmc {
 		base::update::<Self, _>(ctx, mm, id, entity_u).await
 	}
 
-	#[privileges(Access::Global(Ga::Admin))]
+	#[privileges(Access::Global(Ga::UserPwdUpdate), Access::Entity(Ema::Id))]
 	pub async fn update_pwd(
 		ctx: &Ctx,
 		mm: &ModelManager,
@@ -299,6 +300,7 @@ impl UserBmc {
 	///       - The automatically set `mid`/`mtime` will record who performed the deletion.
 	///       - It's likely necessary to record this action in a `um_change_log` (a user management change audit table).
 	///       - Remove or clean up any user-specific assets (messages, etc.).
+	#[privileges(Access::Global(Ga::UserManage))]
 	pub async fn delete(ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<()> {
 		base::delete::<Self>(ctx, mm, id).await
 	}

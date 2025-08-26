@@ -48,7 +48,7 @@ impl OrgRoleConfig {
 	fn new() -> Self {
 		let viewer: HashSet<OrgAccess> = HashSet::from([Oa::User]);
 
-		let editor: HashSet<OrgAccess> = HashSet::from([Oa::Manage]);
+		let editor: HashSet<OrgAccess> = HashSet::from([Oa::Manage, Oa::UserManage]);
 		let editor = editor.union(&viewer).copied().collect();
 
 		let admin: HashSet<OrgAccess> = HashSet::from([]);
