@@ -14,6 +14,7 @@ pub fn rpc_router_builder() -> RouterBuilder {
 		list_orgs,
 		update_org,
 		delete_org,
+		rename_org,
 		get_users_by_org,
 		save_users_to_org
 	)
@@ -40,6 +41,22 @@ impl IntoParams for ParamsForOrgUsers {}
 // endregion: --- Params
 
 // region:    --- RPC Functions
+#[derive(Deserialize)]
+pub struct ParamsOrg {
+	pub id: i64,
+	pub name: String,
+}
+impl IntoParams for ParamsOrg {}
+
+pub async fn rename_org(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsOrg,
+) -> Result<DataRpcResult<()>> {
+	OrgBmc::rename_org(&ctx, &mm, params.id, &params.name).await?;
+	Ok(().into())
+}
+
 pub async fn get_users_by_org(
 	ctx: Ctx,
 	mm: ModelManager,

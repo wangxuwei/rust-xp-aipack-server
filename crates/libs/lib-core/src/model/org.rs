@@ -2,6 +2,7 @@ use crate::ctx::Ctx;
 use crate::generate_common_bmc_fns;
 use crate::model::acs::prelude::*;
 use crate::model::acs::Ga;
+use crate::model::acs::Oa;
 use crate::model::base::{self, DbBmc};
 use crate::model::modql_utils::time_to_sea_value;
 use crate::model::ModelManager;
@@ -138,9 +139,30 @@ generate_common_bmc_fns!(
 	ForCreate: OrgForCreate, CreatePrivileges: [Access::Global(Ga::OrgManage)],
 	ForUpdate: OrgForUpdate, UpdatePrivileges: [Access::Global(Ga::OrgManage)],
 	Filter: OrgFilter, ListPrivileges: [Access::Global(Ga::OrgManage)],
-	GetPrivileges: [Access::Global(Ga::OrgManage)],
+	GetPrivileges: [Access::Global(Ga::OrgManage), Access::Org(Oa::OrgRename)],
 	DeletePrivileges: [Access::Global(Ga::OrgManage)]
 );
+
+impl OrgBmc {
+	#[privileges(Access::Global(Ga::OrgManage), Access::Org(Oa::OrgRename))]
+	pub async fn rename_org(
+		ctx: &Ctx,
+		mm: &ModelManager,
+		id: i64,
+		org_name: &str,
+	) -> Result<()> {
+		base::update::<Self, _>(
+			ctx,
+			mm,
+			id,
+			OrgForUpdate {
+				name: Some(org_name.to_owned()),
+				kind: None,
+			},
+		)
+		.await
+	}
+}
 
 // endregion: --- OrgBmc
 

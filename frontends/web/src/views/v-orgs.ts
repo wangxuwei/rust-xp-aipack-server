@@ -1,8 +1,11 @@
+import { hasAccess } from 'common/user-ctx.js';
+import { hasOrgAccess } from 'common/user-org-ctx.js';
 import { BaseViewElement } from 'common/v-base.js';
 import { orgDco } from 'dcos.js';
 import { OnEvent, customElement, onEvent, onHub } from 'dom-native';
 import { asNum, isEmpty } from 'utils-min';
 import { Org } from '../bindings/Org.js';
+import { DgOrgRename } from './dg-org-rename.js';
 import { DgOrg } from './dg-org.js';
 import { DrOrgUsers } from './dr-org-users.js';
 
@@ -28,6 +31,15 @@ export class OrgsView extends BaseViewElement {
 		}
 	}
 
+	@onEvent('click', '.btn-rename')
+	onRename(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
+		const orgId = asNum(rowEl.dataset.id);
+		if (!isEmpty(orgId)) {
+			this.showOrgRenameDialog(orgId!);
+		}
+	}
+
 	@onEvent('click', '.btn-delete')
 	onDeleteClick(evt: MouseEvent & OnEvent) {
 		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
@@ -44,7 +56,7 @@ export class OrgsView extends BaseViewElement {
 	//#endregion ---------- /Events ----------
 
 	//#region    ---------- Hub Events ---------- 
-	@onHub('dcoHub', 'org', 'create,update,delete')
+	@onHub('dcoHub', 'org', 'create,update,delete,rename')
 	onOrgChange() {
 		this.refresh();
 	}
@@ -69,6 +81,12 @@ export class OrgsView extends BaseViewElement {
 		this.appendChild(dialog);
 	}
 
+	private showOrgRenameDialog(orgId?: number) {
+		const dialog = document.createElement('dg-org-rename') as DgOrgRename;
+		dialog.orgId = orgId!;
+		this.appendChild(dialog);
+	}
+
 	private showOrgUsersDrawer(orgId?: number) {
 		const drawer = document.createElement('dr-org-users') as DrOrgUsers;
 		drawer.orgId = orgId;
@@ -78,17 +96,26 @@ export class OrgsView extends BaseViewElement {
 }
 
 function _render(orgs: Org[]) {
-	const rows = orgs.map(org => `
-		<div class="row" data-id="${org.id}">
-			<div class="cell">${org.name}</div>
-			<div class="cell">${org.kind}</div>
-			<div class="cell actions">
-				<button class="btn-edit prime">Edit</button>
+	const rows = orgs.map(org =>{
+		let html = `
+			<div class="row" data-id="${org.id}">
+				<div class="cell">${org.name}</div>
+				<div class="cell">${org.kind}</div>
+				<div class="cell actions">
+					<button class="btn-edit prime">Edit</button>`;
+		if(hasOrgAccess("OrgRename") || hasAccess("OrgManage")){
+			html +=`
+				<button class="btn-rename prime">Rename Organization</button>`;
+		}
+		html +=`
 				<button class="btn-manage-users prime">Manage Users</button>
 				<button class="btn-delete danger">Delete</button>
 			</div>
 		</div>
-	`).join('');
+		`;
+
+		return html;
+	}).join('');
 
 	return `
 		<div class="header">

@@ -2,11 +2,21 @@ import { Org } from 'bindings/Org';
 import { User } from 'bindings/User';
 import { QueryOptions } from 'common/query_options';
 import { rpc_invoke } from 'common/rpc';
-import { BaseDco } from './dco-base';
+import { BaseDco, dcoHub } from './dco-base';
 
 
 export class OrgDco extends BaseDco<Org, QueryOptions<Org>> {
 	constructor() { super('org') }
+
+	async renameOrg(id: number, name: string): Promise<void> {
+		const result = await rpc_invoke(`rename_org`, { id, name });
+		if (typeof result.data != 'undefined') {
+			dcoHub.pub(this.cmd_suffix, 'rename', result.data);
+			return result.data;
+		} else {
+			throw result;
+		}
+	}
 
 	async getUsersByOrg(id: number): Promise<User[]> {
 		const result = await rpc_invoke(`get_users_by_org`, { id });
