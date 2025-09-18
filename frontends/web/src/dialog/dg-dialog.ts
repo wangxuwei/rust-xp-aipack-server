@@ -26,6 +26,10 @@ const _compCss = css`
 		grid-gap: 1rem;
 	}
 
+	.dialog .large{
+		width: 40rem;
+		margin-left: -20rem;
+	}
 	header{
 		display: contents;
 	}

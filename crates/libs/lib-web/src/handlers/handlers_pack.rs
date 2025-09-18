@@ -1,0 +1,118 @@
+use crate::config::rpc_config;
+use crate::error::{Error, Result};
+use crate::middleware::mw_auth::CtxW;
+use axum::extract::{Multipart, Path, State};
+use axum::response::Response;
+use axum::Json;
+use lib_core::model::pack::PackBmc;
+use lib_core::model::pack_version::PackVersionBmc;
+use lib_core::model::ModelManager;
+use serde_json::{json, Value};
+use std::path::Path as StdPath;
+use tokio::fs::{create_dir_all, File};
+use tokio::io::AsyncWriteExt;
+use uuid::Uuid;
+
+#[axum::debug_handler]
+pub async fn api_upload_pack_handler(
+	State(mm): State<ModelManager>,
+	ctx: Result<CtxW>,
+	mut multipart: Multipart,
+) -> Result<Json<Value>> {
+	let ctx = ctx?.0;
+	let config = rpc_config();
+	let upload_dir = StdPath::new(&config.PACKS_UPLOAD_DIR);
+
+	if !upload_dir.exists() {
+		create_dir_all(upload_dir).await?;
+	}
+
+	let mut pack_name = None;
+	let mut version = None;
+	let mut changelog = None;
+	let mut file_content = None;
+
+	while let Ok(Some(field)) = multipart.next_field().await {
+		match field.name() {
+			Some("pack_name") => {
+				pack_name = field.text().await.ok();
+			}
+			Some("version") => {
+				version = field.text().await.ok();
+			}
+			Some("changelog") => {
+				changelog = field.text().await.ok();
+			}
+			Some("file") => {
+				file_content =
+					Some(field.bytes().await.map_err(|_| Error::PackFileNotFound)?);
+			}
+			_ => {}
+		}
+	}
+
+	let pack_name =
+		pack_name.ok_or(Error::MissingRequiredField("pack_name".to_string()))?;
+	let version =
+		version.ok_or(Error::MissingRequiredField("version".to_string()))?;
+	let content =
+		file_content.ok_or(Error::MissingRequiredField("file".to_string()))?;
+
+	let file_uuid = Uuid::new_v4();
+	let file_path_name = format!("{file_uuid}.aip");
+	let file_path = upload_dir.join(&file_path_name);
+	let file_size = content.len() as i64;
+
+	// Write file content
+	let mut file = File::create(&file_path).await?;
+	file.write_all(&content).await?;
+
+	let pack_version = PackVersionBmc::save_pack_version(
+		&ctx,
+		&mm,
+		pack_name,
+		version,
+		changelog,
+		file_path.to_string_lossy().to_string(),
+		file_size,
+	)
+	.await?;
+
+	Ok(Json(json!({
+		"result": {
+			"success": true,
+			"id": pack_version.id,
+			"pack_id": pack_version.pack_id,
+			"file_path": file_path
+		}
+	})))
+}
+
+pub async fn api_download_pack_handler(
+	State(mm): State<ModelManager>,
+	ctx: Result<CtxW>,
+	Path(id): Path<i64>,
+) -> Result<Response> {
+	let ctx = ctx?.0;
+	let pack_version = PackVersionBmc::get(&ctx, &mm, id).await?;
+	let pack = PackBmc::get(&ctx, &mm, pack_version.pack_id).await?;
+
+	if !StdPath::new(&pack_version.file_path).exists() {
+		return Err(Error::PackFileNotFound);
+	}
+
+	let content = tokio::fs::read(&pack_version.file_path).await?;
+
+	let response = axum::response::Response::builder()
+		.header("Content-Type", "application/octet-stream")
+		.header(
+			"Content-Disposition",
+			format!(
+				"attachment; filename=\"{}-{}.aip\"",
+				pack.name, pack_version.version
+			),
+		)
+		.body(axum::body::Body::from(content))
+		.map_err(|_| Error::FileDownload)?;
+	Ok(response)
+}

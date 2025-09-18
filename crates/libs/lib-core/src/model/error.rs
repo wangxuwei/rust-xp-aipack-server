@@ -31,6 +31,14 @@ pub enum Error {
 		constraint: String,
 	},
 
+	PackVersionAlreadyExists {
+		pack_id: i64,
+		version: String,
+	},
+	PackVersionNotFound {
+		pack_id: i64,
+		version: String,
+	},
 	UserOrgNotFound {
 		user_id: i64,
 		org_id: i64,

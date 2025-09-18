@@ -166,10 +166,10 @@ where
 	// -- Build the query
 	let mut query = Query::select();
 	query.from(MC::table_ref()).columns(E::sea_column_refs());
-
 	// condition from filter
 	if let Some(filter) = filter {
 		let filters: FilterGroups = filter.into();
+
 		let cond: Condition = filters.try_into()?;
 		query.cond_where(cond);
 	}

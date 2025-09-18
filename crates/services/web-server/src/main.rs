@@ -11,6 +11,7 @@ use lib_web::middleware::mw_auth::{mw_ctx_require, mw_ctx_resolver};
 use lib_web::middleware::mw_req_stamp::mw_req_stamp_resolver;
 use lib_web::middleware::mw_res_map::mw_reponse_map;
 use lib_web::routes::routes_static;
+use web::routes_pack;
 
 use crate::web::{routes_login, routes_user, routes_user_org};
 
@@ -46,6 +47,7 @@ async fn main() -> Result<()> {
 		.merge(routes_login::routes(mm.clone()))
 		.merge(routes_user::routes(mm.clone()))
 		.merge(routes_user_org::routes(mm.clone()))
+		.merge(routes_pack::routes(mm.clone()))
 		.nest("/api", routes_rpc)
 		.layer(middleware::map_response(mw_reponse_map))
 		.layer(middleware::from_fn_with_state(mm.clone(), mw_ctx_resolver))

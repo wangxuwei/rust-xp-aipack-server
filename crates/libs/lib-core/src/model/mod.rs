@@ -26,6 +26,8 @@ mod store;
 
 pub mod modql_utils;
 pub mod org;
+pub mod pack;
+pub mod pack_version;
 pub mod user;
 pub mod user_org;
 

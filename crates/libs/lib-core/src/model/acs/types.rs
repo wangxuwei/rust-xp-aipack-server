@@ -60,6 +60,8 @@ pub enum GlobalAccess {
 	UserPwdUpdate,
 	#[sqlx(rename = "a_org_manage")]
 	OrgManage,
+	#[sqlx(rename = "a_pack_manage")]
+	PackManage,
 }
 
 pub type Ga = GlobalAccess;

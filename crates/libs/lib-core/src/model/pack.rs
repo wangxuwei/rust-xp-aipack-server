@@ -1,0 +1,167 @@
+use crate::ctx::Ctx;
+use crate::generate_common_bmc_fns;
+use crate::model::acs::prelude::*;
+use crate::model::acs::Ga;
+use crate::model::base::{self, DbBmc};
+use crate::model::modql_utils::time_to_sea_value;
+use crate::model::ModelManager;
+use crate::model::Result;
+use lib_utils::time::Rfc3339;
+use modql::field::Fields;
+use modql::filter::OpValString;
+use modql::filter::{
+	FilterNodes, ListOptions, OpValsInt64, OpValsString, OpValsValue,
+};
+use sea_query::enum_def;
+use serde::{Deserialize, Serialize};
+use serde_with::serde_as;
+use sqlx::types::time::OffsetDateTime;
+use sqlx::FromRow;
+use ts_rs::TS;
+
+// region:    --- Pack Types
+
+#[serde_as]
+#[derive(Debug, Clone, Fields, FromRow, Serialize, TS)]
+#[ts(export, export_to = "../../../frontends/web/src/bindings/")]
+#[enum_def]
+pub struct Pack {
+	pub id: i64,
+	pub name: String,
+
+	// -- Timestamps
+	pub cid: i64,
+	#[serde_as(as = "Rfc3339")]
+	#[ts(type = "string")]
+	pub ctime: OffsetDateTime,
+	pub mid: i64,
+	#[serde_as(as = "Rfc3339")]
+	#[ts(type = "string")]
+	pub mtime: OffsetDateTime,
+}
+
+#[derive(Fields, Serialize, Deserialize)]
+pub struct PackForCreate {
+	pub name: String,
+}
+
+#[derive(Fields, Serialize, Deserialize, Default)]
+pub struct PackForUpdate {
+	pub name: Option<String>,
+}
+
+#[derive(FilterNodes, Deserialize, Default, Debug)]
+pub struct PackFilter {
+	pub id: Option<OpValsInt64>,
+	pub name: Option<OpValsString>,
+
+	pub cid: Option<OpValsInt64>,
+	#[modql(to_sea_value_fn = "time_to_sea_value")]
+	pub ctime: Option<OpValsValue>,
+	pub mid: Option<OpValsInt64>,
+	#[modql(to_sea_value_fn = "time_to_sea_value")]
+	pub mtime: Option<OpValsValue>,
+}
+
+// endregion: --- Pack Types
+
+// region:    --- PackBmc
+
+pub struct PackBmc;
+
+impl DbBmc for PackBmc {
+	const TABLE: &'static str = "pack";
+}
+
+generate_common_bmc_fns!(
+	Bmc: PackBmc,
+	Entity: Pack,
+	ForCreate: PackForCreate, CreatePrivileges: [Access::Global(Ga::PackManage)],
+	ForUpdate: PackForUpdate, UpdatePrivileges: [Access::Global(Ga::PackManage)],
+	Filter: PackFilter, ListPrivileges: [Access::Global(Ga::PackManage)],
+	GetPrivileges: [Access::Global(Ga::PackManage)],
+	DeletePrivileges: [Access::Global(Ga::PackManage)]
+);
+
+impl PackBmc {
+	#[privileges(Access::Global(Ga::PackManage))]
+	pub async fn ensure_pack(
+		ctx: &Ctx,
+		mm: &ModelManager,
+		pack_name: String,
+	) -> Result<Pack> {
+		// Check if pack exists by name
+		let pack = PackBmc::first(
+			ctx,
+			mm,
+			Some(vec![PackFilter {
+				name: Some(OpValString::Eq(pack_name.clone()).into()),
+				..Default::default()
+			}]),
+			None,
+		)
+		.await?;
+
+		let pack = match pack {
+			Some(pack) => pack,
+			None => {
+				// Create new pack
+				let pack_id = PackBmc::create(
+					ctx,
+					mm,
+					PackForCreate {
+						name: pack_name.clone(),
+					},
+				)
+				.await?;
+				PackBmc::get(ctx, mm, pack_id).await?
+			}
+		};
+
+		Ok(pack)
+	}
+}
+
+// endregion: --- PackBmc
+
+// region:    --- Tests
+
+#[cfg(test)]
+mod tests {
+	type Error = Box<dyn std::error::Error>;
+	type Result<T> = core::result::Result<T, Error>;
+
+	use super::*;
+	use crate::_dev_utils;
+	use serial_test::serial;
+
+	#[serial]
+	#[tokio::test]
+	async fn test_create_ok() -> Result<()> {
+		// -- Setup & Fixtures
+		let mm = _dev_utils::init_test().await;
+		let ctx = Ctx::root_ctx(None);
+		let fx_name = "test_pack";
+
+		// -- Exec
+		let pack_id = PackBmc::create(
+			&ctx,
+			&mm,
+			PackForCreate {
+				name: fx_name.to_string(),
+			},
+		)
+		.await?;
+
+		// -- Check
+		let pack: Pack = PackBmc::get(&ctx, &mm, pack_id).await?;
+		assert_eq!(pack.name, fx_name);
+
+		// -- Clean
+		PackBmc::delete(&ctx, &mm, pack_id).await?;
+
+		Ok(())
+	}
+}
+
+// endregion: --- Tests

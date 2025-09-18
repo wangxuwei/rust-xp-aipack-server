@@ -1,13 +1,19 @@
 use derive_more::From;
 use lib_core::model;
+use serde::Serialize;
+use serde_with::serde_as;
 
 pub type Result<T> = core::result::Result<T, Error>;
 
-#[derive(Debug, From)]
+#[serde_as]
+#[derive(Debug, From, Serialize)]
+#[serde(tag = "type", content = "data")]
 pub enum Error {
 	// -- Modules
 	#[from]
 	Model(model::Error),
+	#[from]
+	Rpc(lib_rpc_core::Error),
 }
 
 // region:    --- Error Boilerplate

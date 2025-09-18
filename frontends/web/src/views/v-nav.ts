@@ -6,52 +6,50 @@ import { all, customElement, onHub } from 'dom-native';
 @customElement('v-nav')
 export class NavView extends BaseViewElement {
 
-	//#region    ---------- Events---------- 
-	//#endregion ---------- /Events---------- 
+    //#region    ---------- Events---------- 
+    //#endregion ---------- /Events---------- 
 
-	//#region    ---------- Hub Events ---------- 
-	@onHub('routeHub', 'CHANGE')
-	routChange() {
-		this.refresh()
-	}
-	//#endregion ---------- /Hub Events ---------- 
+    //#region    ---------- Hub Events ---------- 
+    @onHub('routeHub', 'CHANGE')
+    routChange() {
+        this.refresh()
+    }
+    //#endregion ---------- /Hub Events ---------- 
 
 
-	init() {
-		super.init();
-		this.refresh();
-	}
+    init() {
+        super.init();
+        this.refresh();
+    }
 
-	async refresh() {
-		this.innerHTML = _render();
-		const idx = 0;
-		let urlName = pathAt(0) ?? '';
+    async refresh() {
+        this.innerHTML = _render();
+        const idx = 0;
+        let urlName = pathAt(0) ?? '';
 
-		for (const a of all(this, 'a')) {
-			let href = a.getAttribute('href');
-			let linkName = href?.split('/')[1] ?? ''; // has an extra / at start
-			if (linkName === urlName) {
-				a.classList.add('sel');
-			} else if (a.classList.contains('sel')) {
-				a.classList.remove('sel');
-			}
-		}
-	}
+        for (const a of all(this, 'a')) {
+            let href = a.getAttribute('href');
+            let linkName = href?.split('/')[1] ?? ''; // has an extra / at start
+            if (linkName === urlName) {
+                a.classList.add('sel');
+            } else if (a.classList.contains('sel')) {
+                a.classList.remove('sel');
+            }
+        }
+    }
 }
 
 //// HTMLs
 
 function _render() {
-	let html = `
-			<a class="nav-item" href="/users">Users</a>`;
-	if(hasAccess("Admin")){
-		html += `
-			<a class="nav-item" href="/orgs">Organizations</a>`;
-	}
+    let html = `
+            <a class="nav-item" href="/users">Users</a>`;
+    if(hasAccess("Admin")){
+        html += `
+            <a class="nav-item" href="/orgs">Organizations</a>
+            <a class="nav-item" href="/packs">Packs</a>`;
+    }
 
-	return html;
+    return html;
 
 }
-
-
-

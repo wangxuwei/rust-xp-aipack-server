@@ -31,6 +31,9 @@ pub enum Error {
 	// -- External Modules
 	#[from]
 	SerdeJson(#[serde_as(as = "DisplayFromStr")] serde_json::Error),
+
+	#[from]
+	Io(#[serde_as(as = "DisplayFromStr")] std::io::Error),
 }
 
 // region:    --- Error Boilerplate

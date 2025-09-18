@@ -56,8 +56,8 @@ pub enum Error {
 	// When it's `rpc_router::Error::Handler` but we did not handle the type,
 	// we still capture the type name for information. This should not occur once the code is complete.
 	RpcHandlerErrorUnhandled(&'static str),
-	// When the `rpc_router::Error` is not a `Handler`, we can pass through the rpc_router::Error
-	// as all variants contain concrete types.
+	// When the `rpc-router::Error` is not a `Handler`, we can pass through the rpc_router::Error
+	// as all other variants contain concrete types.
 	RpcRouter {
 		id: Value,
 		method: String,
@@ -67,12 +67,21 @@ pub enum Error {
 	// -- External Modules
 	#[from]
 	SerdeJson(#[serde_as(as = "DisplayFromStr")] serde_json::Error),
+
+	#[from]
+	Io(#[serde_as(as = "DisplayFromStr")] std::io::Error),
+
+	FileDownload,
+	PackFileNotFound,
+	PackVersionAlreadyExists,
+
+	MissingRequiredField(String),
 }
 
 // region:    --- From rpc-router::Error
 
 /// The purpose of this `From` implementation is to extract the error types we recognize
-/// from the `rpc_router`'s `RpcHandlerError` within the `rpc_router::Error::Handler`
+/// from the `rpc-router`'s `RpcHandlerError` within the `rpc_router::Error::Handler`
 /// and place them into the appropriate variant of our application error enum.
 ///
 /// - The `rpc-router` provides an `RpcHandlerError` scheme to allow application RPC handlers
@@ -157,6 +166,13 @@ impl Error {
 				StatusCode::BAD_REQUEST,
 				ClientError::ENTITY_NOT_FOUND { entity, id: *id },
 			),
+			Model(model::Error::PackVersionAlreadyExists { pack_id, version }) => (
+				StatusCode::CONFLICT,
+				ClientError::PACK_VERSION_ALREADY_EXISTS {
+					pack_id: *pack_id,
+					version: version.clone(),
+				},
+			),
 
 			// -- Rpc
 			RpcRequestParsing(req_parsing_err) => (
@@ -207,6 +223,7 @@ pub enum ClientError {
 	LOGIN_FAIL,
 	NO_AUTH,
 	ENTITY_NOT_FOUND { entity: &'static str, id: i64 },
+	PACK_VERSION_ALREADY_EXISTS { pack_id: i64, version: String },
 
 	RPC_REQUEST_INVALID(String),
 	RPC_REQUEST_METHOD_UNKNOWN(String),

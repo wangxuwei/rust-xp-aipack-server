@@ -37,7 +37,6 @@ pub async fn list_users(
 ) -> Result<DataRpcResult<Vec<User>>> {
 	let entities =
 		UserBmc::list(&ctx, &mm, params.filters, params.list_options).await?;
-	println!("users {entities:?}");
 	Ok(entities.into())
 }
 

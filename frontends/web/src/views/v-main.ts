@@ -11,6 +11,7 @@ const tagNameByPath: { [name: string]: string } = {
 	"": 'v-home',
 	"users": 'v-users',
 	"orgs": 'v-orgs',
+	"packs": 'v-packs', 
 };
 
 
