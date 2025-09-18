@@ -3,7 +3,7 @@ use crate::utils::token::{set_token_cookie, AUTH_TOKEN};
 use axum::body::Body;
 use axum::extract::{FromRequestParts, Request, State};
 use axum::http::request::Parts;
-use axum::http::Uri;
+use axum::http::{HeaderMap, HeaderValue, Uri};
 use axum::middleware::Next;
 use axum::response::Response;
 use lib_auth::token::{validate_web_token, Token};
@@ -39,7 +39,8 @@ pub async fn mw_ctx_resolver(
 ) -> Response {
 	debug!("{:<12} - mw_ctx_resolve", "MIDDLEWARE");
 
-	let ctx_ext_result = ctx_resolve(mm, &cookies, get_org_id(req.uri())).await;
+	let ctx_ext_result =
+		ctx_resolve(mm, &cookies, req.headers(), get_org_id(req.uri())).await;
 
 	if ctx_ext_result.is_err()
 		&& !matches!(ctx_ext_result, Err(CtxExtError::TokenNotInCookie))
@@ -57,16 +58,27 @@ pub async fn mw_ctx_resolver(
 async fn ctx_resolve(
 	mm: ModelManager,
 	cookies: &Cookies,
+	headers: &HeaderMap<HeaderValue>,
 	org_id: Option<i64>,
 ) -> CtxExtResult {
-	// -- Get Token String
-	let token = cookies
-		.get(AUTH_TOKEN)
-		.map(|c| c.value().to_string())
-		.ok_or(CtxExtError::TokenNotInCookie)?;
+	let token = match headers.get(AUTH_TOKEN) {
+		Some(token) => token
+			.to_str()
+			.map(|s| s.to_string())
+			.map_err(|_| CtxExtError::TokenNotInHeader),
+		None => Err(CtxExtError::TokenNotInHeader),
+	};
+
+	let token = match token {
+		Ok(_) => token,
+		Err(_) => cookies
+			.get(AUTH_TOKEN)
+			.map(|c| c.value().to_string())
+			.ok_or(CtxExtError::TokenNotInCookie),
+	};
 
 	// -- Parse Token
-	let token: Token = token.parse().map_err(|_| CtxExtError::TokenWrongFormat)?;
+	let token: Token = token?.parse().map_err(|_| CtxExtError::TokenWrongFormat)?;
 
 	// -- Get UserForAuth
 	let user: UserForAuth =
@@ -122,6 +134,7 @@ type CtxExtResult = core::result::Result<CtxW, CtxExtError>;
 #[derive(Clone, Serialize, Debug)]
 pub enum CtxExtError {
 	TokenNotInCookie,
+	TokenNotInHeader,
 	TokenWrongFormat,
 
 	UserNotFound,
