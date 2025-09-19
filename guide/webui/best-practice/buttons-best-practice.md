@@ -10,7 +10,6 @@ These are the best practices for buttons
 <button class="action-edit"></button>
 <button class="btn-edit prime"></button>
 <button class="btn-edit danger"></button>
-<button class="btn-edit main-button"></button>
 ````
 
 - try to see the context, try to add class for events to select with prefix "btn-" or "action-" prefix, if not sure, just add "btn-" by default

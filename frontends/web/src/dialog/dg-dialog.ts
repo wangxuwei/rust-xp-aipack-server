@@ -11,7 +11,7 @@ const _compCss = css`
 
 	.dialog{
 		position: absolute;
-		width: 25rem;
+		width: 30rem;
 		top: 50%;
 		left: 50%;
 		margin-left: -12.5rem;

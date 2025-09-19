@@ -134,7 +134,7 @@ function _render(packId?: number, packNameError?: string | null, versionError?: 
 	const displayFileName = cachedFileName || '';
 	const packNameField = packId ? '' : `
 		<div class="ui-form-row">
-			<label class="ui-form-lbl">Pack Name:</label>
+			<label class="ui-form-lbl">Name:</label>
 			<d-input class="ui-form-val" name="pack_name" placeholder="Enter pack name" value="${cachedPackName}"></d-input>
 		</div>
 	`;
