@@ -122,7 +122,7 @@ function _render(orgs: Org[]) {
 			<button class="add">Add Organization</button>
 		</div>
 		<div class="table-container">
-			<div class="table">
+			<div class="ui-table">
 				<div class="thead row">
 					<div class="cell">Name</div>
 					<div class="cell">Kind</div>

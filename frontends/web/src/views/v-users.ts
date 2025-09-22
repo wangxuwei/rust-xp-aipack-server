@@ -77,7 +77,7 @@ function _render(users: User[]) {
 			<button class="add">Add User</button>
 		</div>
 		<div class="table-container">
-			<div class="table">
+			<div class="ui-table">
 				<div class="thead row">
 					<div class="cell">Username</div>
 					<div class="cell">Actions</div>
