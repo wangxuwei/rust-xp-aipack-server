@@ -1,0 +1,34 @@
+.ui-table {
+	display: grid;
+	grid-template-rows: auto 1fr;
+	border: 1px solid var(--clr-gray-300);
+	overflow: hidden;
+
+	.thead {
+		background-color: var(--clr-gray-200);
+		color: var(--clr-gray-800);
+	}
+
+	.tbody {
+		overflow-y: auto;
+	}
+
+	.row {
+		display: grid;
+		border-bottom: 1px solid var(--clr-gray-300);
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+
+	.cell {
+		padding: 1rem;
+		display: flex;
+		align-items: center;
+
+		&.actions {
+			gap: 0.5rem;
+		}
+	}
+}
