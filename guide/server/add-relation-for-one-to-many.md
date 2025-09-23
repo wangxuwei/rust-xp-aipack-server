@@ -1,174 +1,11 @@
-use crate::model::acs::prelude::*;
-use crate::{
-	ctx::Ctx,
-	model::{
-		acs::{Access, Oa},
-		base::{self, DbBmc},
-		org::OrgIden,
-		user::{User, UserIden},
-		Error, ModelManager, Result,
-	},
-};
-use lib_acs_macros::privileges;
-use lib_utils::time::Rfc3339;
-use modql::{
-	field::{Fields, HasSeaFields},
-	filter::{FilterNodes, ListOptions, OpValInt64, OpValsInt64},
-};
-use sea_query::extension::postgres::PgExpr;
-use sea_query::{enum_def, Condition, Expr, PostgresQueryBuilder, Query};
-use sea_query_binder::SqlxBinder;
-use serde::{Deserialize, Serialize};
-use serde_with::serde_as;
-use sqlx::FromRow;
-use std::collections::HashSet;
-use time::OffsetDateTime;
-use ts_rs::TS;
+## One to Many relationship for server
 
-// region:    --- Types
+These are the best practice for one to many relation maintain on backend side
+let's say the Entity is "UserOrg", so it is relationshitp for "Org" and "UserOrg", which is one to many, and it is base on "Org", so it would insert and delete users for org
 
-#[derive(
-	Clone,
-	Debug,
-	sqlx::Type,
-	derive_more::Display,
-	Deserialize,
-	Serialize,
-	TS,
-	PartialEq,
-	std::cmp::Eq,
-	Hash,
-	Copy,
-)]
-#[ts(export, export_to = "../../../frontends/_common/src/bindings/")]
-#[sqlx(type_name = "orole_name")]
-pub enum ORoleName {
-	#[sqlx(rename = "or_owner")]
-	Owner,
-	#[sqlx(rename = "or_admin")]
-	Admin,
-	#[sqlx(rename = "or_editor")]
-	Editor,
-	#[sqlx(rename = "or_viewer")]
-	Viewer,
-}
-impl From<ORoleName> for sea_query::Value {
-	fn from(val: ORoleName) -> Self {
-		let val = format!("or_{}", val.to_string().to_ascii_lowercase());
-		val.to_string().into()
-	}
-}
+### the implement save and query relations in model/BMC
 
-#[serde_as]
-#[derive(Debug, Clone, Fields, FromRow, Serialize, TS)]
-#[ts(export, export_to = "../../../frontends/web/src/bindings/")]
-#[enum_def]
-pub struct UserOrg {
-	pub id: i64,
-	pub role: ORoleName,
-
-	// -- FK
-	pub org_id: i64,
-	pub user_id: i64,
-
-	// -- Timestamps
-	// creator user_id and time
-	pub cid: i64,
-	#[serde_as(as = "Rfc3339")]
-	#[ts(type = "string")]
-	pub ctime: OffsetDateTime,
-	// last modifier user_id and time
-	pub mid: i64,
-	#[serde_as(as = "Rfc3339")]
-	#[ts(type = "string")]
-	pub mtime: OffsetDateTime,
-}
-
-#[derive(Fields, Serialize, Deserialize)]
-pub struct UserOrgForCreate {
-	pub org_id: i64,
-	pub user_id: i64,
-	#[field(cast_as = "orole_name")]
-	pub role: ORoleName,
-}
-
-#[derive(FilterNodes, Deserialize, Default, Debug)]
-pub struct UserOrgFilter {
-	pub user_id: Option<OpValsInt64>,
-	pub org_id: Option<OpValsInt64>,
-}
-
-// endregion: --- Types
-
-// region:    --- UserOrg
-
-pub struct UserOrgBmc;
-
-impl DbBmc for UserOrgBmc {
-	const TABLE: &'static str = "user_org";
-}
-
-impl UserOrgBmc {
-	#[privileges(Access::Org(Oa::UserManage))]
-	pub async fn create(
-		ctx: &Ctx,
-		mm: &ModelManager,
-		entity_c: UserOrgForCreate,
-	) -> Result<i64> {
-		base::create::<Self, _>(ctx, mm, entity_c).await
-	}
-
-	pub async fn create_many(
-		ctx: &Ctx,
-		mm: &ModelManager,
-		entity_c: Vec<UserOrgForCreate>,
-	) -> Result<Vec<i64>> {
-		base::create_many::<Self, _>(ctx, mm, entity_c).await
-	}
-
-	pub async fn get(ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<UserOrg> {
-		base::get::<Self, _>(ctx, mm, id).await
-	}
-
-	pub async fn get_by_user_org(
-		ctx: &Ctx,
-		mm: &ModelManager,
-		user_id: i64,
-		org_id: i64,
-	) -> Result<UserOrg> {
-		base::first::<Self, _, _>(
-			ctx,
-			mm,
-			Some(vec![UserOrgFilter {
-				user_id: Some(OpValInt64::Eq(user_id).into()),
-				org_id: Some(OpValInt64::Eq(org_id).into()),
-			}]),
-			None,
-		)
-		.await?
-		.ok_or(Error::UserOrgNotFound { user_id, org_id })
-	}
-
-	pub async fn delete(ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<()> {
-		base::delete::<Self>(ctx, mm, id).await
-	}
-
-	pub async fn delete_many(
-		ctx: &Ctx,
-		mm: &ModelManager,
-		ids: Vec<i64>,
-	) -> Result<u64> {
-		base::delete_many::<Self>(ctx, mm, ids).await
-	}
-
-	pub async fn list(
-		ctx: &Ctx,
-		mm: &ModelManager,
-		filter: Option<Vec<UserOrgFilter>>,
-		list_options: Option<ListOptions>,
-	) -> Result<Vec<UserOrg>> {
-		base::list::<Self, _, _>(ctx, mm, filter, list_options).await
-	}
+````rs
 
 	pub async fn get_users_by_org(
 		_ctx: &Ctx,
@@ -329,6 +166,105 @@ impl UserOrgBmc {
 		// endregion: --- /delete UserOrg
 		Ok(user_ids.to_vec())
 	}
+
+
+````
+- the functions above is for query and save relationship, it will append into ```impl UserOrgBmc``` in the file model/user_org.rs, if there is no ```impl UserOrgBmc``` , add that and then put the codes in ```impl UserOrgBmc```
+- do not make the full codes to replace, just put the codes which need into model/user_org.rs
+
+### provide rpc API for the BMC functions
+
+````rs
+
+
+pub fn rpc_router_builder() -> RouterBuilder {
+	router_builder!(
+		...
+		get_users_by_org,
+		search_users_for_org,
+		add_users_to_org,
+		remove_users_from_org,
+	)
 }
 
-// endregion: --- UserOrg
+
+// region:    --- Params
+...
+#[derive(Debug, Deserialize)]
+pub struct ParamsForOrgUsers {
+	pub user_ids: Vec<i64>,
+	pub org_id: i64,
+}
+impl IntoParams for ParamsForOrgUsers {}
+
+#[derive(Deserialize)]
+pub struct ParamsOrg {
+	pub id: i64,
+	pub name: String,
+}
+// endregion: --- Params
+
+// region:    --- RPC Functions
+...
+
+pub async fn get_users_by_org(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsIded,
+) -> Result<DataRpcResult<Vec<User>>> {
+	let ParamsIded { id } = params;
+	let entities = UserOrgBmc::get_users_by_org(&ctx, &mm, id).await?;
+	Ok(entities.into())
+}
+
+/// Params structure for any RPC Update call.
+#[derive(Deserialize)]
+pub struct ParamsSearchOrgUser {
+	pub id: i64,
+	pub username: String,
+}
+impl IntoParams for ParamsSearchOrgUser {}
+pub async fn search_users_for_org(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsSearchOrgUser,
+) -> Result<DataRpcResult<Vec<User>>> {
+	let ParamsSearchOrgUser { id, username } = params;
+	let entities =
+		UserOrgBmc::search_users_for_org(&ctx, &mm, id, username.as_str()).await?;
+	Ok(entities.into())
+}
+
+pub async fn add_users_to_org(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsForOrgUsers,
+) -> Result<DataRpcResult<Vec<i64>>> {
+	let ids =
+		UserOrgBmc::add_users_to_org(&ctx, &mm, params.org_id, &params.user_ids)
+			.await?;
+	Ok(ids.into())
+}
+
+pub async fn remove_users_from_org(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsForOrgUsers,
+) -> Result<DataRpcResult<Vec<i64>>> {
+	let ids = UserOrgBmc::remove_users_from_org(
+		&ctx,
+		&mm,
+		params.org_id,
+		&params.user_ids,
+	)
+	.await?;
+	Ok(ids.into())
+}
+// endregion: --- RPC Functions
+
+````
+
+- provide the above functions "get_users_by_org", "search_users_for_org", "add_users_to_org", "remove_users_from_org", which are for query and save relationship rpc api, put the codes in rpcs/org_rpc.rs
+- for the comments region "Params" and "RPC Functions", if there are, then insert both functions in the corresponding region
+- then register the functions name in the router_builder! in function "rpc_router_builder"
+- do not make the full codes to replace, just put the codes which need into rpcs/org_rpc.rs

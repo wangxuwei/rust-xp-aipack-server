@@ -1,6 +1,6 @@
-## Many to Many relationships for frontends
+## Drawer component relationships for frontends
 
-These are the best practice for many to many relation maintain on frontend side
+These are the best practice for many to many relation maintain on frontend side with a drawer if we need.
 let's say the Entity is "UserOrg", so it is relationshitp for "User" and "Org", which is many to many, and it is base on "Org", so it would insert users and delete users for org
 
 ### implement api in DCO

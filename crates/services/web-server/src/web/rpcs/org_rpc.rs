@@ -16,7 +16,9 @@ pub fn rpc_router_builder() -> RouterBuilder {
 		delete_org,
 		rename_org,
 		get_users_by_org,
-		save_users_to_org
+		search_users_for_org,
+		add_users_to_org,
+		remove_users_from_org,
 	)
 }
 
@@ -38,14 +40,14 @@ pub struct ParamsForOrgUsers {
 }
 impl IntoParams for ParamsForOrgUsers {}
 
-// endregion: --- Params
-
-// region:    --- RPC Functions
 #[derive(Deserialize)]
 pub struct ParamsOrg {
 	pub id: i64,
 	pub name: String,
 }
+// endregion: --- Params
+
+// region:    --- RPC Functions
 impl IntoParams for ParamsOrg {}
 
 pub async fn rename_org(
@@ -67,14 +69,47 @@ pub async fn get_users_by_org(
 	Ok(entities.into())
 }
 
-pub async fn save_users_to_org(
+/// Params structure for any RPC Update call.
+#[derive(Deserialize)]
+pub struct ParamsSearchOrgUser {
+	pub id: i64,
+	pub username: String,
+}
+impl IntoParams for ParamsSearchOrgUser {}
+pub async fn search_users_for_org(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsSearchOrgUser,
+) -> Result<DataRpcResult<Vec<User>>> {
+	let ParamsSearchOrgUser { id, username } = params;
+	let entities =
+		UserOrgBmc::search_users_for_org(&ctx, &mm, id, username.as_str()).await?;
+	Ok(entities.into())
+}
+
+pub async fn add_users_to_org(
 	ctx: Ctx,
 	mm: ModelManager,
 	params: ParamsForOrgUsers,
 ) -> Result<DataRpcResult<Vec<i64>>> {
 	let ids =
-		UserOrgBmc::save_users_to_org(&ctx, &mm, params.org_id, &params.user_ids)
+		UserOrgBmc::add_users_to_org(&ctx, &mm, params.org_id, &params.user_ids)
 			.await?;
+	Ok(ids.into())
+}
+
+pub async fn remove_users_from_org(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsForOrgUsers,
+) -> Result<DataRpcResult<Vec<i64>>> {
+	let ids = UserOrgBmc::remove_users_from_org(
+		&ctx,
+		&mm,
+		params.org_id,
+		&params.user_ids,
+	)
+	.await?;
 	Ok(ids.into())
 }
 // endregion: --- RPC Functions
