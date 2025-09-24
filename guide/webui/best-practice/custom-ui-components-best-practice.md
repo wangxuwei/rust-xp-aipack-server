@@ -1,3 +1,18 @@
+## UI common components Best Practices
+
+These are the best practices for ui components
+
+### common components only with css
+
+when we need to common component, which dont have logic with typescript, then we just use pcss to style dom elemnts
+
+### common components with typescript and css
+
+- when we need to common component, but also need to typescript, create a view component like views best practice
+- when the component do not need custom service data (single ui component), means not use have http request event just provide params, and we can use another way
+like below
+
+```
 import {
   BaseFieldElement, SelectDataSender, SelectOption,
 } from "@dom-native/ui";
@@ -389,3 +404,11 @@ function isSameRect(a: DOMRect, b?: DOMRect): boolean {
 }
 
 // #endregion --- SelectPopupElement
+
+```
+
+this is a demo for custom select with search input.
+then we can use like below, which simlar to other form input elements
+```
+	<c-search-select class="do-close" name="name"></c-search-select>
+```

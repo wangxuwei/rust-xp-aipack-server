@@ -23,15 +23,13 @@ export class OrgUsersView extends BaseViewElement {
     const userId = asNum(rowEl.dataset.id);
     if (!isEmpty(userId) && this.#orgId) {
       // Remove user from org
-      orgDco
-        .removeUsersFromOrg(this.#orgId, [userId!])
-        .then(() => this.refresh());
+      orgDco.removeUsersFromOrg(this.#orgId, [userId!]).then(() => this.refresh());
     }
   }
   //#endregion ---------- /Events ----------
 
   //#region    ---------- Hub Events ----------
-  @onHub("dcoHub", "user_org", "create,delete")
+  @onHub("dcoHub", "org", "add_user,remove_user")
   onUserOrgChange() {
     this.refresh();
   }
@@ -57,7 +55,7 @@ export class OrgUsersView extends BaseViewElement {
 
   private showUserAddDialog() {
     const dialog = document.createElement("dg-org-user-add") as DgOrgUserAdd;
-    console.log(dialog);
+		dialog.orgId = this.#orgId;
     this.appendChild(dialog);
   }
 }
@@ -91,6 +89,10 @@ function _render(org: Org, users: User[]) {
 						<span class="label">Name:</span>
 						<span class="value">${org.name}</span>
 					</div>
+					<div class="info-item">
+						<span class="label">Kind:</span>
+						<span class="value">${org.kind}</span>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -100,8 +102,6 @@ function _render(org: Org, users: User[]) {
 			</div>
 			<div class="actions">
 				<button class="add">Add User</button>
-					<c-search-select class="ui-form-val" name="name"  placeholder="Enter user name" ></c-search-select>
-					<d-select></d-select>
 			</div>
 			<div class="table-container">
 				<div class="ui-table">

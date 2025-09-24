@@ -6,8 +6,8 @@ import { orgDco } from "dcos.js";
 import { OnEvent, customElement, onEvent, onHub } from "dom-native";
 import { asNum, isEmpty } from "utils-min";
 import { Org } from "../bindings/Org.js";
+import { DgOrgRename } from './dg-org-rename.js';
 import { DgOrg } from "./dg-org.js";
-import { DrOrgUsers } from "./dr-org-users.js";
 
 @customElement("v-orgs")
 export class OrgsView extends BaseViewElement {
@@ -81,11 +81,7 @@ export class OrgsView extends BaseViewElement {
   }
 
   private showOrgRenameDialog(orgId?: number) {
-    // const dialog = document.createElement("dg-org-rename") as DgOrgRename;
-    // dialog.orgId = orgId!;
-    // this.appendChild(dialog);
-
-    const dialog = document.createElement("dr-org-users") as DrOrgUsers;
+    const dialog = document.createElement("dg-org-rename") as DgOrgRename;
     dialog.orgId = orgId!;
     this.appendChild(dialog);
   }

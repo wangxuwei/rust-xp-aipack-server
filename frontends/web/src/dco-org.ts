@@ -43,6 +43,7 @@ export class OrgDco extends BaseDco<Org, QueryOptions<Org>> {
   async addUsersToOrg(org_id: number, user_ids?: number[]): Promise<boolean> {
     const result = await rpc_invoke(`add_users_to_org`, { org_id, user_ids });
     if (result.data) {
+			dcoHub.pub(this.cmd_suffix, 'add_user', result.data);
       return result.data;
     } else {
       throw result;
@@ -58,6 +59,7 @@ export class OrgDco extends BaseDco<Org, QueryOptions<Org>> {
       user_ids,
     });
     if (result.data) {
+			dcoHub.pub(this.cmd_suffix, 'remove_user', result.data);
       return result.data;
     } else {
       throw result;

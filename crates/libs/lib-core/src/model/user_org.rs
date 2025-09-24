@@ -223,7 +223,7 @@ impl UserOrgBmc {
 		let username_filter = format!("%{username}%");
 
 		query
-			.from(Self::table_ref())
+			.from(UserIden::User)
 			.columns(User::sea_column_refs_with_rel(UserIden::User))
 			.and_where(Expr::col(UserIden::Id).not_in_subquery(sub_query))
 			.and_where(Expr::col(UserIden::Username).ilike(username_filter));
