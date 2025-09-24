@@ -20,10 +20,11 @@ const _compCss = css`
 		box-shadow: var(--elev-6-shadow);
 
 		display: grid;
-		grid-template-rows: 3rem 1fr .5rem 2rem;
+		grid-template-rows: 3rem auto 3rem;
 		grid-template-columns: 1rem 1fr 2rem;
 		padding-bottom: 1rem;
 		grid-gap: 1rem;
+		grid-row-gap: 1rem 0rem;
 	}
 
 	.dialog .large{
@@ -55,10 +56,12 @@ const _compCss = css`
 	section{
 		grid-area: 2 / 2;
 	}
+
 	footer{
-		grid-area: 4 / 2;
+		grid-area: 3 / 2;
 		display: grid;
 		grid-template-columns: 1fr auto auto;
+		align-items: center;
 		grid-gap: 1rem;
 	}
 `;
@@ -121,7 +124,6 @@ function _renderShadow() {
 	<section>
 		<slot></slot>
 	</section>
-	<span></span>
 	<footer>
 		<span></span>
 		<slot name="footer"></slot>
