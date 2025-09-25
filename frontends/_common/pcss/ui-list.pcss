@@ -1,21 +1,24 @@
-ul, li{
+ul,
+li {
 	margin: 0;
 	padding: 0;
 }
 
-ul{
-	li, a{
-		@mixin typo-label{};
+ul {
+	li,
+	a {
+		@mixin typo-label {
+		}
 		line-height: 1.4;
-		padding: 1rem .5rem;
+		padding: 1rem 0.5rem;
 	}
-	li{
+	li {
 		list-style: none;
 	}
 
-	a{
+	a {
 		cursor: pointer;
-		&:hover{
+		&:hover {
 			background: var(--bkg-sel);
 		}
 	}

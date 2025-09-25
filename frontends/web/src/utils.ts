@@ -1,5 +1,5 @@
-import { closest, getAttr } from 'dom-native';
-import { asNum } from 'utils-min';
+import { closest, getAttr } from "dom-native";
+import { asNum } from "utils-min";
 
 //
 export function guard<U>(val: U | null | undefined, message: string): U {
@@ -22,11 +22,10 @@ export function dic(arr: Array<any>, keyName: string) {
 	// alternative: var result = new Map(arr.map((i) => [i.key, i.val]));
 }
 
-
 type AnyButArray = object | number | string | boolean;
 
 export function ensureArray<T extends AnyButArray>(a: T | Array<T>): Array<T> {
-	return (a instanceof Array) ? a : [a];
+	return a instanceof Array ? a : [a];
 }
 
 /**
@@ -41,14 +40,14 @@ the reference of the entitye {id, type, el}
 													and .el the dom element that contain those attributes
 */
 export function entityRef(el: HTMLElement | EventTarget | null, type?: string) {
-	const selector = (type != null) ? ("[data-entity='" + type + "']") : "[data-entity]";
+	const selector = type != null ? "[data-entity='" + type + "']" : "[data-entity]";
 
 	const entityEl = closest(<HTMLElement>el, selector);
 	if (entityEl) {
 		const entity: { [name: string]: any } = {};
 		entity.el = entityEl;
 		entity.type = entityEl.getAttribute("data-entity");
-		entity.id = asNum(getAttr(entityEl, 'data-entity-id'));
+		entity.id = asNum(getAttr(entityEl, "data-entity-id"));
 		return entity;
 	}
 	return null;
@@ -83,8 +82,7 @@ export function buildTimeVal(time?: number) {
 	return timeStr;
 }
 
-
-//#region    ---------- color ---------- 
+//#region    ---------- color ----------
 const lumaCache = new Map<string, number>();
 export function getLuma(c: string) {
 	if (c.startsWith("#")) {
@@ -96,10 +94,10 @@ export function getLuma(c: string) {
 
 	// if not in cache, compute
 	if (luma == null) {
-		const rgb = parseInt(c, 16);   // convert rrggbb to decimal
-		const r = (rgb >> 16) & 0xff;  // extract red
-		const g = (rgb >> 8) & 0xff;  // extract green
-		const b = (rgb >> 0) & 0xff;  // extract blue
+		const rgb = parseInt(c, 16); // convert rrggbb to decimal
+		const r = (rgb >> 16) & 0xff; // extract red
+		const g = (rgb >> 8) & 0xff; // extract green
+		const b = (rgb >> 0) & 0xff; // extract blue
 
 		luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
 
@@ -110,9 +108,9 @@ export function getLuma(c: string) {
 }
 
 export function formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+	if (bytes === 0) return "0 Bytes";
+	const k = 1024;
+	const sizes = ["Bytes", "KB", "MB", "GB"];
+	const i = Math.floor(Math.log(bytes) / Math.log(k));
+	return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }

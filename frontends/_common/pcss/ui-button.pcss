@@ -2,22 +2,22 @@ button {
 	outline-style: none;
 }
 
-button, a.button{
-
+button,
+a.button {
 	/* Button Colors */
-	--btn-color-bkg-hover: rgba(98, 0, 238, .1);
+	--btn-color-bkg-hover: rgba(98, 0, 238, 0.1);
 	--btn-color: rgb(98, 0, 238);
-	--btn-color-focus: rgba(98, 0, 238, .8);
-	--btn-color-active: rgba(98, 0, 238, .2);
-	--btn-color-active-dark: rgba(98, 0, 238, .6);
+	--btn-color-focus: rgba(98, 0, 238, 0.8);
+	--btn-color-active: rgba(98, 0, 238, 0.2);
+	--btn-color-active-dark: rgba(98, 0, 238, 0.6);
 	--btn-color-outline: #ddd;
 	--btn-color-disabled-light: #fafafa;
 	--btn-color-disabled: #aaa;
-	--btn-color-disabled-dark: #999;	
+	--btn-color-disabled-dark: #999;
 	/* /Button Colors */
 
 	display: inline-flex;
-	
+
 	align-items: center;
 	padding: 0 1rem;
 	border: none;
@@ -26,23 +26,21 @@ button, a.button{
 	background: none;
 	color: var(--btn-color);
 
-
-	font-size: .875rem;
+	font-size: 0.875rem;
 	line-height: 2.25rem;
-	letter-spacing: .08929em;
+	letter-spacing: 0.08929em;
 	font-weight: 500;
 	text-transform: uppercase;
-	
-	
+
 	/*#region    Icon */
-	c-ico{
+	c-ico {
 		fill: var(--btn-color);
-		margin-right: .75rem;
+		margin-right: 0.75rem;
 	}
 
-
-	&.medium, &.high {
-		c-ico{
+	&.medium,
+	&.high {
+		c-ico {
 			fill: white;
 		}
 	}
@@ -50,81 +48,85 @@ button, a.button{
 	/*#endregion Icon */
 
 	/*#region    Common Button States */
-	&:hover:not(:disabled):not(.disabled){
+	&:hover:not(:disabled):not(.disabled) {
 		background: var(--btn-color-bkg-hover);
 	}
-	
-	&:active:not(:disabled):not(.disabled){
+
+	&:active:not(:disabled):not(.disabled) {
 		background: var(--btn-color-active);
 		box-shadow: none;
-	}	
+	}
 	/*#endregion Common Button States */
 
 	/* Note: 'a' tag doe snot have a disabled attribute/pseudo, so fall back on classes */
-	&:disabled, &.disabled{
+	&:disabled,
+	&.disabled {
 		color: var(--btn-color-disabled);
 		cursor: default;
 	}
 
 	/*#region    Button Types */
 
-	&.medium, &.high{
+	&.medium,
+	&.high {
 		background: var(--btn-color);
 		color: white;
 
-		&:disabled, &.disabled{
+		&:disabled,
+		&.disabled {
 			background: var(--btn-color-disabled-light);
 			color: var(--btn-color-disabled);
 		}
 
-		&:hover:not(:disabled):not(.disabled){
+		&:hover:not(:disabled):not(.disabled) {
 			background: var(--btn-color-focus);
 		}
 
-		&:active:not(:disabled):not(.disabled){
+		&:active:not(:disabled):not(.disabled) {
 			background: var(--btn-color-active-dark);
 		}
 	}
 
-	&.high{
+	&.high {
 		box-shadow: var(--elev-1-shadow);
-		&:disabled, &.disabled{
+		&:disabled,
+		&.disabled {
 			box-shadow: none;
 		}
 	}
 
-	&.outlined{
+	&.outlined {
 		box-shadow: none;
 		background: none;
 		color: var(--btn-color);
 		border: solid 1px var(--btn-color-outline);
 
-		&:disabled, &.disabled{
+		&:disabled,
+		&.disabled {
 			color: var(--btn-color-disabled);
-		}		
-	}		
+		}
+	}
 	/*#endregion Button Types */
-
 }
 
-button.prime{		
+button.prime {
 	background: var(--clr-prime);
 	color: white;
-	&:hover:not(:disabled):not(.disabled){
+	&:hover:not(:disabled):not(.disabled) {
 		background: var(--clr-prime);
 	}
-	&:active:not(:disabled):not(.disabled){
+	&:active:not(:disabled):not(.disabled) {
 		background: var(--clr-prime);
 	}
 }
 
-button.danger{
+button.danger {
 	background: var(--clr-other-purple-red);
 	color: white;
-	&:hover:not(:disabled):not(.disabled){
+	&:hover:not(:disabled):not(.disabled) {
 		background: var(--clr-other-purple-red);
 	}
-	&:active:not(:disabled):not(.disabled){
+	&:active:not(:disabled):not(.disabled) {
 		background: var(--clr-other-purple-red);
 	}
 }

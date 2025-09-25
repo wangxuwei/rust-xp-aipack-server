@@ -1,20 +1,20 @@
-import { adoptStyleSheets, css, customElement, onEvent, pull } from 'dom-native';
-import { isEmpty } from 'utils-min';
-import { showValidateError, validateValues } from 'validate.js';
-import { User } from '../bindings/User.js';
-import { userDco } from '../dcos.js';
-import { DgDialog } from '../dialog/dg-dialog.js';
+import { adoptStyleSheets, css, customElement, onEvent, pull } from "dom-native";
+import { isEmpty } from "utils-min";
+import { showValidateError, validateValues } from "validate.js";
+import { User } from "../bindings/User.js";
+import { userDco } from "../dcos.js";
+import { DgDialog } from "../dialog/dg-dialog.js";
 
 const _compCss = css`
 	::slotted(.dialog-content) {
 		display: grid;
 		grid-auto-flow: row;
-		grid-auto-rows: min-content; 
+		grid-auto-rows: min-content;
 		grid-gap: 1rem;
 	}
 `;
 
-@customElement('dg-user')
+@customElement("dg-user")
 export class DgUser extends DgDialog {
 	#userId?: number;
 
@@ -28,12 +28,12 @@ export class DgUser extends DgDialog {
 		adoptStyleSheets(this, _compCss);
 	}
 
-	//#region    ---------- Events ---------- 
-	@onEvent('pointerup', '.do-ok')
+	//#region    ---------- Events ----------
+	@onEvent("pointerup", ".do-ok")
 	async doOk() {
 		const formData = pull(this);
 		let message = validateValues(this);
-		if(!message){
+		if (!message) {
 			let user;
 			if (this.#userId) {
 				user = await userDco.update(this.#userId, formData);
@@ -41,25 +41,27 @@ export class DgUser extends DgDialog {
 				user = await userDco.create(formData);
 			}
 			super.doOk();
-		}else{
+		} else {
 			showValidateError(this, message);
 		}
 	}
-	//#endregion ---------- /Events ---------- 
+	//#endregion ---------- /Events ----------
 
-	//#region    ---------- Lifecycle ---------- 
+	//#region    ---------- Lifecycle ----------
 	async refresh() {
 		const user = !isEmpty(this.#userId) ? await userDco.get(this.#userId!) : undefined;
 		this.innerHTML = _render(user);
 	}
-	//#endregion ---------- /Lifecycle ---------- 
+	//#endregion ---------- /Lifecycle ----------
 }
 
 function _render(user?: User) {
-	const title = user ? 'Update User' : 'Add User';
-	const username = user?.username ?? '';
+	const title = user ? "Update User" : "Add User";
+	const username = user?.username ?? "";
 
-	const pwdClearHtml = user ? `` : `
+	const pwdClearHtml = user
+		? ``
+		: `
 		<div class="ui-form-row">
 			<label class="ui-form-lbl">Password:</label>
 			<d-input class="ui-form-val" name="pwd_clear" value="" placeholder="Enter password" ></d-input>

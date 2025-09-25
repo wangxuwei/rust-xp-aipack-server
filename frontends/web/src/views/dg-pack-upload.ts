@@ -1,89 +1,81 @@
 import { Pack } from "bindings/Pack.js";
 import { packDco } from "dcos.js";
-import {
-  adoptStyleSheets,
-  css,
-  customElement,
-  onEvent,
-  pull,
-} from "dom-native";
-import { showValidateError, validateValues } from 'validate.js';
+import { adoptStyleSheets, css, customElement, onEvent, pull } from "dom-native";
+import { showValidateError, validateValues } from "validate.js";
 import { DgDialog } from "../dialog/dg-dialog.js";
 
 const _compCss = css`
-  ::slotted(.dialog-content) {
-    display: grid;
-    grid-auto-flow: row;
-    grid-auto-rows: min-content;
-    grid-gap: 1rem;
-    padding: 0.5rem;
-  }
+	::slotted(.dialog-content) {
+		display: grid;
+		grid-auto-flow: row;
+		grid-auto-rows: min-content;
+		grid-gap: 1rem;
+		padding: 0.5rem;
+	}
 `;
 
 @customElement("dg-pack-upload")
 export class DgPackUpload extends DgDialog {
-  #packId?: number;
-  #pack?: Pack;
+	#packId?: number;
+	#pack?: Pack;
 
-  set packId(v: number | undefined) {
-    this.#packId = v;
-    this.refresh();
-  }
+	set packId(v: number | undefined) {
+		this.#packId = v;
+		this.refresh();
+	}
 
-  constructor() {
-    super();
-    adoptStyleSheets(this, _compCss);
-  }
+	constructor() {
+		super();
+		adoptStyleSheets(this, _compCss);
+	}
 
-  //#region    ---------- Events ----------
-  @onEvent("pointerup", ".do-ok")
-  async doOk() {
-    const formData = pull(this);
-    const message = validateValues(this);
-    if(!message){
-      formData.pack_name = this.#pack?.name;
+	//#region    ---------- Events ----------
+	@onEvent("pointerup", ".do-ok")
+	async doOk() {
+		const formData = pull(this);
+		const message = validateValues(this);
+		if (!message) {
+			formData.pack_name = this.#pack?.name;
 
-      const fileInput = this.querySelector(
-        'input[type="file"]'
-      ) as HTMLInputElement;
+			const fileInput = this.querySelector('input[type="file"]') as HTMLInputElement;
 
-      const file = fileInput.files![0];
-      formData["file"] = file;
+			const file = fileInput.files![0];
+			formData["file"] = file;
 
-      try {
-        await packDco.savePack(formData);
-        this.close();
-      } catch (error: any) {
-        console.log(error);
-      }
-    }else{
-      showValidateError(this, message);
-    }
-  }
+			try {
+				await packDco.savePack(formData);
+				this.close();
+			} catch (error: any) {
+				console.log(error);
+			}
+		} else {
+			showValidateError(this, message);
+		}
+	}
 
-  @onEvent("change", 'input[type="file"]')
-  onFileSelect(evt: Event) {
-    const input = evt.target as HTMLInputElement;
-    const fileName = input.files?.[0]?.name || "";
-    const fileNameDisplay = this.querySelector(".file-name") as HTMLElement;
-    fileNameDisplay.textContent = fileName;
-  }
-  //#endregion ---------- /Events ----------
+	@onEvent("change", 'input[type="file"]')
+	onFileSelect(evt: Event) {
+		const input = evt.target as HTMLInputElement;
+		const fileName = input.files?.[0]?.name || "";
+		const fileNameDisplay = this.querySelector(".file-name") as HTMLElement;
+		fileNameDisplay.textContent = fileName;
+	}
+	//#endregion ---------- /Events ----------
 
-  //#region    ---------- Lifecycle ----------
-  async refresh() {
-    if (this.#packId) {
-      this.#pack = await packDco.get(this.#packId);
-    }
-    this.innerHTML = _render(this.#pack?.name);
-  }
-  //#endregion ---------- /Lifecycle ----------
+	//#region    ---------- Lifecycle ----------
+	async refresh() {
+		if (this.#packId) {
+			this.#pack = await packDco.get(this.#packId);
+		}
+		this.innerHTML = _render(this.#pack?.name);
+	}
+	//#endregion ---------- /Lifecycle ----------
 }
 
 function _render(packName?: string) {
-  const title = "Upload Pack Version";
+	const title = "Upload Pack Version";
 
-  return `
+	return `
 		<div slot="title">${title}</div>
 
 		<div class="dialog-content">

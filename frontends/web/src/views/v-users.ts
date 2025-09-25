@@ -1,46 +1,45 @@
-import { BaseViewElement } from 'common/v-base.js';
-import { userDco } from 'dcos.js';
-import { OnEvent, customElement, onEvent, onHub } from 'dom-native';
-import { asNum, isEmpty } from 'utils-min';
-import { User } from '../bindings/User.js';
-import { DgUser } from './dg-user.js';
+import { BaseViewElement } from "common/v-base.js";
+import { userDco } from "dcos.js";
+import { OnEvent, customElement, onEvent, onHub } from "dom-native";
+import { asNum, isEmpty } from "utils-min";
+import { User } from "../bindings/User.js";
+import { DgUser } from "./dg-user.js";
 
-@customElement('v-users')
+@customElement("v-users")
 export class UsersView extends BaseViewElement {
-
-	//#region    ---------- Events ---------- 
-	@onEvent('click', '.btn-edit')
+	//#region    ---------- Events ----------
+	@onEvent("click", ".btn-edit")
 	onEditClick(evt: MouseEvent & OnEvent) {
-		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
 		const userId = asNum(rowEl.dataset.id);
 		if (!isEmpty(userId)) {
 			this.showUserDialog(userId!);
 		}
 	}
 
-	@onEvent('click', '.btn-delete')
+	@onEvent("click", ".btn-delete")
 	onDeleteClick(evt: MouseEvent & OnEvent) {
-		const rowEl = evt.selectTarget.closest('.row') as HTMLElement;
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
 		const userId = asNum(rowEl.dataset.id);
 		if (!isEmpty(userId)) {
 			userDco.delete(userId!).then(() => this.refresh());
 		}
 	}
 
-	@onEvent('click', 'button.add')
+	@onEvent("click", "button.add")
 	onAddClick() {
 		this.showUserDialog();
 	}
 	//#endregion ---------- /Events ----------
 
-	//#region    ---------- Hub Events ---------- 
-	@onHub('dcoHub', 'user', 'create,update,delete')
+	//#region    ---------- Hub Events ----------
+	@onHub("dcoHub", "user", "create,update,delete")
 	onUserChange() {
 		this.refresh();
 	}
 	//#endregion ---------- /Hub Events ----------
 
-	//#region    ---------- Lifecycle ---------- 
+	//#region    ---------- Lifecycle ----------
 	init() {
 		super.init();
 		this.refresh();
@@ -52,9 +51,9 @@ export class UsersView extends BaseViewElement {
 	}
 	//#endregion ---------- /Lifecycle ----------
 
-	//#region    ---------- Private Functions ---------- 
+	//#region    ---------- Private Functions ----------
 	private showUserDialog(userId?: number) {
-		const dialog = document.createElement('dg-user') as DgUser;
+		const dialog = document.createElement("dg-user") as DgUser;
 		dialog.userId = userId;
 		this.appendChild(dialog);
 	}
@@ -62,7 +61,9 @@ export class UsersView extends BaseViewElement {
 }
 
 function _render(users: User[]) {
-	const rows = users.map(user => `
+	const rows = users
+		.map(
+			(user) => `
 		<div class="row" data-id="${user.id}">
 			<div class="cell">${user.username}</div>
 			<div class="cell actions">
@@ -70,7 +71,9 @@ function _render(users: User[]) {
 				<button class="btn-delete danger">Delete</button>
 			</div>
 		</div>
-	`).join('');
+		`
+		)
+		.join("");
 
 	return `
 		<div class="header">

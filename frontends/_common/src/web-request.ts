@@ -1,60 +1,58 @@
 // <origin src="https://raw.githubusercontent.com/BriteSnow/cloud-starter/master/frontends/web/src/ts/web-request.ts" />
 // (c) 2019 BriteSnow, inc - This code is licensed under MIT license (see LICENSE for details)
 
-import { isObject, isString, pruneEmpty } from 'utils-min';
-import { getRouteOrgId } from './route.js';
+import { isObject, isString, pruneEmpty } from "utils-min";
+import { getRouteOrgId } from "./route.js";
 
-type WebMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+type WebMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 interface WebRequestOptions {
 	contentType?: string; // override the inferred contentType
 	body?: any;
 	params?: any;
-	headers?: { [name: string]: string }
+	headers?: { [name: string]: string };
 }
-
 
 // --------- AJAX Wrapper --------- //
 // Very simple AJAX wrapper that allow us to simply normalize request/response accross the application code.
-// 
+//
 // Note: We start with just a minimalistic implementation, if more is needed, we can use some AJAX library while keeping the same
-// application APIs. 
+// application APIs.
 
 // use for get and list
 export async function webGet(path: string, opts?: WebRequestOptions) {
-	return webRequest('GET', path, opts);
+	return webRequest("GET", path, opts);
 }
 
-// use for create 
+// use for create
 export function webPost(path: string, opts?: WebRequestOptions) {
-	return webRequest('POST', path, opts);
+	return webRequest("POST", path, opts);
 }
 
 // use for update
 export function webPut(path: string, opts?: WebRequestOptions) {
-	return webRequest('PUT', path, opts);
+	return webRequest("PUT", path, opts);
 }
 
 // use for delete
 export function webDelete(path: string, opts?: WebRequestOptions) {
-	return webRequest('DELETE', path, opts);
+	return webRequest("DELETE", path, opts);
 }
 
 // patch
 export function webPatch(path: string, opts?: WebRequestOptions) {
-	return webRequest('PATCH', path, opts);
+	return webRequest("PATCH", path, opts);
 }
 
 // extract the data from result and if success returns it or not throw error.
 // TODO: add conditional typing to not include null if nullOnFail is false
-export function getData<T = unknown>(result: { success: boolean, data: T }, nullOnFail = false): T | null {
+export function getData<T = unknown>(result: { success: boolean; data: T }, nullOnFail = false): T | null {
 	if (!result || !result.success) {
 		if (nullOnFail) {
 			return null;
 		} else {
 			throw result;
 		}
-
 	} else {
 		return result.data;
 	}
@@ -69,9 +67,9 @@ export async function webRequest(method: WebMethod, path: string, opts?: Partial
 		// NOTE: do not set contentType (fetch does the right thing when FormData)
 	} else if (isObject(body)) {
 		body = JSON.stringify(body);
-		contentType = 'application/json';
+		contentType = "application/json";
 	} else if (isString(body)) {
-		contentType = 'text/plain'
+		contentType = "text/plain";
 	}
 
 	//// Set the eventual Scoped entity as params
@@ -83,19 +81,18 @@ export async function webRequest(method: WebMethod, path: string, opts?: Partial
 	//// Add params to url if defined
 	if (params != null) {
 		const urlParams = urlEncodeParams(params);
-		path += path.includes('?') ? `&${urlParams}` : `?${urlParams}`;
+		path += path.includes("?") ? `&${urlParams}` : `?${urlParams}`;
 	}
 
 	//// Define headers
 	if (contentType) {
-		(headers = headers ?? {})['Content-Type'] = contentType;
+		(headers = headers ?? {})["Content-Type"] = contentType;
 	}
-
 
 	const fetchRequestInit: RequestInit = pruneEmpty({ method, headers, body });
 	const fetchResponse = await fetch(path, fetchRequestInit);
 	// if the content type was application/json, then, just parse it
-	const resContentType = fetchResponse.headers.get('content-type');
+	const resContentType = fetchResponse.headers.get("content-type");
 
 	if (resContentType) {
 		// TODO: need to check multipart handler
@@ -103,7 +100,7 @@ export async function webRequest(method: WebMethod, path: string, opts?: Partial
 			return fetchResponse.json();
 		}
 		// if end with example, i.e. svg, parse as xml
-		else if (resContentType?.endsWith('xml')) {
+		else if (resContentType?.endsWith("xml")) {
 			const bodyText = await fetchResponse.text();
 			return new DOMParser().parseFromString(bodyText, "application/xml");
 		}
@@ -111,18 +108,15 @@ export async function webRequest(method: WebMethod, path: string, opts?: Partial
 		// assume text for now
 		return fetchResponse.text();
 	}
-
 }
-
 
 /** Build a URI query string from js object */
 function urlEncodeParams(obj: any) {
-	var encodedString = '';
+	var encodedString = "";
 	for (var prop in obj) {
 		if (obj.hasOwnProperty(prop)) {
-
 			if (encodedString.length > 0) {
-				encodedString += '&';
+				encodedString += "&";
 			}
 
 			let val = obj[prop];
@@ -133,13 +127,13 @@ function urlEncodeParams(obj: any) {
 			}
 
 			// if the value is an object or array, then, we stringify (for serialization)
-			if (typeof val === 'object' || val instanceof Array) {
+			if (typeof val === "object" || val instanceof Array) {
 				// stringify
 				val = JSON.stringify(val);
 			}
 
 			// always uri encode the value (it will get decoded automatically on the server)
-			encodedString += prop + '=' + encodeURIComponent(val);
+			encodedString += prop + "=" + encodeURIComponent(val);
 		}
 	}
 	return encodedString;

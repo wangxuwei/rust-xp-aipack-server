@@ -1,8 +1,8 @@
 // <origin src="https://raw.githubusercontent.com/BriteSnow/cloud-starter/master/frontends/web/src/ts/route.ts" />
 // (c) 2019 BriteSnow, inc - This code is licensed under MIT license (see LICENSE for details)
 
-import { hub, on } from 'dom-native';
-import { asNum } from 'utils-min';
+import { hub, on } from "dom-native";
+import { asNum } from "utils-min";
 
 // Global routeHub to trigger the events
 const routeHub = hub("routeHub");
@@ -34,11 +34,10 @@ export function getRouteOrgId() {
 }
 
 export function pushPath(path: string) {
-	history.pushState('', document.title, path);
+	history.pushState("", document.title, path);
 	_routeInfo = null; // reset routeInfo
 	triggerRouteChange();
 }
-
 
 interface Params {
 	get(name: string): string | null;
@@ -57,13 +56,13 @@ export class RouteInfo {
 	}
 
 	pathAt(idx: number): string | null {
-		return (this._data.paths.length > idx) ? this._data.paths[idx] : null;
-	};
+		return this._data.paths.length > idx ? this._data.paths[idx] : null;
+	}
 
 	pathAsNum(idx: number): number | null {
 		let num = this.pathAt(idx);
 		return asNum(num);
-	};
+	}
 
 	paths(): string[] {
 		return this._data.paths;
@@ -76,18 +75,16 @@ export class RouteInfo {
 	param(name: string): string | null {
 		return this._data.params.get(name);
 	}
-
 }
 
-document.addEventListener('DOMContentLoaded', function (event) {
-	on(document, 'click', 'a', function (evt) {
+document.addEventListener("DOMContentLoaded", function (event) {
+	on(document, "click", "a", function (evt) {
 		const a = evt.selectTarget;
-		const href = a.getAttribute('href');
+		const href = a.getAttribute("href");
 
 		if (href) {
-
 			// If full url or marked reload-link, then, let the borwser do it's job.
-			if (href.startsWith('http') || a.classList.contains('reload-link')) {
+			if (href.startsWith("http") || a.classList.contains("reload-link")) {
 				return;
 			}
 
@@ -99,16 +96,14 @@ document.addEventListener('DOMContentLoaded', function (event) {
 			// change URL
 			pushPath(href);
 		}
-
-
 	});
 
-	on(window, 'popstate', function () {
+	on(window, "popstate", function () {
 		_routeInfo = null; // reset routeInfo
 		triggerRouteChange();
 	});
 
-	on(window, 'hashchange', function () {
+	on(window, "hashchange", function () {
 		_routeInfo = null; // reset routeInfo
 		triggerRouteChange();
 	});
@@ -116,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
 // --------- utilities --------- //
 function triggerRouteChange() {
-	routeHub.pub('CHANGE', '');
+	routeHub.pub("CHANGE", "");
 }
 
 function getRouteInfo() {
@@ -129,10 +124,10 @@ function getRouteInfo() {
 function buildRouteInfo(): RouteInfo {
 	let hash = window.location.hash;
 	let pathname = window.location.pathname;
-	if (pathname.endsWith('/')) {
+	if (pathname.endsWith("/")) {
 		pathname = pathname.substring(0, pathname.length - 1);
 	}
-	const paths = pathname.split('/').slice(1);
+	const paths = pathname.split("/").slice(1);
 	const url = new URL(window.location.href);
 	const params = url.searchParams;
 

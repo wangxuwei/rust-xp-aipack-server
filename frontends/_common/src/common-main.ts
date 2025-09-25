@@ -1,12 +1,11 @@
-import '@dom-native/ui';
-import { loadDefaultIcons } from '@dom-native/ui';
-import { trigger } from 'dom-native';
-import { webGet } from './web-request.js';
-
+import "@dom-native/ui";
+import { loadDefaultIcons } from "@dom-native/ui";
+import { trigger } from "dom-native";
+import { webGet } from "./web-request.js";
 
 window.__version__ = "DROP-001";
 
-//#region    ---------- Initialize DOM ---------- 
+//#region    ---------- Initialize DOM ----------
 // load the default @dom-native/ui icon set
 loadDefaultIcons();
 
@@ -25,9 +24,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			h.appendChild(firstChildElement);
 		}
 
-		// trigger an APP_LOADED event on document once everything is ready to start the app. 
+		// trigger an APP_LOADED event on document once everything is ready to start the app.
 		trigger(document, "APP_LOADED");
-
 	});
 });
 //#endregion ---------- /Initialize DOM ----------

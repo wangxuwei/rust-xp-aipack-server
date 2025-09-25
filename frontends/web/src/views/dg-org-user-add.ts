@@ -1,30 +1,30 @@
-import { orgDco } from 'dcos';
+import { orgDco } from "dcos";
 import { DgDialog } from "dialog/dg-dialog.js";
 import { adoptStyleSheets, css, customElement, OnEvent, onEvent, pull } from "dom-native";
-import { asNum, isNotEmpty } from 'utils-min';
+import { asNum, isNotEmpty } from "utils-min";
 
 const _compCss = css`
-  ::slotted(.dialog-content) {
-    display: grid;
-    grid-auto-flow: row;
-    grid-auto-rows: min-content;
-    grid-gap: 1rem;
-    padding: 0.5rem;
-  }
+	::slotted(.dialog-content) {
+		display: grid;
+		grid-auto-flow: row;
+		grid-auto-rows: min-content;
+		grid-gap: 1rem;
+		padding: 0.5rem;
+	}
 `;
 @customElement("dg-org-user-add")
 export class DgOrgUserAdd extends DgDialog {
 	#orgId: number | null = null;
 
-  constructor() {
-    super();
-    adoptStyleSheets(this, _compCss);
-  }
+	constructor() {
+		super();
+		adoptStyleSheets(this, _compCss);
+	}
 
 	set orgId(v: number | null) {
 		this.#orgId = v;
 	}
-  //#region    ---------- Events ----------
+	//#region    ---------- Events ----------
 
 	@onEvent("D-DATA", "c-search-select")
 	async onUserData(evt: OnEvent) {
@@ -40,26 +40,28 @@ export class DgOrgUserAdd extends DgDialog {
 	@onEvent("pointerup", ".do-ok")
 	async doOk() {
 		const formData = pull(this);
-		const userIds = formData.userIds.split(",").map((v:string) => asNum(v)).filter((v:number) => v != null);
-		if(isNotEmpty(userIds)){
+		const userIds = formData.userIds
+			.split(",")
+			.map((v: string) => asNum(v))
+			.filter((v: number) => v != null);
+		if (isNotEmpty(userIds)) {
 			await orgDco.addUsersToOrg(this.#orgId!, userIds);
 		}
 		super.doOk();
 	}
-  //#endregion ---------- /Events ----------
+	//#endregion ---------- /Events ----------
 
-  //#region    ---------- Lifecycle ----------
-  init() {
-    super.init();
-    this.innerHTML = _render();
-  }
+	//#region    ---------- Lifecycle ----------
+	init() {
+		super.init();
+		this.innerHTML = _render();
+	}
 
-	
-  //#endregion ---------- /Lifecycle ----------
+	//#endregion ---------- /Lifecycle ----------
 }
 
 function _render() {
-  return `
+	return `
 		<div slot="title">Add User to Organization</div>
 
 		<div class="dialog-content">

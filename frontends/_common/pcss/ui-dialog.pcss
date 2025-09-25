@@ -1,4 +1,4 @@
-.dialog{
+.dialog {
 	box-shadow: var(--elev-6-shadow);
 	background: var(--bkg-L2);
 	background: red;
@@ -7,53 +7,54 @@
 	color: var(--txt-L0);
 	background: #fff;
 	/* Note: not sure why we need outline on this element, but if not, we have a blue box on click */
-	outline: none; 
+	outline: none;
 
-	& > header{
-		@mixin typo-h3{};
+	& > header {
+		@mixin typo-h3 {
+		}
 		padding: 0 1rem;
 		display: grid;
 
 		grid-template-columns: 1fr 1rem;
 		align-items: center;
-		c-ico{
+		c-ico {
 			width: 100%;
 			justify-self: right;
 		}
 	}
 
-	& > section:first-of-type{
+	& > section:first-of-type {
 		padding: 1rem;
 	}
 
-	& > footer{
+	& > footer {
 		padding: 1rem 0 1rem 1rem;
 		display: flex;
 		flex-direction: row;
 		justify-content: flex-end;
 		& > .message {
 			flex: 1;
-			font-size: .8rem;
+			font-size: 0.8rem;
 			color: var(--txt-alert);
 			display: flex;
 			align-items: center;
 		}
-		& > *{
+		& > * {
 			margin-right: 1rem;
 		}
-		& > .spacer{
+		& > .spacer {
 			flex: 1;
 		}
 	}
 }
 
-.dialog.notif{
+.dialog.notif {
 	grid-template-rows: 1fr;
-	& > header{
+	& > header {
 		display: none;
 	}
 
-	& > section:first-of-type{
+	& > section:first-of-type {
 		display: grid;
 		grid-template-columns: 3rem 1fr;
 
@@ -62,10 +63,9 @@
 			height: 2rem;
 		}
 
-		p{
-			padding-top: .25rem;
+		p {
+			padding-top: 0.25rem;
 			color: var(--txt-L3);
 		}
-	}		
-
+	}
 }

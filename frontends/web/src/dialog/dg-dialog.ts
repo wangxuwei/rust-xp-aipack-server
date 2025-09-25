@@ -1,21 +1,24 @@
-import { adoptStyleSheets, BaseHTMLElement, css, customElement, html, onEvent, trigger } from 'dom-native';
+import { adoptStyleSheets, BaseHTMLElement, css, customElement, html, onEvent, trigger } from "dom-native";
 
 //// CSS
 const _compCss = css`
-	:host{
+	:host {
 		position: absolute;
 		z-index: 100;
-		top: 0; left: 0; bottom: 0; right: 0;
-		background: rgba(0,0,0,.3);
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		background: rgba(0, 0, 0, 0.3);
 	}
 
-	.dialog{
+	.dialog {
 		position: absolute;
 		width: 30rem;
 		top: 50%;
 		left: 50%;
 		margin-left: -12.5rem;
-		margin-top: -10rem;		
+		margin-top: -10rem;
 		background: #fff;
 		box-shadow: var(--elev-6-shadow);
 
@@ -27,25 +30,26 @@ const _compCss = css`
 		grid-row-gap: 1rem 0rem;
 	}
 
-	.dialog .large{
+	.dialog .large {
 		width: 40rem;
 		margin-left: -20rem;
 	}
-	header{
+	header {
 		display: contents;
 	}
-	
-	.title{
+
+	.title {
 		align-self: center;
-		grid-area: 1 / 2;		
+		grid-area: 1 / 2;
 	}
-	
+
 	/* style slot placehold as well */
-	.title > *, .title > ::slotted(*){
+	.title > *,
+	.title > ::slotted(*) {
 		font-size: 1.2rem;
 	}
 
-	header c-ico{
+	header c-ico {
 		grid-area: 1 / 3;
 		width: 1.5rem;
 		height: 1.5rem;
@@ -53,11 +57,11 @@ const _compCss = css`
 		align-self: center;
 	}
 
-	section{
+	section {
 		grid-area: 2 / 2;
 	}
 
-	footer{
+	footer {
 		grid-area: 3 / 2;
 		display: grid;
 		grid-template-columns: 1fr auto auto;
@@ -66,70 +70,62 @@ const _compCss = css`
 	}
 `;
 
-
-@customElement('dg-dialog')
+@customElement("dg-dialog")
 export class DgDialog extends BaseHTMLElement {
-
 	constructor() {
 		super();
-		adoptStyleSheets(this.attachShadow({ mode: 'open' }), _compCss).append(_renderShadow());
+		adoptStyleSheets(this.attachShadow({ mode: "open" }), _compCss).append(_renderShadow());
 	}
 
 	init() {
-		const title = this.getAttribute('title');
+		const title = this.getAttribute("title");
 
 		if (title) {
 			this.innerHTML += `<div slot="title">${title}</div>`;
 		}
 	}
 
-	//#region    ---------- Events ---------- 
-	@onEvent('pointerup', '.do-close, .do-cancel')
+	//#region    ---------- Events ----------
+	@onEvent("pointerup", ".do-close, .do-cancel")
 	doCloseOrCancel() {
 		this.cancel();
 	}
 
-	@onEvent('pointerup', '.do-ok')
+	@onEvent("pointerup", ".do-ok")
 	doOk() {
-		trigger(this, 'OK');
+		trigger(this, "OK");
 		this.close();
 	}
-	//#endregion ---------- /Events ---------- 
+	//#endregion ---------- /Events ----------
 
 	cancel() {
-		trigger(this, 'CANCEL');
+		trigger(this, "CANCEL");
 		this.close();
 	}
 
 	close() {
 		this.remove();
-		trigger(this, 'CLOSE');
+		trigger(this, "CLOSE");
 	}
 }
 
-
-
-
-
-
 //// ShadowRoot render
 function _renderShadow() {
-
 	const content = html`
-<div class="dialog" part="dialog">
-	<header>
-		<div class="title"><slot name="title"></slot></div>
-		<c-ico class="do-close" src="#ico-close"></c-ico>
-	</header>
-	<section>
-		<slot></slot>
-	</section>
-	<footer>
-		<span></span>
-		<slot name="footer"></slot>
-	</footer>
-</div>
-`;
+		<div class="dialog" part="dialog">
+			<header>
+				<div class="title"><slot name="title"></slot></div>
+				<c-ico class="do-close" src="#ico-close"></c-ico>
+			</header>
+			<section>
+				<slot></slot>
+			</section>
+			<footer>
+				<span></span>
+				<slot name="footer"></slot>
+			</footer>
+		</div>
+	`;
 
 	return content;
 }

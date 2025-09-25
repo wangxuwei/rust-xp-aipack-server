@@ -6,117 +6,117 @@ import { orgDco } from "dcos.js";
 import { OnEvent, customElement, onEvent, onHub } from "dom-native";
 import { asNum, isEmpty } from "utils-min";
 import { Org } from "../bindings/Org.js";
-import { DgOrgRename } from './dg-org-rename.js';
+import { DgOrgRename } from "./dg-org-rename.js";
 import { DgOrg } from "./dg-org.js";
 
 @customElement("v-orgs")
 export class OrgsView extends BaseViewElement {
-  //#region    ---------- Events ----------
-  @onEvent("click", ".btn-manage-users")
-  onManageUsersClick(evt: MouseEvent & OnEvent) {
-    const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
-    const orgId = asNum(rowEl.dataset.id);
-    if (!isEmpty(orgId)) {
-      this.showOrgUsers(orgId!);
-    }
-  }
+	//#region    ---------- Events ----------
+	@onEvent("click", ".btn-manage-users")
+	onManageUsersClick(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const orgId = asNum(rowEl.dataset.id);
+		if (!isEmpty(orgId)) {
+			this.showOrgUsers(orgId!);
+		}
+	}
 
-  @onEvent("click", ".btn-edit")
-  onEditClick(evt: MouseEvent & OnEvent) {
-    const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
-    const orgId = asNum(rowEl.dataset.id);
-    if (!isEmpty(orgId)) {
-      this.showOrgDialog(orgId!);
-    }
-  }
+	@onEvent("click", ".btn-edit")
+	onEditClick(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const orgId = asNum(rowEl.dataset.id);
+		if (!isEmpty(orgId)) {
+			this.showOrgDialog(orgId!);
+		}
+	}
 
-  @onEvent("click", ".btn-rename")
-  onRename(evt: MouseEvent & OnEvent) {
-    const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
-    const orgId = asNum(rowEl.dataset.id);
-    if (!isEmpty(orgId)) {
-      this.showOrgRenameDialog(orgId!);
-    }
-  }
+	@onEvent("click", ".btn-rename")
+	onRename(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const orgId = asNum(rowEl.dataset.id);
+		if (!isEmpty(orgId)) {
+			this.showOrgRenameDialog(orgId!);
+		}
+	}
 
-  @onEvent("click", ".btn-delete")
-  onDeleteClick(evt: MouseEvent & OnEvent) {
-    const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
-    const orgId = asNum(rowEl.dataset.id);
-    if (!isEmpty(orgId)) {
-      orgDco.delete(orgId!).then(() => this.refresh());
-    }
-  }
+	@onEvent("click", ".btn-delete")
+	onDeleteClick(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const orgId = asNum(rowEl.dataset.id);
+		if (!isEmpty(orgId)) {
+			orgDco.delete(orgId!).then(() => this.refresh());
+		}
+	}
 
-  @onEvent("click", "button.add")
-  onAddClick() {
-    this.showOrgDialog();
-  }
-  //#endregion ---------- /Events ----------
+	@onEvent("click", "button.add")
+	onAddClick() {
+		this.showOrgDialog();
+	}
+	//#endregion ---------- /Events ----------
 
-  //#region    ---------- Hub Events ----------
-  @onHub("dcoHub", "org", "create,update,delete,rename")
-  onOrgChange() {
-    this.refresh();
-  }
-  //#endregion ---------- /Hub Events ----------
+	//#region    ---------- Hub Events ----------
+	@onHub("dcoHub", "org", "create,update,delete,rename")
+	onOrgChange() {
+		this.refresh();
+	}
+	//#endregion ---------- /Hub Events ----------
 
-  //#region    ---------- Lifecycle ----------
-  init() {
-    super.init();
-    this.refresh();
-  }
+	//#region    ---------- Lifecycle ----------
+	init() {
+		super.init();
+		this.refresh();
+	}
 
-  async refresh() {
-    const orgs = await orgDco.list();
-    this.innerHTML = _render(orgs);
-  }
-  //#endregion ---------- /Lifecycle ----------
+	async refresh() {
+		const orgs = await orgDco.list();
+		this.innerHTML = _render(orgs);
+	}
+	//#endregion ---------- /Lifecycle ----------
 
-  //#region    ---------- Private Functions ----------
-  private showOrgDialog(orgId?: number) {
-    const dialog = document.createElement("dg-org") as DgOrg;
-    dialog.orgId = orgId;
-    this.appendChild(dialog);
-  }
+	//#region    ---------- Private Functions ----------
+	private showOrgDialog(orgId?: number) {
+		const dialog = document.createElement("dg-org") as DgOrg;
+		dialog.orgId = orgId;
+		this.appendChild(dialog);
+	}
 
-  private showOrgRenameDialog(orgId?: number) {
-    const dialog = document.createElement("dg-org-rename") as DgOrgRename;
-    dialog.orgId = orgId!;
-    this.appendChild(dialog);
-  }
+	private showOrgRenameDialog(orgId?: number) {
+		const dialog = document.createElement("dg-org-rename") as DgOrgRename;
+		dialog.orgId = orgId!;
+		this.appendChild(dialog);
+	}
 
-  private showOrgUsers(orgId?: number) {
-    pushPath(`/orgs/users/${orgId}`);
-  }
-  //#endregion ---------- /Private Functions ----------
+	private showOrgUsers(orgId?: number) {
+		pushPath(`/orgs/users/${orgId}`);
+	}
+	//#endregion ---------- /Private Functions ----------
 }
 
 function _render(orgs: Org[]) {
-  const rows = orgs
-    .map((org) => {
-      let html = `
+	const rows = orgs
+		.map((org) => {
+			let html = `
 			<div class="row" data-id="${org.id}">
 				<div class="cell">${org.name}</div>
 				<div class="cell">${org.kind}</div>
 				<div class="cell actions">
 					<button class="btn-edit prime">Edit</button>`;
-      if (hasOrgAccess("OrgRename") || hasAccess("OrgManage")) {
-        html += `
+			if (hasOrgAccess("OrgRename") || hasAccess("OrgManage")) {
+				html += `
 				<button class="btn-rename prime">Rename Organization</button>`;
-      }
-      html += `
+			}
+			html += `
 				<button class="btn-manage-users prime">Manage Users</button>
 				<button class="btn-delete danger">Delete</button>
 			</div>
 		</div>
 		`;
 
-      return html;
-    })
-    .join("");
+			return html;
+		})
+		.join("");
 
-  return `
+	return `
 		<div class="header">
 			<button class="add">Add Organization</button>
 		</div>

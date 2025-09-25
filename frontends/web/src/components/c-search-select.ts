@@ -1,43 +1,58 @@
-import {
-  BaseFieldElement, SelectDataSender, SelectOption,
-} from "@dom-native/ui";
+import { BaseFieldElement, SelectDataSender, SelectOption } from "@dom-native/ui";
 import { BaseInputElement } from "@dom-native/ui/src/d-base-input";
 import {
-  adoptStyleSheets, all, BaseHTMLElement, css, customElement, elem, first, frag, getAttr, html, on, onDoc, OnEvent, onEvent, onWin, position, style, trigger,
+	adoptStyleSheets,
+	all,
+	BaseHTMLElement,
+	css,
+	customElement,
+	elem,
+	first,
+	frag,
+	getAttr,
+	html,
+	on,
+	onDoc,
+	OnEvent,
+	onEvent,
+	onWin,
+	position,
+	style,
+	trigger,
 } from "dom-native";
 import { isNotEmpty } from "utils-min";
 //// CSS
 const _compCss = css`
-  .items-con {
-    display: flex;
-    cursor: default;
-    .item {
-      display: flex;
-      align-items: center;
-      border: 1px solid var(--d-field-bdr);
-      background-color: var(--clr-gray-200);
-      border-radius: 10px;
-      padding: 0 0.3rem 0 0.5rem;
-      margin-right: 0.5rem;
+	.items-con {
+		display: flex;
+		cursor: default;
+		.item {
+			display: flex;
+			align-items: center;
+			border: 1px solid var(--d-field-bdr);
+			background-color: var(--clr-gray-200);
+			border-radius: 10px;
+			padding: 0 0.3rem 0 0.5rem;
+			margin-right: 0.5rem;
 
-      .ico-close {
-        cursor: pointer;
-      }
-    }
-  }
-  .ipt-con {
-    flex: 1;
-    display: flex;
-    align-self: stretch;
-    padding: 0.5rem 0;
-    flex: 1;
-    .ipt-ctrl {
-      border: 0;
-      outline: 0;
-      width: 100%;
-      height: 100%;
-    }
-  }
+			.ico-close {
+				cursor: pointer;
+			}
+		}
+	}
+	.ipt-con {
+		flex: 1;
+		display: flex;
+		align-self: stretch;
+		padding: 0.5rem 0;
+		flex: 1;
+		.ipt-ctrl {
+			border: 0;
+			outline: 0;
+			width: 100%;
+			height: 100%;
+		}
+	}
 `;
 
 /**
@@ -70,189 +85,190 @@ const _compCss = css`
  */
 @customElement("c-search-select")
 export class CSearchSelectElement extends BaseInputElement {
-  static get observedAttributes() {
-    return BaseFieldElement.observedAttributes.concat();
-  }
+	static get observedAttributes() {
+		return BaseFieldElement.observedAttributes.concat();
+	}
 
-  // #region    --- Transitive Properties
-  get popupCss(): string | null {
-    return getAttr(this, "popup-css");
-  }
-  // #endregion --- Transitive Properties
+	// #region    --- Transitive Properties
+	get popupCss(): string | null {
+		return getAttr(this, "popup-css");
+	}
+	// #endregion --- Transitive Properties
 
-  #inputEl?: HTMLInputElement;
-  #initOptions: { [name: string]: string } = {};
-  #popupEl: SelectPopupElement | null = null;
-  #value: SelectOption[] | null = [];
+	#inputEl?: HTMLInputElement;
+	#initOptions: { [name: string]: string } = {};
+	#popupEl: SelectPopupElement | null = null;
+	#value: SelectOption[] | null = [];
 
-  //// Properties
-  // options: SelectOption[] = [];
+	//// Properties
+	// options: SelectOption[] = [];
 
-  //// Property (Value)
-  get value() {
-    return this.#value?.map((v) => v.value).join(",") ?? "";
-  }
+	//// Property (Value)
+	get value() {
+		return this.#value?.map((v) => v.value).join(",") ?? "";
+	}
 
-  set valueMap(values: SelectOption[]) {
-    this.#initOptions = values.reduce((pv, v) => {
-      pv[v.value!] = v.content;
-      return pv;
-    }, {} as { [name: string]: string });
+	set valueMap(values: SelectOption[]) {
+		this.#initOptions = values.reduce((pv, v) => {
+			pv[v.value!] = v.content;
+			return pv;
+		}, {} as { [name: string]: string });
 
-    this.#value = this.#value?.map((v) => {
-      return { content: this.#initOptions[v.value!] ?? v, value: v.value };
-    })!;
-  }
+		this.#value = this.#value?.map((v) => {
+			return { content: this.#initOptions[v.value!] ?? v, value: v.value };
+		})!;
+	}
 
-  set value(v: string | null) {
-    this.#value = v?.split(",")
-      .filter((v) => v)
-      .map((v) => {
-        return { content: this.#initOptions[v] ?? v, value: v };
-      })!;
-  }
+	set value(v: string | null) {
+		this.#value = v
+			?.split(",")
+			.filter((v) => v)
+			.map((v) => {
+				return { content: this.#initOptions[v] ?? v, value: v };
+			})!;
+	}
 
-  // #region    --- Component Events
-  triggerData(sendData: SelectDataSender, input?: string) {
-    trigger(this, "D-DATA", { detail: { sendData, input: input ?? "" } });
-  }
-  // #endregion --- Component Events
+	// #region    --- Component Events
+	triggerData(sendData: SelectDataSender, input?: string) {
+		trigger(this, "D-DATA", { detail: { sendData, input: input ?? "" } });
+	}
+	// #endregion --- Component Events
 
-  // #region    --- UI Events
-  @onEvent("pointerup", ".item .ico-close")
-  onItemCloseClick(evt: PointerEvent & OnEvent) {
-    evt.stopPropagation();
-    let itemEl = evt.selectTarget.closest(".item");
-    itemEl?.remove();
-    this.#inputEl?.focus();
-  }
+	// #region    --- UI Events
+	@onEvent("pointerup", ".item .ico-close")
+	onItemCloseClick(evt: PointerEvent & OnEvent) {
+		evt.stopPropagation();
+		let itemEl = evt.selectTarget.closest(".item");
+		itemEl?.remove();
+		this.#inputEl?.focus();
+	}
 
-  @onEvent("input", "input[name='ipt-ctrl']")
-  onInput(evt: PointerEvent & OnEvent) {
-    let inputEl = evt.selectTarget as HTMLInputElement;
-    let value = inputEl.value;
-    this.showPopup(value);
-  }
-  // #endregion --- UI Events
+	@onEvent("input", "input[name='ipt-ctrl']")
+	onInput(evt: PointerEvent & OnEvent) {
+		let inputEl = evt.selectTarget as HTMLInputElement;
+		let value = inputEl.value;
+		this.showPopup(value);
+	}
+	// #endregion --- UI Events
 
-  // #region    --- BaseInput Implementations
+	// #region    --- BaseInput Implementations
 
-  getInitialValue() {
-    this.value = getAttr(this, "value") ?? "";
-    return this.value;
-  }
+	getInitialValue() {
+		this.value = getAttr(this, "value") ?? "";
+		return this.value;
+	}
 
-  createCtrlEl(): HTMLElement {
-    let el = html`
-      <div>
-        <div class="items-con"></div>
-        <div class="ipt-con">
-          <input name="ipt-ctrl" class="ipt-ctrl" />
-        </div>
-      </div>
-    `;
+	createCtrlEl(): HTMLElement {
+		let el = html`
+			<div>
+				<div class="items-con"></div>
+				<div class="ipt-con">
+					<input name="ipt-ctrl" class="ipt-ctrl" />
+				</div>
+			</div>
+		`;
 
-    return el.firstElementChild as HTMLElement;
-  }
-  // #endregion --- BaseInput Implementations
+		return el.firstElementChild as HTMLElement;
+	}
+	// #endregion --- BaseInput Implementations
 
-  // #region    --- Lifecycle
-  // Component initialization (will be called once by BaseHTMLElement on first connectedCallback)
-  init() {
-    super.init();
-    this.classList.add("d-select");
-    adoptStyleSheets(this, _compCss);
-    this.#inputEl = first(this.shadowRoot, "input[name='ipt-ctrl']") as HTMLInputElement;
+	// #region    --- Lifecycle
+	// Component initialization (will be called once by BaseHTMLElement on first connectedCallback)
+	init() {
+		super.init();
+		this.classList.add("d-select");
+		adoptStyleSheets(this, _compCss);
+		this.#inputEl = first(this.shadowRoot, "input[name='ipt-ctrl']") as HTMLInputElement;
 
-		on(this.#inputEl, 'change', (evt) => {
-      // to make not trigger ctrlEl change event
-      evt.stopPropagation();
-    });
-    this.refresh();
-  }
-  // #endregion --- Lifecycle
+		on(this.#inputEl, "change", (evt) => {
+			// to make not trigger ctrlEl change event
+			evt.stopPropagation();
+		});
+		this.refresh();
+	}
+	// #endregion --- Lifecycle
 
-  refresh() {
-    let itemsConEl = first(this.ctrlEl, ".items-con");
-    let itemsHtml = "";
-    if (isNotEmpty(this.#value)) {
-      for (const opt of this.#value) {
-        itemsHtml += `
+	refresh() {
+		let itemsConEl = first(this.ctrlEl, ".items-con");
+		let itemsHtml = "";
+		if (isNotEmpty(this.#value)) {
+			for (const opt of this.#value) {
+				itemsHtml += `
           <div class="item">
             ${opt.content}
             <c-ico src="#ico-close" class="ico-close"></c-ico>
           </div>
         `;
-      }
-    }
-    itemsConEl!.innerHTML = itemsHtml;
-  }
+			}
+		}
+		itemsConEl!.innerHTML = itemsHtml;
+	}
 
-  // custom show popup
-  showPopup(input: string) {
-    if (!this.#popupEl && !this.disabled && !this.readonly) {
-      let options = all(this, "option").map((el) => {
-        return { content: el.innerHTML, value: getAttr(el, "value") };
-      });
-      let popupEl = elem("c-search-select-popup", {
-        class: this.popupCss ?? "",
-      });
-      popupEl._setupData = [this, options];
+	// custom show popup
+	showPopup(input: string) {
+		if (!this.#popupEl && !this.disabled && !this.readonly) {
+			let options = all(this, "option").map((el) => {
+				return { content: el.innerHTML, value: getAttr(el, "value") };
+			});
+			let popupEl = elem("c-search-select-popup", {
+				class: this.popupCss ?? "",
+			});
+			popupEl._setupData = [this, options];
 
-      // Append it to the body.
-      document.body.appendChild(popupEl);
+			// Append it to the body.
+			document.body.appendChild(popupEl);
 
-      // TODO - handle the focus logic
-      // this.classList.add('d-focus');
-      this.#popupEl = popupEl;
+			// TODO - handle the focus logic
+			// this.classList.add('d-focus');
+			this.#popupEl = popupEl;
 
-      // listen the popup if select occurs
-      on(popupEl, "SELECT, CANCEL", (evt) => {
-        if (evt.type === "SELECT") {
-          this.#value?.push(evt.detail);
-          this.#inputEl!.value = "";
-          this.#inputEl?.focus();
+			// listen the popup if select occurs
+			on(popupEl, "SELECT, CANCEL", (evt) => {
+				if (evt.type === "SELECT") {
+					this.#value?.push(evt.detail);
+					this.#inputEl!.value = "";
+					this.#inputEl?.focus();
 
-          // this.triggerChange();
-          this.refresh();
-        } else {
-          // do nothing, assume the popup auto hide
-        }
+					// this.triggerChange();
+					this.refresh();
+				} else {
+					// do nothing, assume the popup auto hide
+				}
 
-        // this.classList.remove('d-focus');
-        this.#popupEl = null;
-      });
-    }
+				// this.classList.remove('d-focus');
+				this.#popupEl = null;
+			});
+		}
 
-    if (this.#popupEl && !this.disabled && !this.readonly) {
-      // trigger a data event if a listener wants to provide data
-      this.triggerData((options: SelectOption[]) => {
-        let showOptions = options;
-        if (isNotEmpty(this.#value) && isNotEmpty(options)) {
-          let valueSet = new Set(this.#value.map((v) => v.value));
-          showOptions = options.filter((o) => !valueSet.has(o.value!));
-        }
-        this.#popupEl?.refreshOptions(showOptions);
-      }, input);
-    }
-  }
+		if (this.#popupEl && !this.disabled && !this.readonly) {
+			// trigger a data event if a listener wants to provide data
+			this.triggerData((options: SelectOption[]) => {
+				let showOptions = options;
+				if (isNotEmpty(this.#value) && isNotEmpty(options)) {
+					let valueSet = new Set(this.#value.map((v) => v.value));
+					showOptions = options.filter((o) => !valueSet.has(o.value!));
+				}
+				this.#popupEl?.refreshOptions(showOptions);
+			}, input);
+		}
+	}
 }
 
 declare global {
-  interface HTMLElementTagNameMap {
-    "c-search-select": CSearchSelectElement;
-  }
+	interface HTMLElementTagNameMap {
+		"c-search-select": CSearchSelectElement;
+	}
 }
 
 // #region    --- SelectPopupElement
 
 const SELECT_POPUP_POSITION = Object.freeze({
-  loc: "bottom",
-  align: "left",
+	loc: "bottom",
+	align: "left",
 } as const);
 
 interface WithData {
-  _data: any;
+	_data: any;
 }
 /**
  * Component to be used only by the SelectElement (for now).
@@ -262,130 +278,119 @@ interface WithData {
  */
 @customElement("c-search-select-popup")
 class SelectPopupElement extends BaseHTMLElement {
-  _setupData!: [CSearchSelectElement, SelectOption[]?];
+	_setupData!: [CSearchSelectElement, SelectOption[]?];
 
-  previousSelectElRect?: DOMRect;
+	previousSelectElRect?: DOMRect;
 
-  get selectEl(): CSearchSelectElement {
-    return this._setupData[0];
-  }
+	get selectEl(): CSearchSelectElement {
+		return this._setupData[0];
+	}
 
-  get selectOptions(): SelectOption[] | undefined {
-    return this._setupData[1];
-  }
+	get selectOptions(): SelectOption[] | undefined {
+		return this._setupData[1];
+	}
 
-  // #region    --- UI Events
-  @onEvent("pointerup", ".option")
-  onClickOption(evt: Event & OnEvent) {
-    let target = (<any>evt.selectTarget) as WithData;
-    let option = target._data;
-    let selectEl = this._setupData?.[0];
-    trigger(this, "SELECT", { detail: option });
-    this.discard(false);
-  }
+	// #region    --- UI Events
+	@onEvent("pointerup", ".option")
+	onClickOption(evt: Event & OnEvent) {
+		let target = (<any>evt.selectTarget) as WithData;
+		let option = target._data;
+		let selectEl = this._setupData?.[0];
+		trigger(this, "SELECT", { detail: option });
+		this.discard(false);
+	}
 
-  @onDoc("scroll", { capture: true })
-  removeOnScroll(evt: Event) {
-    // TODO: Add some padding to not close on small scrolls, or prevent scroll all together (making it modal)
-    this.discard(true);
-  }
+	@onDoc("scroll", { capture: true })
+	removeOnScroll(evt: Event) {
+		// TODO: Add some padding to not close on small scrolls, or prevent scroll all together (making it modal)
+		this.discard(true);
+	}
 
-  @onWin("resize", { capture: true, passive: true })
-  onRepositionEvents(evt: Event) {
-    this.reposition();
-  }
+	@onWin("resize", { capture: true, passive: true })
+	onRepositionEvents(evt: Event) {
+		this.reposition();
+	}
 
-  // Auto remove when click outide of parent
-  // (click on parent, d-select, will be responsibility of d-select)
-  @onDoc("pointerup")
-  onDocClick(evt: PointerEvent) {
-    if (
-      !this.selectEl.contains(evt.target as Element) &&
-      !this.contains(evt.target as Element)
-    ) {
-      this.discard(true);
-    }
-  }
-  // #endregion --- UI Events
+	// Auto remove when click outide of parent
+	// (click on parent, d-select, will be responsibility of d-select)
+	@onDoc("pointerup")
+	onDocClick(evt: PointerEvent) {
+		if (!this.selectEl.contains(evt.target as Element) && !this.contains(evt.target as Element)) {
+			this.discard(true);
+		}
+	}
+	// #endregion --- UI Events
 
-  // #region    --- Lifecycle
+	// #region    --- Lifecycle
 
-  init() {
-    this.classList.add("d-select-popup");
-    this.refreshOptions();
-  }
+	init() {
+		this.classList.add("d-select-popup");
+		this.refreshOptions();
+	}
 
-  // #endregion --- Lifecycle
+	// #endregion --- Lifecycle
 
-  refreshOptions(options?: SelectOption[]) {
-    options = options ?? this._setupData?.[1];
-    if (isNotEmpty(options)) {
-      let content = frag(options, (o) =>
-        elem("div", {
-          class: "option",
-          value: o.value || "",
-          $: {
-            textContent: o.content,
-            _data: o,
-          },
-        })
-      );
-      this.replaceChildren(content);
-    } else {
-      let el = html`<div class="empty-data">No data</div>`;
-      this.replaceChildren(el.firstElementChild!);
-    }
-    this.reposition();
-  }
+	refreshOptions(options?: SelectOption[]) {
+		options = options ?? this._setupData?.[1];
+		if (isNotEmpty(options)) {
+			let content = frag(options, (o) =>
+				elem("div", {
+					class: "option",
+					value: o.value || "",
+					$: {
+						textContent: o.content,
+						_data: o,
+					},
+				})
+			);
+			this.replaceChildren(content);
+		} else {
+			let el = html`<div class="empty-data">No data</div>`;
+			this.replaceChildren(el.firstElementChild!);
+		}
+		this.reposition();
+	}
 
-  discard(cancel: boolean) {
-    this.remove();
-    if (cancel) {
-      trigger(this, "CANCEL");
-    }
-  }
+	discard(cancel: boolean) {
+		this.remove();
+		if (cancel) {
+			trigger(this, "CANCEL");
+		}
+	}
 
-  reposition() {
-    const parentRect = this.selectEl.getBoundingClientRect();
-    if (
-      parentRect != null &&
-      !isSameRect(parentRect, this.previousSelectElRect)
-    ) {
-      const hGap = 4;
-      let width = this.selectEl.clientWidth - hGap * 2;
-      style(this, { width: `${width + 1}px` });
-      position(this, this.selectEl, {
-        pos: "BL",
-        vGap: 8,
-        hGap,
-      });
-      // NOTE: This is a hack otherwise when the window has small height
-      //       the popup sometime goes below the d-textara text content.
-      //       Really seems to be a UI bug, and only way found so far is to change
-      //       a ui property on this popup (hence the +1 above, and the value here)
-      setTimeout(() => {
-        style(this, { width: `${width}px` });
-      }, 20);
-    }
-    this.previousSelectElRect = parentRect;
-  }
+	reposition() {
+		const parentRect = this.selectEl.getBoundingClientRect();
+		if (parentRect != null && !isSameRect(parentRect, this.previousSelectElRect)) {
+			const hGap = 4;
+			let width = this.selectEl.clientWidth - hGap * 2;
+			style(this, { width: `${width + 1}px` });
+			position(this, this.selectEl, {
+				pos: "BL",
+				vGap: 8,
+				hGap,
+			});
+			// NOTE: This is a hack otherwise when the window has small height
+			//       the popup sometime goes below the d-textara text content.
+			//       Really seems to be a UI bug, and only way found so far is to change
+			//       a ui property on this popup (hence the +1 above, and the value here)
+			setTimeout(() => {
+				style(this, { width: `${width}px` });
+			}, 20);
+		}
+		this.previousSelectElRect = parentRect;
+	}
 }
 
 // Augment the global TagName space to match runtime
 declare global {
-  interface HTMLElementTagNameMap {
-    "c-search-select-popup": SelectPopupElement;
-  }
+	interface HTMLElementTagNameMap {
+		"c-search-select-popup": SelectPopupElement;
+	}
 }
 
 function isSameRect(a: DOMRect, b?: DOMRect): boolean {
-  if (b == null) return false;
-  return (
-    a.top == b.top &&
-    a.left == b.left &&
-    a.right == b.right &&
-    a.bottom == b.bottom
-  );
+	if (b == null) return false;
+	return a.top == b.top && a.left == b.left && a.right == b.right && a.bottom == b.bottom;
 }
 
 // #endregion --- SelectPopupElement

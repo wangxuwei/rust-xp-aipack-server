@@ -1,6 +1,7 @@
 # -- Base
 .*
 !.gitignore
+!.prettierrc
 
 # '_' in pro dir, ok.
 !**/pro/**/_*

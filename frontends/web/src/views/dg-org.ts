@@ -1,20 +1,20 @@
-import { adoptStyleSheets, css, customElement, onEvent, pull } from 'dom-native';
-import { isEmpty } from 'utils-min';
-import { showValidateError, validateValues } from 'validate.js';
-import { Org } from '../bindings/Org.js';
-import { orgDco } from '../dcos.js';
-import { DgDialog } from '../dialog/dg-dialog.js';
+import { adoptStyleSheets, css, customElement, onEvent, pull } from "dom-native";
+import { isEmpty } from "utils-min";
+import { showValidateError, validateValues } from "validate.js";
+import { Org } from "../bindings/Org.js";
+import { orgDco } from "../dcos.js";
+import { DgDialog } from "../dialog/dg-dialog.js";
 
 const _compCss = css`
 	::slotted(.dialog-content) {
 		display: grid;
 		grid-auto-flow: row;
-		grid-auto-rows: min-content; 
+		grid-auto-rows: min-content;
 		grid-gap: 1rem;
 	}
 `;
 
-@customElement('dg-org')
+@customElement("dg-org")
 export class DgOrg extends DgDialog {
 	#orgId?: number;
 
@@ -28,12 +28,12 @@ export class DgOrg extends DgDialog {
 		adoptStyleSheets(this, _compCss);
 	}
 
-	//#region    ---------- Events ---------- 
-	@onEvent('pointerup', '.do-ok')
+	//#region    ---------- Events ----------
+	@onEvent("pointerup", ".do-ok")
 	async doOk() {
 		const formData = pull(this);
 		const message = validateValues(this);
-		if(!message){
+		if (!message) {
 			let org;
 			if (this.#orgId) {
 				org = await orgDco.update(this.#orgId, formData);
@@ -41,24 +41,24 @@ export class DgOrg extends DgDialog {
 				org = await orgDco.create(formData);
 			}
 			super.doOk();
-		}else{
+		} else {
 			showValidateError(this, message);
 		}
 	}
-	//#endregion ---------- /Events ---------- 
+	//#endregion ---------- /Events ----------
 
-	//#region    ---------- Lifecycle ---------- 
+	//#region    ---------- Lifecycle ----------
 	async refresh() {
 		const org = !isEmpty(this.#orgId) ? await orgDco.get(this.#orgId!) : undefined;
 		this.innerHTML = _render(org);
 	}
-	//#endregion ---------- /Lifecycle ---------- 
+	//#endregion ---------- /Lifecycle ----------
 }
 
 function _render(org?: Org) {
-	const title = org ? 'Update Organization' : 'Add Organization';
-	const name = org?.name ?? '';
-	const kind = org?.kind ?? 'Personal';
+	const title = org ? "Update Organization" : "Add Organization";
+	const name = org?.name ?? "";
+	const kind = org?.kind ?? "Personal";
 
 	return `
 		<div slot="title">${title}</div>

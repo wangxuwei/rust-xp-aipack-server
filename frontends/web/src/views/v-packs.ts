@@ -9,93 +9,93 @@ import { DgPack } from "./dg-pack.js";
 
 @customElement("v-packs")
 export class PacksView extends BaseViewElement {
-  //#region    ---------- Events ----------
-  @onEvent("click", ".btn-upload")
-  onUpload(evt: MouseEvent & OnEvent) {
-    const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
-    const packId = asNum(rowEl.dataset.id);
-    if (!isEmpty(packId)) {
-      this.showPackUploadDialog(packId!);
-    }
-  }
+	//#region    ---------- Events ----------
+	@onEvent("click", ".btn-upload")
+	onUpload(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const packId = asNum(rowEl.dataset.id);
+		if (!isEmpty(packId)) {
+			this.showPackUploadDialog(packId!);
+		}
+	}
 
-  @onEvent("click", ".btn-edit")
-  onEditClick(evt: MouseEvent & OnEvent) {
-    const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
-    const packId = asNum(rowEl.dataset.id);
-    if (!isEmpty(packId)) {
-      this.showPackDialog(packId!);
-    }
-  }
+	@onEvent("click", ".btn-edit")
+	onEditClick(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const packId = asNum(rowEl.dataset.id);
+		if (!isEmpty(packId)) {
+			this.showPackDialog(packId!);
+		}
+	}
 
-  @onEvent("click", ".btn-delete")
-  onDeleteClick(evt: MouseEvent & OnEvent) {
-    const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
-    const packId = asNum(rowEl.dataset.id);
-    if (!isEmpty(packId)) {
-      packDco.delete(packId!);
-    }
-  }
+	@onEvent("click", ".btn-delete")
+	onDeleteClick(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const packId = asNum(rowEl.dataset.id);
+		if (!isEmpty(packId)) {
+			packDco.delete(packId!);
+		}
+	}
 
-  @onEvent("click", "button.add")
-  onAddClick() {
-    this.showPackDialog();
-  }
+	@onEvent("click", "button.add")
+	onAddClick() {
+		this.showPackDialog();
+	}
 
-  @onEvent("click", ".btn-details")
-  onDetailsClick(evt: MouseEvent & OnEvent) {
-    const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
-    const packId = asNum(rowEl.dataset.id);
-    if (!isEmpty(packId)) {
-      this.showPackVersionsDialog(packId!);
-    }
-  }
-  //#endregion ---------- /Events ----------
+	@onEvent("click", ".btn-details")
+	onDetailsClick(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const packId = asNum(rowEl.dataset.id);
+		if (!isEmpty(packId)) {
+			this.showPackVersionsDialog(packId!);
+		}
+	}
+	//#endregion ---------- /Events ----------
 
-  //#region    ---------- Hub Events ----------
-  @onHub("dcoHub", "pack", "create,update,delete")
-  onPackChange() {
-    this.refresh();
-  }
-  //#endregion ---------- /Hub Events ----------
+	//#region    ---------- Hub Events ----------
+	@onHub("dcoHub", "pack", "create,update,delete")
+	onPackChange() {
+		this.refresh();
+	}
+	//#endregion ---------- /Hub Events ----------
 
-  //#region    ---------- Lifecycle ----------
-  init() {
-    super.init();
-    this.refresh();
-  }
+	//#region    ---------- Lifecycle ----------
+	init() {
+		super.init();
+		this.refresh();
+	}
 
-  async refresh() {
-    const packs = await packDco.list();
-    this.innerHTML = _render(packs);
-  }
-  //#endregion ---------- /Lifecycle ----------
+	async refresh() {
+		const packs = await packDco.list();
+		this.innerHTML = _render(packs);
+	}
+	//#endregion ---------- /Lifecycle ----------
 
-  //#region    ---------- Private Functions ----------
-  private showPackDialog(packId?: number) {
-    const dialog = document.createElement("dg-pack") as DgPack;
-    dialog.packId = packId;
-    this.appendChild(dialog);
-  }
+	//#region    ---------- Private Functions ----------
+	private showPackDialog(packId?: number) {
+		const dialog = document.createElement("dg-pack") as DgPack;
+		dialog.packId = packId;
+		this.appendChild(dialog);
+	}
 
-  private showPackUploadDialog(packId: number) {
-    const dialog = document.createElement("dg-pack-upload") as DgPackUpload;
-    dialog.packId = packId;
-    this.appendChild(dialog);
-  }
+	private showPackUploadDialog(packId: number) {
+		const dialog = document.createElement("dg-pack-upload") as DgPackUpload;
+		dialog.packId = packId;
+		this.appendChild(dialog);
+	}
 
-  private showPackVersionsDialog(packId: number) {
-    const dialog = document.createElement("dg-pack-versions") as DgPackVersions;
-    dialog.packId = packId;
-    this.appendChild(dialog);
-  }
-  //#endregion ---------- /Private Functions ----------
+	private showPackVersionsDialog(packId: number) {
+		const dialog = document.createElement("dg-pack-versions") as DgPackVersions;
+		dialog.packId = packId;
+		this.appendChild(dialog);
+	}
+	//#endregion ---------- /Private Functions ----------
 }
 
 function _render(packs: Pack[]) {
-  const rows = packs
-    .map(
-      (pack) => `
+	const rows = packs
+		.map(
+			(pack) => `
         <div class="row" data-id="${pack.id}">
             <div class="cell">
                 <div class="pack-name">${pack.name}</div>
@@ -108,10 +108,10 @@ function _render(packs: Pack[]) {
             </div>
         </div>
     `
-    )
-    .join("");
+		)
+		.join("");
 
-  return `
+	return `
         <div class="header">
             <button class="add">Add New Pack</button>
         </div>

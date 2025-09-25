@@ -1,4 +1,4 @@
-export { }; // to make this file a module
+export {}; // to make this file a module
 
 declare global {
 	interface HTMLElement {

@@ -1,5 +1,3 @@
-
-
 export function randomString(length?: number) {
 	length = length || 6;
 	const arr: string[] = [];
@@ -9,4 +7,3 @@ export function randomString(length?: number) {
 	}
 	return arr.join("");
 }
-

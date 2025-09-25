@@ -1,13 +1,10 @@
 // <origin src="https://raw.githubusercontent.com/BriteSnow/cloud-starter/master/frontends/web/src/ts/render.ts" />
 // (c) 2019 BriteSnow, inc - This code is licensed under MIT license (see LICENSE for details)
 
-import { html } from 'dom-native';
+import { html } from "dom-native";
 import * as Handlebars from "handlebars";
 
-
-
 export function render(templateName: string, data?: any): DocumentFragment {
-
 	// call the function and return the result
 	return html(renderAsString(templateName, data));
 }

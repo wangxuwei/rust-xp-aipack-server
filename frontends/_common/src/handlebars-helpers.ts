@@ -1,9 +1,8 @@
 import * as Handlebars from "handlebars";
 
 Handlebars.registerHelper("echo", function (cond: string, val: any) {
-	return (cond) ? val : "";
+	return cond ? val : "";
 });
-
 
 // we can use like this {{{incl "tmpl-test" data ...}}}
 Handlebars.registerHelper("incl", function (templateName: string, data: any, options: any) {
@@ -16,4 +15,3 @@ Handlebars.registerHelper("incl", function (templateName: string, data: any, opt
 	var html = tmpl(params);
 	return html;
 });
-

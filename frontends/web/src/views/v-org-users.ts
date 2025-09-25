@@ -9,65 +9,65 @@ import { DgOrgUserAdd } from "./dg-org-user-add.js";
 
 @customElement("v-org-users")
 export class OrgUsersView extends BaseViewElement {
-  #orgId: number | null = null;
+	#orgId: number | null = null;
 
-  //#region    ---------- Events ----------
-  @onEvent("click", "button.add")
-  onAddClick() {
-    this.showUserAddDialog();
-  }
+	//#region    ---------- Events ----------
+	@onEvent("click", "button.add")
+	onAddClick() {
+		this.showUserAddDialog();
+	}
 
-  @onEvent("click", ".btn-delete")
-  onDeleteClick(evt: MouseEvent & OnEvent) {
-    const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
-    const userId = asNum(rowEl.dataset.id);
-    if (!isEmpty(userId) && this.#orgId) {
-      // Remove user from org
-      orgDco.removeUsersFromOrg(this.#orgId, [userId!]).then(() => this.refresh());
-    }
-  }
-  //#endregion ---------- /Events ----------
+	@onEvent("click", ".btn-delete")
+	onDeleteClick(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const userId = asNum(rowEl.dataset.id);
+		if (!isEmpty(userId) && this.#orgId) {
+			// Remove user from org
+			orgDco.removeUsersFromOrg(this.#orgId, [userId!]).then(() => this.refresh());
+		}
+	}
+	//#endregion ---------- /Events ----------
 
-  //#region    ---------- Hub Events ----------
-  @onHub("dcoHub", "org", "add_user,remove_user")
-  onUserOrgChange() {
-    this.refresh();
-  }
-  //#endregion ---------- /Hub Events ----------
+	//#region    ---------- Hub Events ----------
+	@onHub("dcoHub", "org", "add_user,remove_user")
+	onUserOrgChange() {
+		this.refresh();
+	}
+	//#endregion ---------- /Hub Events ----------
 
-  //#region    ---------- Lifecycle ----------
-  init() {
-    super.init();
-    this.#orgId = pathAsNum(2);
-    this.refresh();
-  }
+	//#region    ---------- Lifecycle ----------
+	init() {
+		super.init();
+		this.#orgId = pathAsNum(2);
+		this.refresh();
+	}
 
-  async refresh() {
-    if (this.#orgId) {
-      const org = await orgDco.get(this.#orgId);
-      const users = await orgDco.getUsersByOrg(this.#orgId);
-      this.innerHTML = _render(org, users);
-    } else {
-      this.innerHTML = _renderEmpty();
-    }
-  }
-  //#endregion ---------- /Lifecycle ----------
+	async refresh() {
+		if (this.#orgId) {
+			const org = await orgDco.get(this.#orgId);
+			const users = await orgDco.getUsersByOrg(this.#orgId);
+			this.innerHTML = _render(org, users);
+		} else {
+			this.innerHTML = _renderEmpty();
+		}
+	}
+	//#endregion ---------- /Lifecycle ----------
 
-  private showUserAddDialog() {
-    const dialog = document.createElement("dg-org-user-add") as DgOrgUserAdd;
+	private showUserAddDialog() {
+		const dialog = document.createElement("dg-org-user-add") as DgOrgUserAdd;
 		dialog.orgId = this.#orgId;
-    this.appendChild(dialog);
-  }
+		this.appendChild(dialog);
+	}
 }
 
 function _renderEmpty() {
-  return "not exist";
+	return "not exist";
 }
 
 function _render(org: Org, users: User[]) {
-  const rows = users
-    .map(
-      (user) => `
+	const rows = users
+		.map(
+			(user) => `
 		<div class="row" data-id="${user.id}">
 			<div class="cell">${user.username}</div>
 			<div class="cell actions">
@@ -75,10 +75,10 @@ function _render(org: Org, users: User[]) {
 			</div>
 		</div>
 	`
-    )
-    .join("");
+		)
+		.join("");
 
-  return `
+	return `
 		<div class="org-info-section">
 			<div class="card">
 				<div class="header">

@@ -1,18 +1,18 @@
-v-main{
+v-main {
 	flex: 1;
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: 4rem auto 1.5rem;	
+	grid-template-rows: 4rem auto 1.5rem;
 	background: blue;
-	
-	& > header{
+
+	& > header {
 		grid-area: 1 / 1 / 2 / 3;
 		background: var(--bkg-header);
 		display: grid;
 		grid-template-columns: 4rem 8rem auto 14rem 1rem;
 		z-index: 100;
-		
-		& > d-ico { 
+
+		& > d-ico {
 			justify-self: center;
 			align-self: center;
 			fill: #fff;
@@ -25,15 +25,15 @@ v-main{
 			display: flex;
 			align-items: center;
 			& > h3 {
-				@mixin typo-h3{};
+				@mixin typo-h3 {
+				}
 				align-self: center;
 				justify-self: left;
 				color: #fff;
 			}
-
 		}
 
-		& > aside{
+		& > aside {
 			position: relative;
 			user-select: none;
 			grid-column: 4;
@@ -42,19 +42,19 @@ v-main{
 			align-items: center;
 			justify-content: flex-end;
 			cursor: pointer;
-			c-ico{
+			c-ico {
 				width: 1.5rem;
 				height: 1.5rem;
 				fill: #fff;
-				margin-right: .5rem;
+				margin-right: 0.5rem;
 				fill: var(--ico-ngv);
 			}
-			.dx-name{
+			.dx-name {
 				/* margin-left: .5rem; */
 				color: #fff;
 			}
 
-			c-menu{
+			c-menu {
 				top: 3.5rem;
 				right: 0;
 				min-width: 10rem;
@@ -62,8 +62,7 @@ v-main{
 		}
 	}
 
-
-	& > main{
+	& > main {
 		grid-area: 2 / 1 / 3 / 1;
 		display: flex;
 		background: #fff;
@@ -72,21 +71,20 @@ v-main{
 		}
 	}
 
-	& > footer{
+	& > footer {
 		border: solid 1px red;
 		grid-area: 3 / 1 / 3 / 3;
 	}
 
-	&.un-auth{
+	&.un-auth {
 		display: none;
 	}
 
-	.__version__{
+	.__version__ {
 		position: absolute;
 		bottom: 8px;
 		right: 8px;
-		opacity: .3;
+		opacity: 0.3;
 		font-size: 11px;
 	}
-
 }

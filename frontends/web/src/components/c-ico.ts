@@ -1,11 +1,11 @@
-import { adoptStyleSheets, BaseHTMLElement, css, customElement, html } from 'dom-native';
+import { adoptStyleSheets, BaseHTMLElement, css, customElement, html } from "dom-native";
 const { assign } = Object;
 
 //// CSS
 const _compCss = css`
-	:host{
+	:host {
 		--ico-fill: black;
-		text-transform: none; 
+		text-transform: none;
 		padding: 0;
 		margin: 0;
 		width: 1rem;
@@ -15,38 +15,34 @@ const _compCss = css`
 		justify-content: center;
 		user-select: none;
 	}
-	
-	svg{
+
+	svg {
 		width: 100%;
 		height: 100%;
-		fill: var(--ico-fill);		
+		fill: var(--ico-fill);
 	}
 `;
 
-
-@customElement('c-ico')
+@customElement("c-ico")
 class IcoElement extends BaseHTMLElement {
-	static _BASE_URL_: string = '/svg/sprite.svg';
+	static _BASE_URL_: string = "/svg/sprite.svg";
 
-	get src() { return this.getAttribute('src') ?? '' };
+	get src() {
+		return this.getAttribute("src") ?? "";
+	}
 
 	constructor() {
 		super();
-		this.attachShadow({ mode: 'open' }).append(_renderShadow(this.src));
+		this.attachShadow({ mode: "open" }).append(_renderShadow(this.src));
 		adoptStyleSheets(this, _compCss);
 	}
-
 }
-
-
 
 //// Shadow Render
 function _renderShadow(src: string) {
-
-	const href = src.startsWith('#') ? `${IcoElement._BASE_URL_}${src}` : src;
-	const content = html`
-	<svg class="symbol">
-	<use xlink:href="${href}" aria-hidden="true"></use>
+	const href = src.startsWith("#") ? `${IcoElement._BASE_URL_}${src}` : src;
+	const content = html` <svg class="symbol">
+		<use xlink:href="${href}" aria-hidden="true"></use>
 	</svg>`;
 
 	return content;

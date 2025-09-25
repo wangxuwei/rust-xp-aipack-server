@@ -1,6 +1,6 @@
-import { deepFreeze } from 'utils-min';
-import { randomString } from './utils';
-import { webPost } from './web-request';
+import { deepFreeze } from "utils-min";
+import { randomString } from "./utils";
+import { webPost } from "./web-request";
 
 const apiPrx = "/api";
 
@@ -10,7 +10,7 @@ export async function rpc_invoke(method: string, params?: object, id?: any, apiP
 
 	const response: any = await webPost(`${apiPrx}`, { body: data });
 	if (response.error != null) {
-		console.log('ERROR - rpc_invoke - rpc_invoke error', response);
+		console.log("ERROR - rpc_invoke - rpc_invoke error", response);
 		throw response.error;
 	} else {
 		return deepFreeze(response.result);
@@ -27,7 +27,7 @@ export async function request_upload(method: string, params?: { [name: string]: 
 	}
 	const response: any = await webPost(`${apiPrx}/${method}`, { body: data });
 	if (response.error != null) {
-		console.log('ERROR - request_upload - request_upload error', response);
+		console.log("ERROR - request_upload - request_upload error", response);
 		throw response.error;
 	} else {
 		return deepFreeze(response.result);

@@ -1,9 +1,7 @@
-
-
-v-login{
+v-login {
 	flex: 1;
-	
-	.dialog{
+
+	.dialog {
 		position: absolute;
 		width: 500px;
 		top: 300px;
@@ -12,7 +10,7 @@ v-login{
 		display: grid;
 		grid-template-rows: 8rem auto 4rem;
 
-		header{
+		header {
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -22,7 +20,7 @@ v-login{
 			font-weight: 100;
 		}
 
-		.content{
+		.content {
 			background: var(--bkg-prime);
 			display: grid;
 			padding: 3rem 4rem 1rem 4rem;
@@ -30,43 +28,41 @@ v-login{
 			grid-gap: 1rem;
 			/* min-height: 20rem; */
 
-			c-input{
+			c-input {
 				--bkg: white;
 			}
-			button.do{
+			button.do {
 				justify-self: center;
 				background: #fff;
 				color: var(--txt);
 			}
 		}
 
-		footer{
+		footer {
 			background: var(--bkg-prime);
-			.line{
+			.line {
 				width: 1px;
 				background: #fff;
 				height: 1.5rem;
 			}
 		}
-
 	}
 
 	&.has-message {
-		.message{
-			background: rgba(255,255,255,.7);
+		.message {
+			background: rgba(255, 255, 255, 0.7);
 			padding: 0 1rem;
-			
 		}
 	}
-	&.login-mode{
-		.dialog .for-register{
+	&.login-mode {
+		.dialog .for-register {
 			display: none;
 		}
 	}
 
-	&.register-mode{
-		.dialog .for-login{
+	&.register-mode {
+		.dialog .for-login {
 			display: none;
 		}
-	}	
+	}
 }
