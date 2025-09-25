@@ -1,5 +1,6 @@
 import { adoptStyleSheets, css, customElement, onEvent, pull } from 'dom-native';
 import { isEmpty } from 'utils-min';
+import { showValidateError, validateValues } from 'validate.js';
 import { User } from '../bindings/User.js';
 import { userDco } from '../dcos.js';
 import { DgDialog } from '../dialog/dg-dialog.js';
@@ -31,13 +32,18 @@ export class DgUser extends DgDialog {
 	@onEvent('pointerup', '.do-ok')
 	async doOk() {
 		const formData = pull(this);
-		let user;
-		if (this.#userId) {
-			user = await userDco.update(this.#userId, formData);
-		} else {
-			user = await userDco.create(formData);
+		let message = validateValues(this);
+		if(!message){
+			let user;
+			if (this.#userId) {
+				user = await userDco.update(this.#userId, formData);
+			} else {
+				user = await userDco.create(formData);
+			}
+			super.doOk();
+		}else{
+			showValidateError(this, message);
 		}
-		super.doOk();
 	}
 	//#endregion ---------- /Events ---------- 
 
@@ -67,7 +73,7 @@ function _render(user?: User) {
 			<div class="ui-form">
 				<div class="ui-form-row">
 					<label class="ui-form-lbl">Username:</label>
-					<d-input class="ui-form-val" name="username" value="${username}" placeholder="Enter username" ></d-input>
+					<d-input class="ui-form-val" name="username" value="${username}" placeholder="Enter username" v-rules="required" ></d-input>
 				</div>
 				${pwdClearHtml}
 			</div>

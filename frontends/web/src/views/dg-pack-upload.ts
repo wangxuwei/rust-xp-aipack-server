@@ -7,6 +7,7 @@ import {
   onEvent,
   pull,
 } from "dom-native";
+import { showValidateError, validateValues } from 'validate.js';
 import { DgDialog } from "../dialog/dg-dialog.js";
 
 const _compCss = css`
@@ -38,20 +39,25 @@ export class DgPackUpload extends DgDialog {
   @onEvent("pointerup", ".do-ok")
   async doOk() {
     const formData = pull(this);
-    formData.pack_name = this.#pack?.name;
+    const message = validateValues(this);
+    if(!message){
+      formData.pack_name = this.#pack?.name;
 
-    const fileInput = this.querySelector(
-      'input[type="file"]'
-    ) as HTMLInputElement;
+      const fileInput = this.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement;
 
-    const file = fileInput.files![0];
-    formData["file"] = file;
+      const file = fileInput.files![0];
+      formData["file"] = file;
 
-    try {
-      await packDco.savePack(formData);
-      this.close();
-    } catch (error: any) {
-      console.log(error);
+      try {
+        await packDco.savePack(formData);
+        this.close();
+      } catch (error: any) {
+        console.log(error);
+      }
+    }else{
+      showValidateError(this, message);
     }
   }
 
@@ -88,11 +94,11 @@ function _render(packName?: string) {
 				</div>
 				<div class="ui-form-row">
 					<label class="ui-form-lbl">Version:</label>
-					<d-input class="ui-form-val" type="version" name="version" placeholder="Enter version (e.g., 1.0.0)" value="" ></d-input>
+					<d-input class="ui-form-val" type="version" name="version"  v-rules="required" placeholder="Enter version (e.g., 1.0.0)" value="" ></d-input>
 				</div>
 				<div class="ui-form-row">
 					<label class="ui-form-lbl">Changelog:</label>
-					<d-textarea class="ui-form-val" name="changelog" placeholder="Enter changelog notes"></d-textarea>
+					<d-textarea class="ui-form-val" name="changelog"  v-rules="required" placeholder="Enter changelog notes"></d-textarea>
 				</div>
 				<div class="ui-form-row">
 					<label class="ui-form-lbl">File:</label>

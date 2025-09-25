@@ -1,5 +1,6 @@
 import { adoptStyleSheets, css, customElement, onEvent, pull } from 'dom-native';
 import { isEmpty } from 'utils-min';
+import { showValidateError, validateValues } from 'validate.js';
 import { Org } from '../bindings/Org.js';
 import { orgDco } from '../dcos.js';
 import { DgDialog } from '../dialog/dg-dialog.js';
@@ -31,13 +32,18 @@ export class DgOrg extends DgDialog {
 	@onEvent('pointerup', '.do-ok')
 	async doOk() {
 		const formData = pull(this);
-		let org;
-		if (this.#orgId) {
-			org = await orgDco.update(this.#orgId, formData);
-		} else {
-			org = await orgDco.create(formData);
+		const message = validateValues(this);
+		if(!message){
+			let org;
+			if (this.#orgId) {
+				org = await orgDco.update(this.#orgId, formData);
+			} else {
+				org = await orgDco.create(formData);
+			}
+			super.doOk();
+		}else{
+			showValidateError(this, message);
 		}
-		super.doOk();
 	}
 	//#endregion ---------- /Events ---------- 
 
@@ -61,7 +67,7 @@ function _render(org?: Org) {
 			<div class="ui-form">
 				<div class="ui-form-row">
 					<label class="ui-form-lbl">Name:</label>
-					<d-input class="ui-form-val" name="name" value="${name}" placeholder="Enter organization name" ></d-input>
+					<d-input class="ui-form-val" name="name" value="${name}" v-rules="required" placeholder="Enter organization name" ></d-input>
 				</div>
 				<div class="ui-form-row">
 					<label class="ui-form-lbl">Kind:</label>

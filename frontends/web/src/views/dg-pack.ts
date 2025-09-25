@@ -7,6 +7,7 @@ import {
   onEvent,
   pull,
 } from "dom-native";
+import { showValidateError, validateValues } from 'validate.js';
 import { DgDialog } from "../dialog/dg-dialog.js";
 
 const _compCss = css`
@@ -38,16 +39,20 @@ export class DgPack extends DgDialog {
   @onEvent("pointerup", ".do-ok")
   async doOk() {
     const formData = pull(this);
-
-    try {
-      if (this.#packId) {
-        await packDco.update(this.#packId, formData);
-      } else {
-        await packDco.create(formData);
+    let message = validateValues(this);
+    if(!message){
+      try {
+        if (this.#packId) {
+          await packDco.update(this.#packId, formData);
+        } else {
+          await packDco.create(formData);
+        }
+        this.close();
+      } catch (error: any) {
+        console.log(error);
       }
-      this.close();
-    } catch (error: any) {
-      console.log(error);
+    }else{
+      showValidateError(this, message);
     }
   }
   //#endregion ---------- /Events ----------
@@ -73,7 +78,7 @@ function _render(packId?: number, pack?: Pack, packNameError?: string | null) {
 			<div class="ui-form">
 				<div class="ui-form-row">
 					<label class="ui-form-lbl">Name:</label>
-					<d-input class="ui-form-val" name="name" placeholder="Enter pack name" value="${packName}"></d-input>
+					<d-input class="ui-form-val" name="name" placeholder="Enter pack name" v-rules="required" value="${packName}"></d-input>
 				</div>
 				<div class="ui-form-row">
 					<label class="ui-form-lbl"></label>
