@@ -65,18 +65,22 @@ function _renderEmpty() {
 }
 
 function _render(org: Org, users: User[]) {
-	const rows = users
-		.map(
-			(user) => `
-		<div class="row" data-id="${user.id}">
-			<div class="cell">${user.username}</div>
-			<div class="cell actions">
-				<button class="btn-delete danger">Remove</button>
-			</div>
-		</div>
-	`
-		)
-		.join("");
+	const rows =
+		users.length > 0
+			? users
+					.map(
+						(user) =>
+							`
+							<div class="row" data-id="${user.id}">
+								<div class="cell">${user.username}</div>
+								<div class="cell actions">
+									<button class="btn-delete danger">Remove</button>
+								</div>
+							</div>
+						`
+					)
+					.join("")
+			: '<div class="no-rows">No user of org.</div>';
 
 	return `
 		<div class="org-info-section">

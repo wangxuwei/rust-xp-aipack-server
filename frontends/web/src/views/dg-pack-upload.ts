@@ -43,7 +43,7 @@ export class DgPackUpload extends DgDialog {
 			formData["file"] = file;
 
 			try {
-				await packDco.savePack(formData);
+				await packDco.uploadPack(formData);
 				this.close();
 			} catch (error: any) {
 				console.log(error);
@@ -95,7 +95,7 @@ function _render(packName?: string) {
 				<div class="ui-form-row">
 					<label class="ui-form-lbl">File:</label>
 					<div class="file-input-container">
-						<input id="file-upload" type="file" name="file" accept=".aip">
+						<input id="file-upload" type="file" name="file" v-rules="required" accept=".aip">
 						<label for="file-upload" class="file-input-label">Choose File</label>
 						<span class="file-name"></span>
 					</div>

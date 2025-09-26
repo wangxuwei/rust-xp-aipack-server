@@ -7,7 +7,7 @@ const tagNameByPath: { [name: string]: string } = {
 	"": "v-home",
 	users: "v-users",
 	orgs: "v-org-route",
-	packs: "v-packs",
+	packs: "v-pack-route",
 };
 
 @customElement("v-main")

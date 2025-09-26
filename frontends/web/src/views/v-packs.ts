@@ -1,10 +1,10 @@
+import { pushPath } from "common/route.js";
 import { BaseViewElement } from "common/v-base.js";
 import { packDco } from "dcos.js";
 import { OnEvent, customElement, onEvent, onHub } from "dom-native";
 import { asNum, isEmpty } from "utils-min";
 import { Pack } from "../bindings/Pack.js";
 import { DgPackUpload } from "./dg-pack-upload.js";
-import { DgPackVersions } from "./dg-pack-versions.js";
 import { DgPack } from "./dg-pack.js";
 
 @customElement("v-packs")
@@ -42,12 +42,12 @@ export class PacksView extends BaseViewElement {
 		this.showPackDialog();
 	}
 
-	@onEvent("click", ".btn-details")
-	onDetailsClick(evt: MouseEvent & OnEvent) {
+	@onEvent("click", ".btn-versions")
+	onVersionsClick(evt: MouseEvent & OnEvent) {
 		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
 		const packId = asNum(rowEl.dataset.id);
 		if (!isEmpty(packId)) {
-			this.showPackVersionsDialog(packId!);
+			pushPath(`/packs/versions/${packId}`);
 		}
 	}
 	//#endregion ---------- /Events ----------
@@ -83,12 +83,6 @@ export class PacksView extends BaseViewElement {
 		dialog.packId = packId;
 		this.appendChild(dialog);
 	}
-
-	private showPackVersionsDialog(packId: number) {
-		const dialog = document.createElement("dg-pack-versions") as DgPackVersions;
-		dialog.packId = packId;
-		this.appendChild(dialog);
-	}
 	//#endregion ---------- /Private Functions ----------
 }
 
@@ -102,7 +96,7 @@ function _render(packs: Pack[]) {
             </div>
             <div class="cell actions">
                 <button class="btn-upload">Upload new version</button>
-                <button class="btn-details">Details</button>
+                <button class="btn-versions prime">Versions</button>
                 <button class="btn-edit prime">Edit</button>
                 <button class="btn-delete danger">Delete</button>
             </div>

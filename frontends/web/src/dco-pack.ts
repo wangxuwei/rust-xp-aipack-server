@@ -9,16 +9,15 @@ export class PackDco extends BaseDco<Pack, QueryOptions<Pack>> {
 		super("pack");
 	}
 
-	async savePack(formData: any): Promise<any> {
+	async uploadPack(formData: any): Promise<any> {
 		const result = await request_upload(`upload_pack`, formData);
 		if (result.success) {
-			dcoHub.pub(this.cmd_suffix, "create", result);
+			dcoHub.pub(this.cmd_suffix, "upload_pack_version", result);
 			return result.id;
 		} else {
 			throw result;
 		}
 	}
-
 	// List all versions for a specific pack
 	async listPackVersions(pack_id: number): Promise<PackVersion[]> {
 		const result = await rpc_invoke(`list_pack_versions`, { filters: { pack_id } });

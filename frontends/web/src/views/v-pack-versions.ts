@@ -1,0 +1,143 @@
+import { pathAsNum } from "common/route.js";
+import { BaseViewElement } from "common/v-base.js";
+import { packDco } from "dcos.js";
+import { OnEvent, customElement, onEvent, onHub } from "dom-native";
+import { download } from "file.js";
+import { asNum, isNotEmpty } from "utils-min";
+import { formatFileSize } from "utils.js";
+import { Pack } from "../bindings/Pack.js";
+import { PackVersion } from "../bindings/PackVersion.js";
+import { DgPackUpload } from "./dg-pack-upload.js";
+
+@customElement("v-pack-versions")
+export class PackVersionsView extends BaseViewElement {
+	#packId: number | null = null;
+
+	//#region    ---------- Events ----------
+	@onEvent("click", "button.add")
+	onAddClick() {
+		this.showPackUploadDialog();
+	}
+
+	@onEvent("click", ".btn-download")
+	async onDownloadClick(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const versionId = asNum(rowEl.dataset.id);
+		if (versionId) {
+			this.downloadPackVersion(versionId);
+		}
+	}
+
+	@onEvent("click", ".btn-delete")
+	onDeleteClick(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const versionId = asNum(rowEl.dataset.id);
+		if (isNotEmpty(versionId) && this.#packId) {
+			// Remove version from pack
+			packDco.deletePackVersion(versionId).then(() => this.refresh());
+		}
+	}
+	//#endregion ---------- /Events ----------
+
+	//#region    ---------- Hub Events ----------
+	@onHub("dcoHub", "pack", "upload_pack_version,delete_pack_version")
+	onPackVersionChange() {
+		this.refresh();
+	}
+	//#endregion ---------- /Hub Events ----------
+
+	//#region    ---------- Lifecycle ----------
+	init() {
+		super.init();
+		this.#packId = pathAsNum(2);
+		this.refresh();
+	}
+
+	async refresh() {
+		if (this.#packId) {
+			const pack = await packDco.get(this.#packId);
+			const versions = await packDco.listPackVersions(this.#packId);
+			this.innerHTML = _render(pack, versions);
+		} else {
+			this.innerHTML = _renderEmpty();
+		}
+	}
+	//#endregion ---------- /Lifecycle ----------
+
+	private async downloadPackVersion(versionId: number) {
+		try {
+			download(`/api/download_pack/${versionId}`);
+		} catch (error) {
+			console.error("Failed to download pack:", error);
+			alert("Failed to download pack. Please try again.");
+		}
+	}
+
+	private showPackUploadDialog() {
+		const view = document.createElement("dg-pack-upload") as DgPackUpload;
+		(view as any).packId = this.#packId;
+		this.appendChild(view);
+	}
+}
+
+function _renderEmpty() {
+	return "Pack not found";
+}
+
+function _render(pack: Pack, versions: PackVersion[]) {
+	const rows =
+		versions.length > 0
+			? versions
+					.map(
+						(v) => `
+			<div class="row" data-id="${v.id}">
+				<div class="cell">${v.version}</div>
+				<div class="cell">${formatFileSize(Number(v.file_size))}</div>
+				<div class="cell">${v.changelog || "-"}</div>
+				<div class="cell actions">
+					<button class="btn-download small prime">Download</button>
+					<button class="btn-delete small danger">Delete</button>
+				</div>
+			</div>
+		`
+					)
+					.join("")
+			: '<div class="no-rows">No versions of this pack.</div>';
+
+	return `
+		<div class="pack-info-section">
+			<div class="card">
+				<div class="header">
+					<h3>Pack</h3>
+				</div>
+				<section>
+					<div class="info-item">
+						<span class="label">Name:</span>
+						<span class="value">${pack.name}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="versions-table-section">
+			<div class="section-header">
+				<h3>Versions</h3>
+			</div>
+			<div class="actions">
+				<button class="add">Add Version</button>
+			</div>
+			<div class="table-container">
+				<div class="ui-table">
+					<div class="thead row">
+						<div class="cell">Version</div>
+						<div class="cell">Size</div>
+						<div class="cell">Changelog</div>
+						<div class="cell actions">Actions</div>
+					</div>
+					<div class="tbody">
+						${rows}
+					</div>
+				</div>
+			</div>
+		</div>
+	`;
+}
