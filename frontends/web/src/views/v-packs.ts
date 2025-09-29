@@ -85,7 +85,7 @@ function _render(packs: Pack[]) {
 							<a href="/packs/versions/${pack.id}">${pack.name}</a>				
             </div>
             <div class="cell actions">
-                <button class="btn-upload">Upload new version</button>
+                <button class="btn-upload default">Upload new version</button>
                 <button class="btn-edit prime">Edit</button>
                 <button class="btn-delete danger">Delete</button>
             </div>
@@ -102,7 +102,7 @@ function _render(packs: Pack[]) {
             <button class="add default">Add New Pack</button>
         </div>
         <div class="table-container">
-            <div class="table">
+            <div class="ui-table">
                 <div class="thead row">
                     <div class="cell">Pack</div>
                     <div class="cell">Actions</div>
