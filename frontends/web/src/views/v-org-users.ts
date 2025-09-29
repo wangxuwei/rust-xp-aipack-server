@@ -110,7 +110,7 @@ function _render(org: Org, users: User[]) {
 					<h3>Users</h3>
 				</div>
 				<div class="actions">
-					<button class="add">Add User</button>
+					<button class="add default">Add User</button>
 				</div>
 				<div class="table-container">
 					<div class="ui-table">

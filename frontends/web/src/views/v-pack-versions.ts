@@ -131,7 +131,7 @@ function _render(pack: Pack, versions: PackVersion[]) {
 					<h3>Versions</h3>
 				</div>
 				<div class="actions">
-					<button class="add">Add Version</button>
+					<button class="add default">Add Version</button>
 				</div>
 				<div class="table-container">
 					<div class="ui-table">

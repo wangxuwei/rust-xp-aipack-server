@@ -109,6 +109,17 @@ a.button {
 	/*#endregion Button Types */
 }
 
+button.default {
+	background: var(--clr-gray-300);
+	color: var(--clr-gray-800);
+	&:hover:not(:disabled):not(.disabled) {
+		background: var(--clr-gray-300);
+	}
+	&:active:not(:disabled):not(.disabled) {
+		background: var(--clr-gray-300);
+	}
+}
+
 button.prime {
 	background: var(--clr-prime);
 	color: white;

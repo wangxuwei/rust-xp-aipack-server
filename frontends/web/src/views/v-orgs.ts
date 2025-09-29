@@ -107,7 +107,7 @@ function _render(orgs: Org[]) {
 			<div class="breadcrumb-item">Organizations</div>
 		</div>
 		<div class="header">
-			<button class="add">Add Organization</button>
+			<button class="add default">Add Organization</button>
 		</div>
 		<div class="table-container">
 			<div class="ui-table">

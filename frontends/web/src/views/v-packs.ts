@@ -99,7 +99,7 @@ function _render(packs: Pack[]) {
 					<div class="breadcrumb-item">Packs</div>
 				</div>
         <div class="header">
-            <button class="add">Add New Pack</button>
+            <button class="add default">Add New Pack</button>
         </div>
         <div class="table-container">
             <div class="table">

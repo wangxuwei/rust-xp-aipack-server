@@ -80,7 +80,7 @@ function _render(users: User[]) {
 			<div class="breadcrumb-item">Users</div>
 		</div>
 		<div class="header">
-			<button class="add">Add User</button>
+			<button class="add default">Add User</button>
 		</div>
 		<div class="table-container">
 			<div class="ui-table">
