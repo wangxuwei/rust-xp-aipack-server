@@ -3,10 +3,12 @@ import { BaseViewElement } from "common/v-base.js";
 import { packDco } from "dcos.js";
 import { OnEvent, customElement, onEvent, onHub } from "dom-native";
 import { download } from "file.js";
+import { formatDateTime } from "utils-date.js";
 import { asNum, isNotEmpty } from "utils-min";
 import { formatFileSize } from "utils.js";
 import { Pack } from "../bindings/Pack.js";
 import { PackVersion } from "../bindings/PackVersion.js";
+import { APP_DATE_FORMAT } from "./conf.js";
 import { DgPackUpload } from "./dg-pack-upload.js";
 
 @customElement("v-pack-versions")
@@ -94,6 +96,7 @@ function _render(pack: Pack, versions: PackVersion[]) {
 				<div class="cell">${v.version}</div>
 				<div class="cell">${formatFileSize(Number(v.file_size))}</div>
 				<div class="cell">${v.changelog || "-"}</div>
+				<div class="cell">${formatDateTime(v.mtime, APP_DATE_FORMAT)}</div>
 				<div class="cell actions">
 					<button class="btn-download small prime">Download</button>
 					<button class="btn-delete small danger">Delete</button>
@@ -136,6 +139,7 @@ function _render(pack: Pack, versions: PackVersion[]) {
 							<div class="cell">Version</div>
 							<div class="cell">Size</div>
 							<div class="cell">Changelog</div>
+							<div class="cell">Time</div>
 							<div class="cell actions">Actions</div>
 						</div>
 						<div class="tbody">
