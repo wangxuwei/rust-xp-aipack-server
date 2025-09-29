@@ -76,6 +76,9 @@ function _render(users: User[]) {
 		.join("");
 
 	return `
+		<div class="ui-breadcrumbs">
+			<div class="breadcrumb-item">Users</div>
+		</div>
 		<div class="header">
 			<button class="add">Add User</button>
 		</div>

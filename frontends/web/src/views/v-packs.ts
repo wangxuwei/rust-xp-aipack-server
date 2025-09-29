@@ -1,4 +1,3 @@
-import { pushPath } from "common/route.js";
 import { BaseViewElement } from "common/v-base.js";
 import { packDco } from "dcos.js";
 import { OnEvent, customElement, onEvent, onHub } from "dom-native";
@@ -40,15 +39,6 @@ export class PacksView extends BaseViewElement {
 	@onEvent("click", "button.add")
 	onAddClick() {
 		this.showPackDialog();
-	}
-
-	@onEvent("click", ".btn-versions")
-	onVersionsClick(evt: MouseEvent & OnEvent) {
-		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
-		const packId = asNum(rowEl.dataset.id);
-		if (!isEmpty(packId)) {
-			pushPath(`/packs/versions/${packId}`);
-		}
 	}
 	//#endregion ---------- /Events ----------
 
@@ -92,11 +82,10 @@ function _render(packs: Pack[]) {
 			(pack) => `
         <div class="row" data-id="${pack.id}">
             <div class="cell">
-                <div class="pack-name">${pack.name}</div>
+							<a href="/packs/versions/${pack.id}">${pack.name}</a>				
             </div>
             <div class="cell actions">
                 <button class="btn-upload">Upload new version</button>
-                <button class="btn-versions prime">Versions</button>
                 <button class="btn-edit prime">Edit</button>
                 <button class="btn-delete danger">Delete</button>
             </div>
@@ -106,6 +95,9 @@ function _render(packs: Pack[]) {
 		.join("");
 
 	return `
+				<div class="ui-breadcrumbs">
+					<div class="breadcrumb-item">Packs</div>
+				</div>
         <div class="header">
             <button class="add">Add New Pack</button>
         </div>

@@ -83,38 +83,44 @@ function _render(org: Org, users: User[]) {
 			: '<div class="no-rows">No user of org.</div>';
 
 	return `
-		<div class="org-info-section">
-			<div class="card">
-				<div class="header">
-					<h3>Organization</h3>
-				</div>
-				<section>
-					<div class="info-item">
-						<span class="label">Name:</span>
-						<span class="value">${org.name}</span>
-					</div>
-					<div class="info-item">
-						<span class="label">Kind:</span>
-						<span class="value">${org.kind}</span>
-					</div>
-				</div>
-			</div>
+		<div class="ui-breadcrumbs">
+			<div class="breadcrumb-item"><a href="/orgs">Organizations</a></div>
+			<div class="breadcrumb-item">Users</div>
 		</div>
-		<div class="users-table-section">
-			<div class="section-header">
-				<h3>Users</h3>
-			</div>
-			<div class="actions">
-				<button class="add">Add User</button>
-			</div>
-			<div class="table-container">
-				<div class="ui-table">
-					<div class="thead row">
-						<div class="cell">Username</div>
-						<div class="cell actions">Actions</div>
+		<div class="info-main">
+			<div class="org-info-section">
+				<div class="card">
+					<div class="header">
+						<h3>Organization</h3>
 					</div>
-					<div class="tbody">
-						${rows}
+					<section>
+						<div class="info-item">
+							<span class="label">Name:</span>
+							<span class="value">${org.name}</span>
+						</div>
+						<div class="info-item">
+							<span class="label">Kind:</span>
+							<span class="value">${org.kind}</span>
+						</div>
+					</section>
+				</div>
+			</div>
+			<div class="users-table-section">
+				<div class="section-header">
+					<h3>Users</h3>
+				</div>
+				<div class="actions">
+					<button class="add">Add User</button>
+				</div>
+				<div class="table-container">
+					<div class="ui-table">
+						<div class="thead row">
+							<div class="cell">Username</div>
+							<div class="cell actions">Actions</div>
+						</div>
+						<div class="tbody">
+							${rows}
+						</div>
 					</div>
 				</div>
 			</div>

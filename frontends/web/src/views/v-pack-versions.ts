@@ -105,36 +105,42 @@ function _render(pack: Pack, versions: PackVersion[]) {
 			: '<div class="no-rows">No versions of this pack.</div>';
 
 	return `
-		<div class="pack-info-section">
-			<div class="card">
-				<div class="header">
-					<h3>Pack</h3>
-				</div>
-				<section>
-					<div class="info-item">
-						<span class="label">Name:</span>
-						<span class="value">${pack.name}</span>
-					</div>
-				</div>
-			</div>
+		<div class="ui-breadcrumbs">
+			<div class="breadcrumb-item"><a href="/orgs">Packs</a></div>
+			<div class="breadcrumb-item">Versions</div>
 		</div>
-		<div class="versions-table-section">
-			<div class="section-header">
-				<h3>Versions</h3>
-			</div>
-			<div class="actions">
-				<button class="add">Add Version</button>
-			</div>
-			<div class="table-container">
-				<div class="ui-table">
-					<div class="thead row">
-						<div class="cell">Version</div>
-						<div class="cell">Size</div>
-						<div class="cell">Changelog</div>
-						<div class="cell actions">Actions</div>
+		<div class="info-main">
+			<div class="pack-info-section">
+				<div class="card">
+					<div class="header">
+						<h3>Pack</h3>
 					</div>
-					<div class="tbody">
-						${rows}
+					<section>
+						<div class="info-item">
+							<span class="label">Name:</span>
+							<span class="value">${pack.name}</span>
+						</div>
+					</section>
+				</div>
+			</div>
+			<div class="versions-table-section">
+				<div class="section-header">
+					<h3>Versions</h3>
+				</div>
+				<div class="actions">
+					<button class="add">Add Version</button>
+				</div>
+				<div class="table-container">
+					<div class="ui-table">
+						<div class="thead row">
+							<div class="cell">Version</div>
+							<div class="cell">Size</div>
+							<div class="cell">Changelog</div>
+							<div class="cell actions">Actions</div>
+						</div>
+						<div class="tbody">
+							${rows}
+						</div>
 					</div>
 				</div>
 			</div>

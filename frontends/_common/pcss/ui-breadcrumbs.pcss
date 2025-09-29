@@ -1,0 +1,25 @@
+.ui-breadcrumbs {
+	display: flex;
+	align-items: center;
+	.breadcrumb-item {
+		color: var(--clr-gray-500);
+		font-weight: 500;
+		a {
+			display: inline;
+			color: var(--clr-prime-700);
+			&:hover {
+				color: var(--clr-prime-500);
+			}
+		}
+		&:after {
+			content: ">";
+			margin: 0 0.5rem;
+		}
+		&:last-child {
+			color: var(--txt);
+			&:after {
+				display: none;
+			}
+		}
+	}
+}

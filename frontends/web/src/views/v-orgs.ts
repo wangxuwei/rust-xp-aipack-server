@@ -1,4 +1,3 @@
-import { pushPath } from "common/route.js";
 import { hasAccess } from "common/user-ctx.js";
 import { hasOrgAccess } from "common/user-org-ctx.js";
 import { BaseViewElement } from "common/v-base.js";
@@ -12,15 +11,6 @@ import { DgOrg } from "./dg-org.js";
 @customElement("v-orgs")
 export class OrgsView extends BaseViewElement {
 	//#region    ---------- Events ----------
-	@onEvent("click", ".btn-manage-users")
-	onManageUsersClick(evt: MouseEvent & OnEvent) {
-		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
-		const orgId = asNum(rowEl.dataset.id);
-		if (!isEmpty(orgId)) {
-			this.showOrgUsers(orgId!);
-		}
-	}
-
 	@onEvent("click", ".btn-edit")
 	onEditClick(evt: MouseEvent & OnEvent) {
 		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
@@ -86,9 +76,6 @@ export class OrgsView extends BaseViewElement {
 		this.appendChild(dialog);
 	}
 
-	private showOrgUsers(orgId?: number) {
-		pushPath(`/orgs/users/${orgId}`);
-	}
 	//#endregion ---------- /Private Functions ----------
 }
 
@@ -97,7 +84,7 @@ function _render(orgs: Org[]) {
 		.map((org) => {
 			let html = `
 			<div class="row" data-id="${org.id}">
-				<div class="cell">${org.name}</div>
+				<div class="cell"><a href="/orgs/users/${org.id}">${org.name}</a></div>
 				<div class="cell">${org.kind}</div>
 				<div class="cell actions">
 					<button class="btn-edit prime">Edit</button>`;
@@ -106,7 +93,6 @@ function _render(orgs: Org[]) {
 				<button class="btn-rename prime">Rename Organization</button>`;
 			}
 			html += `
-				<button class="btn-manage-users prime">Manage Users</button>
 				<button class="btn-delete danger">Delete</button>
 			</div>
 		</div>
@@ -117,6 +103,9 @@ function _render(orgs: Org[]) {
 		.join("");
 
 	return `
+		<div class="ui-breadcrumbs">
+			<div class="breadcrumb-item">Organizations</div>
+		</div>
 		<div class="header">
 			<button class="add">Add Organization</button>
 		</div>
