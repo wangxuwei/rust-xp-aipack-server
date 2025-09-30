@@ -13,6 +13,7 @@ pub fn rpc_router_builder() -> RouterBuilder {
 		update_pack,
 		list_packs,
 		delete_pack,
+		list_and_count_packs,
 		list_pack_versions,
 		delete_pack_version
 	)
@@ -27,14 +28,30 @@ generate_common_rpc_fns!(
 	Suffix: pack
 );
 
+pub async fn list_and_count_packs(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsList<PackFilter>,
+) -> Result<DataRpcResult<(Vec<Pack>, i64)>> {
+	let result =
+		PackBmc::list_and_count(&ctx, &mm, params.filters, params.list_options)
+			.await?;
+	Ok(result.into())
+}
+
 pub async fn list_pack_versions(
 	ctx: Ctx,
 	mm: ModelManager,
 	params: ParamsList<PackVersionFilter>,
-) -> Result<DataRpcResult<Vec<PackVersion>>> {
-	let entities =
-		PackVersionBmc::list(&ctx, &mm, params.filters, params.list_options).await?;
-	Ok(entities.into())
+) -> Result<DataRpcResult<(Vec<PackVersion>, i64)>> {
+	let result = PackVersionBmc::list_and_count(
+		&ctx,
+		&mm,
+		params.filters,
+		params.list_options,
+	)
+	.await?;
+	Ok(result.into())
 }
 
 pub async fn delete_pack_version(

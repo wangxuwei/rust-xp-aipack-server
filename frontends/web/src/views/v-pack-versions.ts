@@ -1,8 +1,9 @@
 import { pathAsNum } from "common/route.js";
 import { BaseViewElement } from "common/v-base.js";
 import { packDco } from "dcos.js";
-import { OnEvent, customElement, onEvent, onHub } from "dom-native";
+import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
 import { download } from "file.js";
+import { PaginationView } from "pagination/v-pagination.js";
 import { formatDateTime } from "utils-date.js";
 import { asNum, isNotEmpty } from "utils-min";
 import { formatFileSize } from "utils.js";
@@ -13,7 +14,14 @@ import { DgPackUpload } from "./dg-pack-upload.js";
 
 @customElement("v-pack-versions")
 export class PackVersionsView extends BaseViewElement {
+	#pageIndex: number = 0;
+	#pageSize: number = 3;
 	#packId: number | null = null;
+
+	//// Key elements
+	private get paginationEl(): PaginationView {
+		return first(this, "v-pagination") as PaginationView;
+	}
 
 	//#region    ---------- Events ----------
 	@onEvent("click", "button.add")
@@ -39,6 +47,13 @@ export class PackVersionsView extends BaseViewElement {
 			packDco.deletePackVersion(versionId).then(() => this.refresh());
 		}
 	}
+
+	@onEvent("PAGE_CHANGE")
+	onPageChange(evt: OnEvent) {
+		this.#pageIndex = evt.detail.pageIndex;
+		this.#pageSize = evt.detail.pageSize;
+		this.refresh();
+	}
 	//#endregion ---------- /Events ----------
 
 	//#region    ---------- Hub Events ----------
@@ -58,8 +73,12 @@ export class PackVersionsView extends BaseViewElement {
 	async refresh() {
 		if (this.#packId) {
 			const pack = await packDco.get(this.#packId);
-			const versions = await packDco.listPackVersions(this.#packId);
+			const [versions, count] = await packDco.listPackVersions(this.#packId, {
+				list_options: { offset: this.#pageIndex * this.#pageSize, limit: this.#pageSize },
+			});
 			this.innerHTML = _render(pack, versions);
+			const paginationEl = this.paginationEl;
+			paginationEl.refreshInfo(this.#pageIndex, count);
 		} else {
 			this.innerHTML = _renderEmpty();
 		}
@@ -144,6 +163,9 @@ function _render(pack: Pack, versions: PackVersion[]) {
 						</div>
 						<div class="tbody">
 							${rows}
+						</div>
+						<div class="tfoot">
+							<v-pagination></v-pagination>
 						</div>
 					</div>
 				</div>

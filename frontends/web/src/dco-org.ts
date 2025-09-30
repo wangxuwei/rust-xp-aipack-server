@@ -1,12 +1,21 @@
 import { Org } from "bindings/Org";
 import { User } from "bindings/User";
-import { QueryOptions } from "common/query_options";
+import { ListOptions, QueryOptions } from "common/query_options";
 import { rpc_invoke } from "common/rpc";
 import { BaseDco, dcoHub } from "./dco-base";
 
 export class OrgDco extends BaseDco<Org, QueryOptions<Org>> {
 	constructor() {
 		super("org");
+	}
+
+	async listAndCount(qo?: QueryOptions<Org>): Promise<[Org[], number]> {
+		const result = await rpc_invoke(`list_and_count_${this.plural}`, { ...qo });
+		if (result.data) {
+			return result.data;
+		} else {
+			throw result;
+		}
 	}
 
 	async renameOrg(id: number, name: string): Promise<void> {
@@ -31,8 +40,8 @@ export class OrgDco extends BaseDco<Org, QueryOptions<Org>> {
 		}
 	}
 
-	async getUsersByOrg(id: number): Promise<User[]> {
-		const result = await rpc_invoke(`get_users_by_org`, { id });
+	async getUsersByOrg(id: number, list_options: ListOptions): Promise<[User[], number]> {
+		const result = await rpc_invoke(`get_users_by_org`, { id, list_options });
 		if (result.data) {
 			return result.data;
 		} else {

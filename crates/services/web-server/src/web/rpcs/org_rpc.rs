@@ -4,6 +4,7 @@ use lib_core::model::{
 	user_org::UserOrgBmc,
 };
 use lib_rpc_core::prelude::*;
+use modql::filter::ListOptions;
 use rpc_router::IntoParams;
 use serde::Deserialize;
 
@@ -15,6 +16,7 @@ pub fn rpc_router_builder() -> RouterBuilder {
 		update_org,
 		delete_org,
 		rename_org,
+		list_and_count_orgs,
 		get_users_by_org,
 		search_users_for_org,
 		add_users_to_org,
@@ -45,10 +47,17 @@ pub struct ParamsOrg {
 	pub id: i64,
 	pub name: String,
 }
+impl IntoParams for ParamsOrg {}
+
+#[derive(Deserialize)]
+pub struct ParamsUserOrg {
+	pub id: i64,
+	pub list_options: Option<ListOptions>,
+}
+impl IntoParams for ParamsUserOrg {}
 // endregion: --- Params
 
 // region:    --- RPC Functions
-impl IntoParams for ParamsOrg {}
 
 pub async fn rename_org(
 	ctx: Ctx,
@@ -62,11 +71,11 @@ pub async fn rename_org(
 pub async fn get_users_by_org(
 	ctx: Ctx,
 	mm: ModelManager,
-	params: ParamsIded,
-) -> Result<DataRpcResult<Vec<User>>> {
-	let ParamsIded { id } = params;
-	let entities = UserOrgBmc::get_users_by_org(&ctx, &mm, id).await?;
-	Ok(entities.into())
+	params: ParamsUserOrg,
+) -> Result<DataRpcResult<(Vec<User>, i64)>> {
+	let ParamsUserOrg { id, list_options } = params;
+	let result = UserOrgBmc::get_users_by_org(&ctx, &mm, id, list_options).await?;
+	Ok(result.into())
 }
 
 /// Params structure for any RPC Update call.
@@ -76,6 +85,7 @@ pub struct ParamsSearchOrgUser {
 	pub username: String,
 }
 impl IntoParams for ParamsSearchOrgUser {}
+
 pub async fn search_users_for_org(
 	ctx: Ctx,
 	mm: ModelManager,
@@ -111,5 +121,16 @@ pub async fn remove_users_from_org(
 	)
 	.await?;
 	Ok(ids.into())
+}
+
+pub async fn list_and_count_orgs(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsList<OrgFilter>,
+) -> Result<DataRpcResult<(Vec<Org>, i64)>> {
+	let result =
+		OrgBmc::list_and_count(&ctx, &mm, params.filters, params.list_options)
+			.await?;
+	Ok(result.into())
 }
 // endregion: --- RPC Functions

@@ -35,9 +35,8 @@ export abstract class BaseRouteView extends BaseViewElement {
 	}
 
 	//#endregion    ---------- /Path ----------
-
 	protected get routeCtnEl(): HTMLElement {
-		return first(this, ".ui-route")!;
+		return first(this, ".ui-route-con")!;
 	}
 
 	protected abstract levelPath(): number;
@@ -58,6 +57,7 @@ export abstract class BaseRouteView extends BaseViewElement {
 	//#region    ---------- Lifecycle ----------
 	init() {
 		super.init();
+		this.classList.add("ui-route");
 	}
 
 	protected routeRefresh() {

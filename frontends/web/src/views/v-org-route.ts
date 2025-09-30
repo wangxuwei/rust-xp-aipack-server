@@ -1,4 +1,4 @@
-import { customElement, first } from "dom-native";
+import { customElement } from "dom-native";
 import { BaseRouteView } from "./v-base-route.js";
 
 const tagNameByPath: { [name: string]: string } = {
@@ -8,10 +8,6 @@ const tagNameByPath: { [name: string]: string } = {
 
 @customElement("v-org-route")
 export class OrgRouteView extends BaseRouteView {
-	protected get routeCtnEl(): HTMLElement {
-		return first(this, ".ui-route")!;
-	}
-
 	protected levelPath(): number {
 		return 1;
 	}
@@ -31,7 +27,7 @@ export class OrgRouteView extends BaseRouteView {
 
 function _render() {
 	return `
-		<div class="ui-route">
+		<div class="ui-route-con">
 		</div>
 	`;
 }

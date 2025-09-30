@@ -105,7 +105,7 @@ pub struct OrgForUpdate {
 	pub kind: Option<OrgKind>,
 }
 
-#[derive(FilterNodes, Deserialize, Default, Debug)]
+#[derive(FilterNodes, Deserialize, Default, Debug, Clone)]
 pub struct OrgFilter {
 	pub id: Option<OpValsInt64>,
 
@@ -144,6 +144,19 @@ generate_common_bmc_fns!(
 );
 
 impl OrgBmc {
+	#[privileges(Access::Global(Ga::OrgManage))]
+	pub async fn list_and_count(
+		ctx: &Ctx,
+		mm: &ModelManager,
+		filter: Option<Vec<OrgFilter>>,
+		list_options: Option<ListOptions>,
+	) -> Result<(Vec<Org>, i64)> {
+		let list =
+			base::list::<Self, _, _>(ctx, mm, filter.clone(), list_options).await?;
+		let count = base::count::<Self, _>(ctx, mm, filter).await?;
+		Ok((list, count))
+	}
+
 	#[privileges(Access::Global(Ga::OrgManage), Access::Org(Oa::OrgRename))]
 	pub async fn rename_org(
 		ctx: &Ctx,

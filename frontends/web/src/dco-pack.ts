@@ -9,6 +9,15 @@ export class PackDco extends BaseDco<Pack, QueryOptions<Pack>> {
 		super("pack");
 	}
 
+	async listAndCount(qo?: QueryOptions<Pack>): Promise<[Pack[], number]> {
+		const result = await rpc_invoke(`list_and_count_${this.plural}`, { ...qo });
+		if (result.data) {
+			return result.data;
+		} else {
+			throw result;
+		}
+	}
+
 	async uploadPack(formData: any): Promise<any> {
 		const result = await request_upload(`upload_pack`, formData);
 		if (result.success) {
@@ -19,8 +28,11 @@ export class PackDco extends BaseDco<Pack, QueryOptions<Pack>> {
 		}
 	}
 	// List all versions for a specific pack
-	async listPackVersions(pack_id: number): Promise<PackVersion[]> {
-		const result = await rpc_invoke(`list_pack_versions`, { filters: { pack_id } });
+	async listPackVersions(pack_id: number, qo?: QueryOptions<Pack>): Promise<[PackVersion[], number]> {
+		const params: any = qo ?? {};
+		params.filters = params.filters ?? {};
+		params.filters.pack_id = pack_id;
+		const result = await rpc_invoke(`list_pack_versions`, params);
 		if (result.data) {
 			return result.data;
 		} else {

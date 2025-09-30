@@ -112,7 +112,7 @@ pub enum UserIden {
 	Pwd,
 }
 
-#[derive(FilterNodes, Deserialize, Default, Debug)]
+#[derive(FilterNodes, Deserialize, Default, Debug, Clone)]
 pub struct UserFilter {
 	pub id: Option<OpValsInt64>,
 
@@ -246,6 +246,19 @@ impl UserBmc {
 		list_options: Option<ListOptions>,
 	) -> Result<Vec<User>> {
 		base::list::<Self, _, _>(ctx, mm, filter, list_options).await
+	}
+
+	#[privileges(Access::Global(Ga::UserManage))]
+	pub async fn list_and_count(
+		ctx: &Ctx,
+		mm: &ModelManager,
+		filter: Option<Vec<UserFilter>>,
+		list_options: Option<ListOptions>,
+	) -> Result<(Vec<User>, i64)> {
+		let list =
+			base::list::<Self, _, _>(ctx, mm, filter.clone(), list_options).await?;
+		let count = base::count::<Self, _>(ctx, mm, filter).await?;
+		Ok((list, count))
 	}
 
 	#[privileges(Access::Global(Ga::UserManage))]

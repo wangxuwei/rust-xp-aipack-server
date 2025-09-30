@@ -1,7 +1,8 @@
 import { pathAsNum } from "common/route.js";
 import { BaseViewElement } from "common/v-base.js";
 import { orgDco } from "dcos.js";
-import { OnEvent, customElement, onEvent, onHub } from "dom-native";
+import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
+import { PaginationView } from "pagination/v-pagination.js";
 import { asNum, isEmpty } from "utils-min";
 import { Org } from "../bindings/Org.js";
 import { User } from "../bindings/User.js";
@@ -9,7 +10,14 @@ import { DgOrgUserAdd } from "./dg-org-user-add.js";
 
 @customElement("v-org-users")
 export class OrgUsersView extends BaseViewElement {
+	#pageIndex: number = 0;
+	#pageSize: number = 3;
 	#orgId: number | null = null;
+
+	//// Key elements
+	private get paginationEl(): PaginationView {
+		return first(this, "v-pagination") as PaginationView;
+	}
 
 	//#region    ---------- Events ----------
 	@onEvent("click", "button.add")
@@ -25,6 +33,13 @@ export class OrgUsersView extends BaseViewElement {
 			// Remove user from org
 			orgDco.removeUsersFromOrg(this.#orgId, [userId!]).then(() => this.refresh());
 		}
+	}
+
+	@onEvent("PAGE_CHANGE")
+	onPageChange(evt: OnEvent) {
+		this.#pageIndex = evt.detail.pageIndex;
+		this.#pageSize = evt.detail.pageSize;
+		this.refresh();
 	}
 	//#endregion ---------- /Events ----------
 
@@ -45,8 +60,13 @@ export class OrgUsersView extends BaseViewElement {
 	async refresh() {
 		if (this.#orgId) {
 			const org = await orgDco.get(this.#orgId);
-			const users = await orgDco.getUsersByOrg(this.#orgId);
+			const [users, count] = await orgDco.getUsersByOrg(this.#orgId, {
+				offset: this.#pageIndex * this.#pageSize,
+				limit: this.#pageSize,
+			});
 			this.innerHTML = _render(org, users);
+			const paginationEl = this.paginationEl;
+			paginationEl.refreshInfo(this.#pageIndex, count);
 		} else {
 			this.innerHTML = _renderEmpty();
 		}
@@ -120,6 +140,9 @@ function _render(org: Org, users: User[]) {
 						</div>
 						<div class="tbody">
 							${rows}
+						</div>
+						<div class="tfoot">
+							<v-pagination></v-pagination>
 						</div>
 					</div>
 				</div>

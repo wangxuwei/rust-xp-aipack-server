@@ -1,0 +1,35 @@
+v-pagination {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	color: var(--clr-gray-700);
+
+	.page-section {
+		display: flex;
+		align-items: center;
+		text-align: center;
+		margin-left: 1rem;
+
+		.disabled {
+			display: none;
+		}
+		.number-info {
+			display: inline-block;
+			margin: 0 1.5rem;
+			input {
+				text-align: center;
+				width: 2.5rem;
+				height: 1.5rem;
+				margin-right: 0.5rem;
+				border: 1px solid var(--clr-gray-500);
+				font-size: 0.9rem;
+			}
+			.sep {
+				margin-right: 0.5rem;
+			}
+		}
+	}
+	.count-section {
+		margin-left: 1rem;
+	}
+}

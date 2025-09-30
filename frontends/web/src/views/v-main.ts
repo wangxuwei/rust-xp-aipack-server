@@ -87,7 +87,7 @@ function _render(username: string) {
 		</aside>
 	</header>
 
-	<main>
+	<main class="ui-route-con">
 	</main>
 	<div class="__version__">${window.__version__}</div>
 	`;

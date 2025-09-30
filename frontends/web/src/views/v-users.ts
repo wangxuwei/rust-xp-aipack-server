@@ -1,12 +1,21 @@
 import { BaseViewElement } from "common/v-base.js";
 import { userDco } from "dcos.js";
-import { OnEvent, customElement, onEvent, onHub } from "dom-native";
+import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
+import { PaginationView } from "pagination/v-pagination.js";
 import { asNum, isEmpty } from "utils-min";
 import { User } from "../bindings/User.js";
 import { DgUser } from "./dg-user.js";
 
 @customElement("v-users")
 export class UsersView extends BaseViewElement {
+	#pageIndex: number = 0;
+	#pageSize: number = 3;
+
+	//// Key elements
+	private get paginationEl(): PaginationView {
+		return first(this, "v-pagination") as PaginationView;
+	}
+
 	//#region    ---------- Events ----------
 	@onEvent("click", ".btn-edit")
 	onEditClick(evt: MouseEvent & OnEvent) {
@@ -30,6 +39,13 @@ export class UsersView extends BaseViewElement {
 	onAddClick() {
 		this.showUserDialog();
 	}
+
+	@onEvent("PAGE_CHANGE")
+	onPageChange(evt: OnEvent) {
+		this.#pageIndex = evt.detail.pageIndex;
+		this.#pageSize = evt.detail.pageSize;
+		this.refresh();
+	}
 	//#endregion ---------- /Events ----------
 
 	//#region    ---------- Hub Events ----------
@@ -46,8 +62,12 @@ export class UsersView extends BaseViewElement {
 	}
 
 	async refresh() {
-		const users = await userDco.list();
+		const [users, count] = await userDco.listAndCount({
+			list_options: { offset: this.#pageIndex * this.#pageSize, limit: this.#pageSize },
+		});
 		this.innerHTML = _render(users);
+		const paginationEl = this.paginationEl;
+		paginationEl.refreshInfo(this.#pageIndex, count);
 	}
 	//#endregion ---------- /Lifecycle ----------
 
@@ -90,6 +110,9 @@ function _render(users: User[]) {
 				</div>
 				<div class="tbody">
 					${rows}
+				</div>
+				<div class="tfoot">
+					<v-pagination></v-pagination>
 				</div>
 			</div>
 		</div>

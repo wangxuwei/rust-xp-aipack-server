@@ -4,7 +4,14 @@ use lib_core::model::user::{
 use lib_rpc_core::prelude::*;
 
 pub fn rpc_router_builder() -> RouterBuilder {
-	router_builder!(create_user, get_user, list_users, update_user, delete_user,)
+	router_builder!(
+		create_user,
+		get_user,
+		list_users,
+		list_and_count_users,
+		update_user,
+		delete_user,
+	)
 }
 
 // region:    --- RPC Functions
@@ -38,6 +45,17 @@ pub async fn list_users(
 	let entities =
 		UserBmc::list(&ctx, &mm, params.filters, params.list_options).await?;
 	Ok(entities.into())
+}
+
+pub async fn list_and_count_users(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsList<UserFilter>,
+) -> Result<DataRpcResult<(Vec<User>, i64)>> {
+	let result =
+		UserBmc::list_and_count(&ctx, &mm, params.filters, params.list_options)
+			.await?;
+	Ok(result.into())
 }
 
 pub async fn update_user(

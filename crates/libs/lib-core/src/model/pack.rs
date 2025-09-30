@@ -50,7 +50,7 @@ pub struct PackForUpdate {
 	pub name: Option<String>,
 }
 
-#[derive(FilterNodes, Deserialize, Default, Debug)]
+#[derive(FilterNodes, Deserialize, Default, Debug, Clone)]
 pub struct PackFilter {
 	pub id: Option<OpValsInt64>,
 	pub name: Option<OpValsString>,
@@ -84,6 +84,19 @@ generate_common_bmc_fns!(
 );
 
 impl PackBmc {
+	#[privileges(Access::Global(Ga::PackManage))]
+	pub async fn list_and_count(
+		ctx: &Ctx,
+		mm: &ModelManager,
+		filter: Option<Vec<PackFilter>>,
+		list_options: Option<ListOptions>,
+	) -> Result<(Vec<Pack>, i64)> {
+		let list =
+			base::list::<Self, _, _>(ctx, mm, filter.clone(), list_options).await?;
+		let count = base::count::<Self, _>(ctx, mm, filter).await?;
+		Ok((list, count))
+	}
+
 	#[privileges(Access::Global(Ga::PackManage))]
 	pub async fn ensure_pack(
 		ctx: &Ctx,

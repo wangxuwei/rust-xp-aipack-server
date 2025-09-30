@@ -1,4 +1,5 @@
 use crate::model::acs::prelude::*;
+use crate::model::base::compute_list_options;
 use crate::{
 	ctx::Ctx,
 	model::{
@@ -16,7 +17,7 @@ use modql::{
 	filter::{FilterNodes, ListOptions, OpValInt64, OpValsInt64},
 };
 use sea_query::extension::postgres::PgExpr;
-use sea_query::{enum_def, Condition, Expr, PostgresQueryBuilder, Query};
+use sea_query::{enum_def, Condition, Expr, Func, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
@@ -174,13 +175,13 @@ impl UserOrgBmc {
 		_ctx: &Ctx,
 		mm: &ModelManager,
 		org_id: i64,
-	) -> Result<Vec<User>> {
+		list_options: Option<ListOptions>,
+	) -> Result<(Vec<User>, i64)> {
 		// -- Build the query
 		let mut query = Query::select();
 
 		query
 			.from(Self::table_ref())
-			.columns(User::sea_column_refs_with_rel(UserIden::User))
 			.inner_join(
 				UserIden::User,
 				Expr::col((UserOrgIden::Table, UserOrgIden::UserId))
@@ -197,12 +198,26 @@ impl UserOrgBmc {
 			Condition::all().add(Expr::col(UserOrgIden::OrgId).eq(org_id));
 		query.cond_where(condition.clone());
 
+		let mut list_query = query.clone();
+		list_query.columns(User::sea_column_refs_with_rel(UserIden::User));
+
+		// list options
+		let list_options = compute_list_options(list_options)?;
+		list_options.apply_to_sea_query(&mut list_query);
+
+		let mut count_query = query.clone();
+		count_query.expr(Func::count(Expr::col((UserIden::User, UserIden::Id))));
+
 		// -- Execute the query
-		let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+		let (sql, values) = list_query.build_sqlx(PostgresQueryBuilder);
 		let sqlx_query = sqlx::query_as_with::<_, User, _>(&sql, values);
 		let entities = mm.dbx().fetch_all(sqlx_query).await?;
 
-		Ok(entities)
+		let (sql, values) = count_query.build_sqlx(PostgresQueryBuilder);
+		let sqlx_query = sqlx::query_as_with::<_, (i64,), _>(&sql, values);
+		let (count,) = mm.dbx().fetch_one(sqlx_query).await?;
+
+		Ok((entities, count))
 	}
 
 	pub async fn search_users_for_org(
