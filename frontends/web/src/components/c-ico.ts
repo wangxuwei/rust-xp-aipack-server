@@ -41,7 +41,7 @@ class IcoElement extends BaseHTMLElement {
 //// Shadow Render
 function _renderShadow(src: string) {
 	const href = src.startsWith("#") ? `${IcoElement._BASE_URL_}${src}` : src;
-	const content = html` <svg class="symbol">
+	const content = html` <svg class="symbol" part="symbol">
 		<use xlink:href="${href}" aria-hidden="true"></use>
 	</svg>`;
 

@@ -64,7 +64,10 @@ export abstract class BaseRouteView extends BaseViewElement {
 		if (this.hasPathChanged(this.levelPath())) {
 			const newPath = pathAt(this.levelPath());
 			const name = isNotEmpty(newPath) ? newPath : "";
-			const tagName = this.getTagByPath(name);
+			let tagName = this.getTagByPath(name);
+			if (!tagName) {
+				tagName = "v-not-found";
+			}
 			this.routeCtnEl.innerHTML = `<${tagName}></${tagName}>`;
 		}
 	}
