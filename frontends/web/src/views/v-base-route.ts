@@ -4,6 +4,10 @@ import { first, onHub } from "dom-native";
 import { isNotEmpty } from "utils-min";
 
 export abstract class BaseRouteView extends BaseViewElement {
+	public showNotFound() {
+		this.routeCtnEl.innerHTML = `<v-not-found></v-not-found>`;
+	}
+
 	//#region    ---------- Path ----------
 	// current paths
 	private currentPaths?: string[];
@@ -71,6 +75,7 @@ export abstract class BaseRouteView extends BaseViewElement {
 			this.routeCtnEl.innerHTML = `<${tagName}></${tagName}>`;
 		}
 	}
+
 	//#endregion ---------- /Lifecycle ----------
 
 	//#region    ---------- Private Functions ----------

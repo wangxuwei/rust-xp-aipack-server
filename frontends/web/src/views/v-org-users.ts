@@ -7,6 +7,7 @@ import { asNum, isEmpty } from "utils-min";
 import { Org } from "../bindings/Org.js";
 import { User } from "../bindings/User.js";
 import { DgOrgUserAdd } from "./dg-org-user-add.js";
+import { BaseRouteView } from "./v-base-route.js";
 
 @customElement("v-org-users")
 export class OrgUsersView extends BaseViewElement {
@@ -59,7 +60,15 @@ export class OrgUsersView extends BaseViewElement {
 
 	async refresh() {
 		if (this.#orgId) {
-			const org = await orgDco.get(this.#orgId);
+			let org;
+			try {
+				org = await orgDco.get(this.#orgId);
+			} catch (e) {}
+			if (!org) {
+				const routeView = this.closest(".ui-route") as BaseRouteView;
+				routeView.showNotFound();
+				return;
+			}
 			const [users, count] = await orgDco.getUsersByOrg(this.#orgId, {
 				offset: this.#pageIndex * this.#pageSize,
 				limit: this.#pageSize,

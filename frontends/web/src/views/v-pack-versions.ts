@@ -11,6 +11,7 @@ import { Pack } from "../bindings/Pack.js";
 import { PackVersion } from "../bindings/PackVersion.js";
 import { APP_DATE_FORMAT } from "./conf.js";
 import { DgPackUpload } from "./dg-pack-upload.js";
+import { BaseRouteView } from "./v-base-route.js";
 
 @customElement("v-pack-versions")
 export class PackVersionsView extends BaseViewElement {
@@ -72,7 +73,15 @@ export class PackVersionsView extends BaseViewElement {
 
 	async refresh() {
 		if (this.#packId) {
-			const pack = await packDco.get(this.#packId);
+			let pack;
+			try {
+				pack = await packDco.get(this.#packId);
+			} catch (e) {}
+			if (!pack) {
+				const routeView = this.closest(".ui-route") as BaseRouteView;
+				routeView.showNotFound();
+				return;
+			}
 			const [versions, count] = await packDco.listPackVersions(this.#packId, {
 				list_options: { offset: this.#pageIndex * this.#pageSize, limit: this.#pageSize },
 			});
