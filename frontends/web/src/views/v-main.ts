@@ -60,7 +60,7 @@ export class MainView extends BaseRouteView {
 		return tagNameByPath[urlPath];
 	}
 
-	protected levelPath(): number {
+	public levelPath(): number {
 		// top level
 		return 0;
 	}

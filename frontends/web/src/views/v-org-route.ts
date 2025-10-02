@@ -8,7 +8,7 @@ const tagNameByPath: { [name: string]: string } = {
 
 @customElement("v-org-route")
 export class OrgRouteView extends BaseRouteView {
-	protected levelPath(): number {
+	public levelPath(): number {
 		return 1;
 	}
 

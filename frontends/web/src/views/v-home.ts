@@ -1,8 +1,8 @@
-import { BaseViewElement } from "common/v-base.js";
 import { customElement } from "dom-native";
+import { BaseLeafRoute } from "./v-leaf-route";
 
 @customElement("v-home")
-export class HomeView extends BaseViewElement {
+export class HomeView extends BaseLeafRoute {
 	//#region    ---------- Events----------
 	//#endregion ---------- /Events----------
 

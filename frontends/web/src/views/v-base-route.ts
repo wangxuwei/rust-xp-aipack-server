@@ -39,12 +39,10 @@ export abstract class BaseRouteView extends BaseViewElement {
 	}
 
 	//#endregion    ---------- /Path ----------
+	public abstract levelPath(): number;
 	protected get routeCtnEl(): HTMLElement {
 		return first(this, ".ui-route-con")!;
 	}
-
-	protected abstract levelPath(): number;
-
 	protected abstract getTagByPath(urlPath: string): string;
 
 	//#region    ---------- Events ----------

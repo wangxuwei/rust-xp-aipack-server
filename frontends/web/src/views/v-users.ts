@@ -1,13 +1,13 @@
-import { BaseViewElement } from "common/v-base.js";
 import { userDco } from "dcos.js";
 import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
 import { asNum, isEmpty } from "utils-min";
 import { User } from "../bindings/User.js";
 import { DgUser } from "./dg-user.js";
+import { BaseLeafRoute } from "./v-leaf-route.js";
 
 @customElement("v-users")
-export class UsersView extends BaseViewElement {
+export class UsersView extends BaseLeafRoute {
 	#pageIndex: number = 0;
 	#pageSize: number = 3;
 

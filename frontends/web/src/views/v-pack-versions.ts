@@ -1,5 +1,4 @@
 import { pathAsNum } from "common/route.js";
-import { BaseViewElement } from "common/v-base.js";
 import { packDco } from "dcos.js";
 import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
 import { download } from "file.js";
@@ -12,9 +11,10 @@ import { PackVersion } from "../bindings/PackVersion.js";
 import { APP_DATE_FORMAT } from "./conf.js";
 import { DgPackUpload } from "./dg-pack-upload.js";
 import { BaseRouteView } from "./v-base-route.js";
+import { BaseLeafRoute } from "./v-leaf-route.js";
 
 @customElement("v-pack-versions")
-export class PackVersionsView extends BaseViewElement {
+export class PackVersionsView extends BaseLeafRoute {
 	#pageIndex: number = 0;
 	#pageSize: number = 3;
 	#packId: number | null = null;
@@ -22,6 +22,10 @@ export class PackVersionsView extends BaseViewElement {
 	//// Key elements
 	private get paginationEl(): PaginationView {
 		return first(this, "v-pagination") as PaginationView;
+	}
+
+	protected get leafLevel() {
+		return 2;
 	}
 
 	//#region    ---------- Events ----------
@@ -89,7 +93,8 @@ export class PackVersionsView extends BaseViewElement {
 			const paginationEl = this.paginationEl;
 			paginationEl.refreshInfo(this.#pageIndex, count);
 		} else {
-			this.innerHTML = _renderEmpty();
+			const routeView = this.closest(".ui-route") as BaseRouteView;
+			routeView.showNotFound();
 		}
 	}
 	//#endregion ---------- /Lifecycle ----------
@@ -108,10 +113,6 @@ export class PackVersionsView extends BaseViewElement {
 		(view as any).packId = this.#packId;
 		this.appendChild(view);
 	}
-}
-
-function _renderEmpty() {
-	return "Pack not found";
 }
 
 function _render(pack: Pack, versions: PackVersion[]) {

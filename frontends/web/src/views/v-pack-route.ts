@@ -8,7 +8,7 @@ const tagNameByPath: { [name: string]: string } = {
 
 @customElement("v-pack-route")
 export class PackRouteView extends BaseRouteView {
-	protected levelPath(): number {
+	public levelPath(): number {
 		return 1;
 	}
 

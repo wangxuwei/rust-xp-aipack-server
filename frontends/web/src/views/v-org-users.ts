@@ -1,5 +1,4 @@
 import { pathAsNum } from "common/route.js";
-import { BaseViewElement } from "common/v-base.js";
 import { orgDco } from "dcos.js";
 import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
@@ -8,9 +7,10 @@ import { Org } from "../bindings/Org.js";
 import { User } from "../bindings/User.js";
 import { DgOrgUserAdd } from "./dg-org-user-add.js";
 import { BaseRouteView } from "./v-base-route.js";
+import { BaseLeafRoute } from "./v-leaf-route.js";
 
 @customElement("v-org-users")
-export class OrgUsersView extends BaseViewElement {
+export class OrgUsersView extends BaseLeafRoute {
 	#pageIndex: number = 0;
 	#pageSize: number = 3;
 	#orgId: number | null = null;
@@ -18,6 +18,10 @@ export class OrgUsersView extends BaseViewElement {
 	//// Key elements
 	private get paginationEl(): PaginationView {
 		return first(this, "v-pagination") as PaginationView;
+	}
+
+	protected get leafLevel() {
+		return 2;
 	}
 
 	//#region    ---------- Events ----------
@@ -64,6 +68,7 @@ export class OrgUsersView extends BaseViewElement {
 			try {
 				org = await orgDco.get(this.#orgId);
 			} catch (e) {}
+
 			if (!org) {
 				const routeView = this.closest(".ui-route") as BaseRouteView;
 				routeView.showNotFound();
@@ -77,7 +82,8 @@ export class OrgUsersView extends BaseViewElement {
 			const paginationEl = this.paginationEl;
 			paginationEl.refreshInfo(this.#pageIndex, count);
 		} else {
-			this.innerHTML = _renderEmpty();
+			const routeView = this.closest(".ui-route") as BaseRouteView;
+			routeView.showNotFound();
 		}
 	}
 	//#endregion ---------- /Lifecycle ----------
@@ -87,10 +93,6 @@ export class OrgUsersView extends BaseViewElement {
 		dialog.orgId = this.#orgId;
 		this.appendChild(dialog);
 	}
-}
-
-function _renderEmpty() {
-	return "not exist";
 }
 
 function _render(org: Org, users: User[]) {
