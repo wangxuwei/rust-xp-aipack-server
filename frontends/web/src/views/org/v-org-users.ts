@@ -1,13 +1,13 @@
 import { pathAsNum } from "common/route.js";
-import { orgDco } from "dcos.js";
 import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
+import { orgDco } from "ts/dcos.js";
 import { asNum, isEmpty } from "utils-min";
-import { Org } from "../bindings/Org.js";
-import { User } from "../bindings/User.js";
+import { Org } from "../../bindings/Org.js";
+import { User } from "../../bindings/User.js";
+import { BaseRouteView } from "../route/v-base-route.js";
+import { BaseLeafRoute } from "../route/v-leaf-route.js";
 import { DgOrgUserAdd } from "./dg-org-user-add.js";
-import { BaseRouteView } from "./v-base-route.js";
-import { BaseLeafRoute } from "./v-leaf-route.js";
 
 @customElement("v-org-users")
 export class OrgUsersView extends BaseLeafRoute {

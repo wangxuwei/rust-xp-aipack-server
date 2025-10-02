@@ -1,10 +1,10 @@
-import { userDco } from "dcos.js";
 import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
+import { userDco } from "ts/dcos.js";
 import { asNum, isEmpty } from "utils-min";
-import { User } from "../bindings/User.js";
+import { User } from "../../bindings/User.js";
+import { BaseLeafRoute } from "../route/v-leaf-route.js";
 import { DgUser } from "./dg-user.js";
-import { BaseLeafRoute } from "./v-leaf-route.js";
 
 @customElement("v-users")
 export class UsersView extends BaseLeafRoute {

@@ -1,7 +1,7 @@
 import { position } from "@dom-native/draggable";
 import { getUserContext, logoff, UserContext } from "common/user-ctx.js";
 import { append, customElement, first, html, on, onEvent, push } from "dom-native";
-import { BaseRouteView } from "./v-base-route";
+import { BaseRouteView } from "./route/v-base-route";
 
 const tagNameByPath: { [name: string]: string } = {
 	"": "v-home",

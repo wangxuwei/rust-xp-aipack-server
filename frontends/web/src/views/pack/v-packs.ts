@@ -1,9 +1,9 @@
+import { Pack } from "bindings/Pack.js";
 import { BaseViewElement } from "common/v-base.js";
-import { packDco } from "dcos.js";
 import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
+import { packDco } from "ts/dcos.js";
 import { asNum, isEmpty } from "utils-min";
-import { Pack } from "../bindings/Pack.js";
 import { DgPackUpload } from "./dg-pack-upload.js";
 import { DgPack } from "./dg-pack.js";
 

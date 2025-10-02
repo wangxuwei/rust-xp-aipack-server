@@ -1,8 +1,8 @@
 import { Pack } from "bindings/Pack.js";
-import { packDco } from "dcos.js";
 import { adoptStyleSheets, css, customElement, onEvent, pull } from "dom-native";
-import { showValidateError, validateValues } from "validate.js";
-import { DgDialog } from "../dialog/dg-dialog.js";
+import { packDco } from "ts/dcos.js";
+import { showValidateError, validateValues } from "ts/validate.js";
+import { DgDialog } from "../../dialog/dg-dialog.js";
 
 const _compCss = css`
 	::slotted(.dialog-content) {

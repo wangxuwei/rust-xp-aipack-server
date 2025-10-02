@@ -1,5 +1,5 @@
 import { customElement } from "dom-native";
-import { BaseLeafRoute } from "./v-leaf-route";
+import { BaseLeafRoute } from "./route/v-leaf-route";
 
 @customElement("v-home")
 export class HomeView extends BaseLeafRoute {

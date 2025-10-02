@@ -1,13 +1,13 @@
 import { hasAccess } from "common/user-ctx.js";
 import { hasOrgAccess } from "common/user-org-ctx.js";
-import { orgDco } from "dcos.js";
 import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
+import { orgDco } from "ts/dcos.js";
 import { asNum, isEmpty } from "utils-min";
-import { Org } from "../bindings/Org.js";
+import { Org } from "../../bindings/Org.js";
+import { BaseLeafRoute } from "../route/v-leaf-route.js";
 import { DgOrgRename } from "./dg-org-rename.js";
 import { DgOrg } from "./dg-org.js";
-import { BaseLeafRoute } from "./v-leaf-route.js";
 
 @customElement("v-orgs")
 export class OrgsView extends BaseLeafRoute {

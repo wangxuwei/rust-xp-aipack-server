@@ -1,6 +1,6 @@
-import { orgDco } from "dcos";
 import { DgDialog } from "dialog/dg-dialog.js";
 import { adoptStyleSheets, css, customElement, OnEvent, onEvent, pull } from "dom-native";
+import { orgDco } from "ts/dcos";
 import { asNum, isNotEmpty } from "utils-min";
 
 const _compCss = css`

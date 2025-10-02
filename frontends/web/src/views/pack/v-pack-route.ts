@@ -1,5 +1,5 @@
 import { customElement } from "dom-native";
-import { BaseRouteView } from "./v-base-route.js";
+import { BaseRouteView } from "../route/v-base-route.js";
 
 const tagNameByPath: { [name: string]: string } = {
 	"": "v-packs",
