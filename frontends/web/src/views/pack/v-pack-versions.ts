@@ -138,7 +138,7 @@ function _render(pack: Pack, versions: PackVersion[]) {
 
 	return `
 		<div class="ui-breadcrumbs">
-			<div class="breadcrumb-item"><a href="/orgs">Packs</a></div>
+			<div class="breadcrumb-item"><a href="/packs">Packs</a></div>
 			<div class="breadcrumb-item">Versions</div>
 		</div>
 		<div class="info-main">
