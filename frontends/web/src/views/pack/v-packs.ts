@@ -1,7 +1,9 @@
 import { Pack } from "bindings/Pack.js";
 import { BaseViewElement } from "common/v-base.js";
-import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
+import { OnEvent, all, customElement, first, onEvent, onHub, setAttr } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
+import { TableCell } from "table/v-table-cell.js";
+import { getOrderBy } from "ts/app-helper.js";
 import { packDco } from "ts/dcos.js";
 import { asNum, isEmpty } from "utils-min";
 import { DgPackUpload } from "./dg-pack-upload.js";
@@ -11,10 +13,16 @@ import { DgPack } from "./dg-pack.js";
 export class PacksView extends BaseViewElement {
 	#pageIndex: number = 0;
 	#pageSize: number = 3;
+	#sortColumn = "id";
+	#sortType = "asc";
 
 	//// Key elements
 	private get paginationEl(): PaginationView {
 		return first(this, "v-pagination") as PaginationView;
+	}
+
+	private get orderColumnEl(): TableCell {
+		return first(this, `v-table-cell[sort-column='${this.#sortColumn}']`) as TableCell;
 	}
 
 	//#region    ---------- Events ----------
@@ -56,6 +64,13 @@ export class PacksView extends BaseViewElement {
 		this.#pageSize = evt.detail.pageSize;
 		this.refresh();
 	}
+
+	@onEvent("SORT_CHANGE")
+	onSortChange(evt: OnEvent) {
+		this.#sortColumn = evt.detail.sortColumn;
+		this.#sortType = evt.detail.sortType;
+		this.refresh();
+	}
 	//#endregion ---------- /Events ----------
 
 	//#region    ---------- Hub Events ----------
@@ -73,11 +88,22 @@ export class PacksView extends BaseViewElement {
 
 	async refresh() {
 		const [packs, count] = await packDco.listAndCount({
-			list_options: { offset: this.#pageIndex * this.#pageSize, limit: this.#pageSize },
+			list_options: {
+				offset: this.#pageIndex * this.#pageSize,
+				limit: this.#pageSize,
+				order_bys: [getOrderBy(this.#sortColumn, this.#sortType)],
+			},
 		});
 		this.innerHTML = _render(packs);
 		const paginationEl = this.paginationEl;
 		paginationEl.refreshInfo(this.#pageIndex, count);
+		const orderColumnEl = this.orderColumnEl;
+		all(this, "v-table-cell").forEach((cellEl) => {
+			setAttr(cellEl, "sort-type", null);
+		});
+		if (this.#sortType) {
+			setAttr(orderColumnEl, "sort-type", this.#sortType);
+		}
 	}
 	//#endregion ---------- /Lifecycle ----------
 
@@ -124,7 +150,7 @@ function _render(packs: Pack[]) {
         <div class="table-container">
             <div class="ui-table">
                 <div class="thead row">
-                    <div class="cell">Pack</div>
+                    <v-table-cell sort-column="name">Pack</v-table-cell>
                     <div class="cell">Actions</div>
                 </div>
                 <div class="tbody">

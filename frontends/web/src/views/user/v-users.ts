@@ -1,5 +1,7 @@
-import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
+import { OnEvent, all, customElement, first, onEvent, onHub, setAttr } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
+import { TableCell } from "table/v-table-cell.js";
+import { getOrderBy } from "ts/app-helper.js";
 import { userDco } from "ts/dcos.js";
 import { asNum, isEmpty } from "utils-min";
 import { User } from "../../bindings/User.js";
@@ -10,10 +12,16 @@ import { DgUser } from "./dg-user.js";
 export class UsersView extends BaseLeafRoute {
 	#pageIndex: number = 0;
 	#pageSize: number = 3;
+	#sortColumn = "username";
+	#sortType = "id";
 
 	//// Key elements
 	private get paginationEl(): PaginationView {
 		return first(this, "v-pagination") as PaginationView;
+	}
+
+	private get orderColumnEl(): TableCell {
+		return first(this, `v-table-cell[sort-column='${this.#sortColumn}']`) as TableCell;
 	}
 
 	//#region    ---------- Events ----------
@@ -46,6 +54,13 @@ export class UsersView extends BaseLeafRoute {
 		this.#pageSize = evt.detail.pageSize;
 		this.refresh();
 	}
+
+	@onEvent("SORT_CHANGE")
+	onSortChange(evt: OnEvent) {
+		this.#sortColumn = evt.detail.sortColumn;
+		this.#sortType = evt.detail.sortType;
+		this.refresh();
+	}
 	//#endregion ---------- /Events ----------
 
 	//#region    ---------- Hub Events ----------
@@ -63,11 +78,22 @@ export class UsersView extends BaseLeafRoute {
 
 	async refresh() {
 		const [users, count] = await userDco.listAndCount({
-			list_options: { offset: this.#pageIndex * this.#pageSize, limit: this.#pageSize },
+			list_options: {
+				offset: this.#pageIndex * this.#pageSize,
+				limit: this.#pageSize,
+				order_bys: [getOrderBy(this.#sortColumn, this.#sortType)],
+			},
 		});
 		this.innerHTML = _render(users);
 		const paginationEl = this.paginationEl;
 		paginationEl.refreshInfo(this.#pageIndex, count);
+		const orderColumnEl = this.orderColumnEl;
+		all(this, "v-table-cell").forEach((cellEl) => {
+			setAttr(cellEl, "sort-type", null);
+		});
+		if (this.#sortType) {
+			setAttr(orderColumnEl, "sort-type", this.#sortType);
+		}
 	}
 	//#endregion ---------- /Lifecycle ----------
 
@@ -105,7 +131,7 @@ function _render(users: User[]) {
 		<div class="table-container">
 			<div class="ui-table">
 				<div class="thead row">
-					<div class="cell">Username</div>
+					<v-table-cell sort-column="username">Username</v-table-cell>
 					<div class="cell">Actions</div>
 				</div>
 				<div class="tbody">

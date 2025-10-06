@@ -1,8 +1,10 @@
 import { Pack } from "bindings/Pack.js";
 import { PackVersion } from "bindings/PackVersion.js";
 import { pathAsNum } from "common/route.js";
-import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
+import { OnEvent, all, customElement, first, onEvent, onHub, setAttr } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
+import { TableCell } from "table/v-table-cell.js";
+import { getOrderBy } from "ts/app-helper.js";
 import { APP_DATE_FORMAT } from "ts/conf.js";
 import { packDco } from "ts/dcos.js";
 import { download } from "ts/file.js";
@@ -18,10 +20,16 @@ export class PackVersionsView extends BaseLeafRoute {
 	#pageIndex: number = 0;
 	#pageSize: number = 3;
 	#packId: number | null = null;
+	#sortColumn = "id";
+	#sortType = "asc";
 
 	//// Key elements
 	private get paginationEl(): PaginationView {
 		return first(this, "v-pagination") as PaginationView;
+	}
+
+	private get orderColumnEl(): TableCell {
+		return first(this, `v-table-cell[sort-column='${this.#sortColumn}']`) as TableCell;
 	}
 
 	protected get leafLevel() {
@@ -59,6 +67,13 @@ export class PackVersionsView extends BaseLeafRoute {
 		this.#pageSize = evt.detail.pageSize;
 		this.refresh();
 	}
+
+	@onEvent("SORT_CHANGE")
+	onSortChange(evt: OnEvent) {
+		this.#sortColumn = evt.detail.sortColumn;
+		this.#sortType = evt.detail.sortType;
+		this.refresh();
+	}
 	//#endregion ---------- /Events ----------
 
 	//#region    ---------- Hub Events ----------
@@ -87,11 +102,22 @@ export class PackVersionsView extends BaseLeafRoute {
 				return;
 			}
 			const [versions, count] = await packDco.listPackVersions(this.#packId, {
-				list_options: { offset: this.#pageIndex * this.#pageSize, limit: this.#pageSize },
+				list_options: {
+					offset: this.#pageIndex * this.#pageSize,
+					limit: this.#pageSize,
+					order_bys: [getOrderBy(this.#sortColumn, this.#sortType)],
+				},
 			});
 			this.innerHTML = _render(pack, versions);
 			const paginationEl = this.paginationEl;
 			paginationEl.refreshInfo(this.#pageIndex, count);
+			const orderColumnEl = this.orderColumnEl;
+			all(this, "v-table-cell").forEach((cellEl) => {
+				setAttr(cellEl, "sort-type", null);
+			});
+			if (this.#sortType) {
+				setAttr(orderColumnEl, "sort-type", this.#sortType);
+			}
 		} else {
 			const routeView = this.closest(".ui-route") as BaseRouteView;
 			routeView.showNotFound();
@@ -165,10 +191,10 @@ function _render(pack: Pack, versions: PackVersion[]) {
 				<div class="table-container">
 					<div class="ui-table">
 						<div class="thead row">
-							<div class="cell">Version</div>
-							<div class="cell">Size</div>
-							<div class="cell">Changelog</div>
-							<div class="cell">Time</div>
+							<v-table-cell sort-column="version">Version</v-table-cell>
+							<v-table-cell sort-column="file_size">Size</v-table-cell>
+							<v-table-cell sort-column="changelog">Changelog</v-table-cell>
+							<v-table-cell sort-column="ctime">Time</v-table-cell>
 							<div class="cell actions">Actions</div>
 						</div>
 						<div class="tbody">

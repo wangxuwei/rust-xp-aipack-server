@@ -1,7 +1,9 @@
 import { hasAccess } from "common/user-ctx.js";
 import { hasOrgAccess } from "common/user-org-ctx.js";
-import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
+import { OnEvent, all, customElement, first, onEvent, onHub, setAttr } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
+import { TableCell } from "table/v-table-cell.js";
+import { getOrderBy } from "ts/app-helper.js";
 import { orgDco } from "ts/dcos.js";
 import { asNum, isEmpty } from "utils-min";
 import { Org } from "../../bindings/Org.js";
@@ -13,12 +15,17 @@ import { DgOrg } from "./dg-org.js";
 export class OrgsView extends BaseLeafRoute {
 	#pageIndex: number = 0;
 	#pageSize: number = 3;
+	#sortColumn = "id";
+	#sortType = "asc";
 
 	//// Key elements
 	private get paginationEl(): PaginationView {
 		return first(this, "v-pagination") as PaginationView;
 	}
 
+	private get orderColumnEl(): TableCell {
+		return first(this, `v-table-cell[sort-column='${this.#sortColumn}']`) as TableCell;
+	}
 	//#region    ---------- Events ----------
 	@onEvent("click", ".btn-edit")
 	onEditClick(evt: MouseEvent & OnEvent) {
@@ -58,6 +65,13 @@ export class OrgsView extends BaseLeafRoute {
 		this.#pageSize = evt.detail.pageSize;
 		this.refresh();
 	}
+
+	@onEvent("SORT_CHANGE")
+	onSortChange(evt: OnEvent) {
+		this.#sortColumn = evt.detail.sortColumn;
+		this.#sortType = evt.detail.sortType;
+		this.refresh();
+	}
 	//#endregion ---------- /Events ----------
 
 	//#region    ---------- Hub Events ----------
@@ -75,11 +89,22 @@ export class OrgsView extends BaseLeafRoute {
 
 	async refresh() {
 		const [orgs, count] = await orgDco.listAndCount({
-			list_options: { offset: this.#pageIndex * this.#pageSize, limit: this.#pageSize },
+			list_options: {
+				offset: this.#pageIndex * this.#pageSize,
+				limit: this.#pageSize,
+				order_bys: [getOrderBy(this.#sortColumn, this.#sortType)],
+			},
 		});
 		this.innerHTML = _render(orgs);
 		const paginationEl = this.paginationEl;
 		paginationEl.refreshInfo(this.#pageIndex, count);
+		const orderColumnEl = this.orderColumnEl;
+		all(this, "v-table-cell").forEach((cellEl) => {
+			setAttr(cellEl, "sort-type", null);
+		});
+		if (this.#sortType) {
+			setAttr(orderColumnEl, "sort-type", this.#sortType);
+		}
 	}
 	//#endregion ---------- /Lifecycle ----------
 
@@ -132,7 +157,7 @@ function _render(orgs: Org[]) {
 		<div class="table-container">
 			<div class="ui-table">
 				<div class="thead row">
-					<div class="cell">Name</div>
+					<v-table-cell sort-column="name">Name</v-table-cell>
 					<div class="cell">Kind</div>
 					<div class="cell actions">Actions</div>
 				</div>

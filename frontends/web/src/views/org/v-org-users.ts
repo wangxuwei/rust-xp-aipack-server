@@ -1,6 +1,8 @@
 import { pathAsNum } from "common/route.js";
-import { OnEvent, customElement, first, onEvent, onHub } from "dom-native";
+import { OnEvent, all, customElement, first, onEvent, onHub, setAttr } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
+import { TableCell } from "table/v-table-cell.js";
+import { getOrderBy } from "ts/app-helper.js";
 import { orgDco } from "ts/dcos.js";
 import { asNum, isEmpty } from "utils-min";
 import { Org } from "../../bindings/Org.js";
@@ -13,11 +15,17 @@ import { DgOrgUserAdd } from "./dg-org-user-add.js";
 export class OrgUsersView extends BaseLeafRoute {
 	#pageIndex: number = 0;
 	#pageSize: number = 3;
+	#sortColumn = "id";
+	#sortType = "asc";
 	#orgId: number | null = null;
 
 	//// Key elements
 	private get paginationEl(): PaginationView {
 		return first(this, "v-pagination") as PaginationView;
+	}
+
+	private get orderColumnEl(): TableCell {
+		return first(this, `v-table-cell[sort-column='${this.#sortColumn}']`) as TableCell;
 	}
 
 	protected get leafLevel() {
@@ -53,6 +61,13 @@ export class OrgUsersView extends BaseLeafRoute {
 	onUserOrgChange() {
 		this.refresh();
 	}
+
+	@onEvent("SORT_CHANGE")
+	onSortChange(evt: OnEvent) {
+		this.#sortColumn = evt.detail.sortColumn;
+		this.#sortType = evt.detail.sortType;
+		this.refresh();
+	}
 	//#endregion ---------- /Hub Events ----------
 
 	//#region    ---------- Lifecycle ----------
@@ -77,10 +92,18 @@ export class OrgUsersView extends BaseLeafRoute {
 			const [users, count] = await orgDco.getUsersByOrg(this.#orgId, {
 				offset: this.#pageIndex * this.#pageSize,
 				limit: this.#pageSize,
+				order_bys: [getOrderBy(this.#sortColumn, this.#sortType)],
 			});
 			this.innerHTML = _render(org, users);
 			const paginationEl = this.paginationEl;
 			paginationEl.refreshInfo(this.#pageIndex, count);
+			const orderColumnEl = this.orderColumnEl;
+			all(this, "v-table-cell").forEach((cellEl) => {
+				setAttr(cellEl, "sort-type", null);
+			});
+			if (this.#sortType) {
+				setAttr(orderColumnEl, "sort-type", this.#sortType);
+			}
 		} else {
 			const routeView = this.closest(".ui-route") as BaseRouteView;
 			routeView.showNotFound();
@@ -146,7 +169,7 @@ function _render(org: Org, users: User[]) {
 				<div class="table-container">
 					<div class="ui-table">
 						<div class="thead row">
-							<div class="cell">Username</div>
+							<v-table-cell sort-column="username">Username</v-table-cell>
 							<div class="cell actions">Actions</div>
 						</div>
 						<div class="tbody">
