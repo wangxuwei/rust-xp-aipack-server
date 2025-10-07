@@ -1,11 +1,11 @@
 import { Pack } from "bindings/Pack.js";
 import { PackVersion } from "bindings/PackVersion.js";
+import { apiPrx, APP_DATE_FORMAT } from "common/conf.js";
 import { pathAsNum } from "common/route.js";
-import { OnEvent, all, customElement, first, onEvent, onHub, setAttr } from "dom-native";
+import { all, customElement, first, OnEvent, onEvent, onHub, setAttr } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
 import { TableCell } from "table/v-table-cell.js";
 import { getOrderBy } from "ts/app-helper.js";
-import { APP_DATE_FORMAT } from "ts/conf.js";
 import { packDco } from "ts/dcos.js";
 import { download } from "ts/file.js";
 import { formatDateTime } from "ts/utils-date.js";
@@ -127,7 +127,7 @@ export class PackVersionsView extends BaseLeafRoute {
 
 	private async downloadPackVersion(versionId: number) {
 		try {
-			download(`/api/download_pack/${versionId}`);
+			download(`${apiPrx}/download_pack/${versionId}`);
 		} catch (error) {
 			console.error("Failed to download pack:", error);
 			alert("Failed to download pack. Please try again.");

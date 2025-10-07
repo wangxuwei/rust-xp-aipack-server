@@ -2,6 +2,7 @@ import { position } from "@dom-native/draggable";
 import { getUserContext, logoff, UserContext } from "common/user-ctx.js";
 import { append, customElement, first, html, on, onEvent, push } from "dom-native";
 import { BaseRouteView } from "./route/v-base-route";
+import { DgChangePwd } from "./user/dg-change-pwd";
 
 const tagNameByPath: { [name: string]: string } = {
 	"": "v-home",
@@ -41,6 +42,7 @@ export class MainView extends BaseRouteView {
 				document.body,
 				html(`
 			<c-menu id='user-menu-123'>
+				<li class="do-change-pwd">Change password</li>
 				<li class="do-logoff">Logoff</li>
 			</c-menu>
 			`)
@@ -51,6 +53,13 @@ export class MainView extends BaseRouteView {
 			on(menu, "pointerup", "li.do-logoff", async (evt) => {
 				await logoff();
 				window.location.href = "/";
+			});
+
+			on(menu, "pointerup", "li.do-change-pwd", async (evt) => {
+				const dialog = document.createElement("dg-change-pwd") as DgChangePwd;
+				const user = await getUserContext();
+				dialog.userId = user?.id;
+				this.appendChild(dialog);
 			});
 		}
 	}

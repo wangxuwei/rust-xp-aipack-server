@@ -1,4 +1,5 @@
 import { GlobalAccess } from "./bindings/GlobalAccess.js";
+import { apiPrx } from "./conf.js";
 import { webGet, webPost } from "./web-request.js";
 
 export interface UserContext {
@@ -11,17 +12,17 @@ export interface UserContext {
 let _uc: UserContext | null;
 
 export async function login(username: string, pwd: string) {
-	const r = await webPost("/api/login", { body: { username, pwd } });
+	const r = await webPost(apiPrx + "/login", { body: { username, pwd } });
 	return r;
 }
 
 export async function logoff() {
-	const r = await webPost("/api/logoff", { body: { logoff: true } });
+	const r = await webPost(apiPrx + "/logoff", { body: { logoff: true } });
 	return r;
 }
 
 export async function getUserContext(): Promise<UserContext | null> {
-	const ucResult = await webGet("/api/user-context");
+	const ucResult = await webGet(apiPrx + "/user-context");
 	_uc = ucResult?.result?.user;
 	return ucResult && ucResult.result ? ucResult.result.user : null;
 }

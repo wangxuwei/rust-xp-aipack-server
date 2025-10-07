@@ -1,11 +1,10 @@
 import { deepFreeze } from "utils-min";
+import { apiPrx as defaultApiPrx } from "./conf";
 import { randomString } from "./utils";
 import { webPost } from "./web-request";
 
-const apiPrx = "/api";
-
 export async function rpc_invoke(method: string, params?: object, id?: any, apiPrx?: string): Promise<any> {
-	apiPrx = apiPrx ?? "/api/rpc";
+	apiPrx = apiPrx ?? `${defaultApiPrx}/rpc`;
 	const data = { id: id ?? randomString(), method, params, jsonrpc: "2.0" };
 
 	const response: any = await webPost(`${apiPrx}`, { body: data });
@@ -25,7 +24,7 @@ export async function request_upload(method: string, params?: { [name: string]: 
 	for (const k in params) {
 		data.append(k, params[k]);
 	}
-	const response: any = await webPost(`${apiPrx}/${method}`, { body: data });
+	const response: any = await webPost(`${defaultApiPrx}/${method}`, { body: data });
 	if (response.error != null) {
 		console.log("ERROR - request_upload - request_upload error", response);
 		throw response.error;

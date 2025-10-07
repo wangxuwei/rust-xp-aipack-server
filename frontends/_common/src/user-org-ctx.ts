@@ -1,5 +1,6 @@
 import { OrgAccess } from "./bindings/OrgAccess.js";
 import { ORoleName } from "./bindings/ORoleName.js";
+import { apiPrx } from "./conf.js";
 import { webGet } from "./web-request.js";
 
 export interface UserOrgContext {
@@ -11,7 +12,7 @@ export interface UserOrgContext {
 let _uoc: UserOrgContext | null;
 
 export async function getUserOrgContext(): Promise<UserOrgContext | null> {
-	const uocResult = await webGet("/api/user-org-context");
+	const uocResult = await webGet(apiPrx + "/user-org-context");
 	_uoc = uocResult?.result?.org;
 	return uocResult && uocResult.result ? uocResult.result.org : null;
 }

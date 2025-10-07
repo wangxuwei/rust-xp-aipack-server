@@ -32,6 +32,18 @@ pub enum Error {
 	// -- Extractors
 	ReqStampNotInReqExt,
 
+	// -- Pwd
+	UserNotFound,
+	FailUserHasNoPwd {
+		user_id: i64,
+	},
+	FailPwdNotMatching {
+		user_id: i64,
+	},
+	FailPwdNotCorrect {
+		user_id: i64,
+	},
+
 	// -- Modules
 	#[from]
 	Ctx(ctx::Error),

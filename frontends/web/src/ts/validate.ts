@@ -19,27 +19,34 @@ const VALIDATORS = {
 		validator: function (field: FormField) {
 			return field.value ? true : { var: field.label };
 		},
-		message: "{var} is required",
+		message: "'{var}' is required",
 	},
 	number: {
 		validator: function (field: FormField) {
 			const v = asNum(field.value);
 			return v != null ? true : { var: field.label };
 		},
-		message: "{var} should be a number",
+		message: "'{var}' should be a number",
+	},
+	equal: {
+		validator: function (field: FormField, depends: string[], dependsFields: FormField[]) {
+			return field.value == dependsFields[0]?.value ? true : { var: dependsFields[0].label, var0: field.label };
+		},
+		message: "'{var0}' should be equal with '{var}'",
 	},
 	maxlength: {
 		validator: function (field: FormField, depends: string[], dependsFields: FormField[]) {
 			let maxLength = asNum(depends[0])!;
 			return field.value.length <= maxLength ? true : { var: field.label, maxLength };
 		},
-		message: "{var} length should be less than {maxLength}",
+		message: "'{var}' length should be less than {maxLength}",
 	},
 } as { [name: string]: ValidationRule };
 
 // endregion: --- Types
 
 // region:    --- Core Validation Functions
+// <d-input v-rules="equal" v-equal-depends-on="" />
 export function showValidateError(formEl: HTMLElement, message: string) {
 	const validateEl = first(formEl, ".ui-form-validate-message");
 	if (validateEl) {
@@ -60,7 +67,7 @@ export function validateValues(formEl: HTMLElement): string | null {
 	let validResult = null;
 	const validatorsMap = fieldEls.reduce((pv, fieldEl) => {
 		const name = getAttr(fieldEl, "name")!;
-		const value = getAttr(fieldEl, "value")!;
+		const value = (fieldEl as HTMLInputElement).value!;
 		const label = getFormLabel(fieldEl);
 		let field = {
 			label,
@@ -96,9 +103,10 @@ function validateValue(
 			if (ruleConf) {
 				const dependsValues = [];
 				const dependsFields = [];
-				const ruleDependsOnStr = getAttr(fieldEl, `"v-${ruleName}-depends-on"`);
+				const ruleDependsOnStr = getAttr(fieldEl, `v-${ruleName}-depends-on`);
 				if (ruleDependsOnStr) {
 					const ruleValues = ruleDependsOnStr.split(";");
+
 					// load all rule values
 					for (const ruleValue of ruleValues) {
 						if (ruleValue.startsWith(FIELD_PREFIX)) {
@@ -108,6 +116,7 @@ function validateValue(
 							if (fieldsMap) {
 								const dependField = fieldsMap[dependName];
 								dependVal = dependField?.value;
+								dependFormField = dependField;
 							} else {
 								const dependField = getDependOnField(formEl, dependName);
 								dependVal = dependField.value;
