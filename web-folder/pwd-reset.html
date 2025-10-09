@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/pwd-reset.css?v=DROP-001" rel="stylesheet">
+    <!-- Load the app bundle party libraries (this is generated from src/js-lib/index.ts) -->
+    <script type="text/javascript" src="/js/pwd-reset.js?v=DROP-001"></script> 
+    <title>Reset Password</title>
+</head>
+<body>
+    <div class="container form-ctn">
+        <h1>Reset Password</h1>
+        <div class="error hide"></div>
+        <form class="reset-form">
+            <input type="hidden" name="prp" value="{{prp}}">
+            <div class="form-group">
+                <label for="password">New Password:</label>
+                <input type="password" name="pwd_clear" required>
+            </div>
+            <div class="form-group">
+                <label for="repeat-password">Repeat Password:</label>
+                <input type="password" name="repeat_pwd" required>
+            </div>
+            <button type="submit">Reset Password</button>
+        </form>
+    </div>
+
+    <div class="container success-ctn hide">
+        <h2>Reset successfully</h2>
+        <div class="ctn">Password reset successfully, please click <a class="login reload-link" href="/login">here</a> to login page</div>
+    </div>
+</body>
+</html>

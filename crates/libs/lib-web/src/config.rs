@@ -1,4 +1,4 @@
-use lib_utils::envs::get_env;
+use lib_utils::envs::{get_env, get_env_parse};
 use std::sync::OnceLock;
 
 pub fn rpc_config() -> &'static RpcConfig {
@@ -14,12 +14,19 @@ pub fn rpc_config() -> &'static RpcConfig {
 #[allow(non_snake_case)]
 pub struct RpcConfig {
 	pub PACKS_UPLOAD_DIR: String,
+	pub WEB_FOLDER: String,
+	pub HOST: String,
+	pub PRLINK_DURATION: i64,
 }
 
 impl RpcConfig {
 	fn load_from_env() -> lib_utils::envs::Result<RpcConfig> {
 		Ok(RpcConfig {
 			PACKS_UPLOAD_DIR: get_env("PACKS_UPLOAD_DIR")?,
+			// -- Web
+			HOST: get_env("SERVICE_HOST")?,
+			WEB_FOLDER: get_env("SERVICE_WEB_FOLDER")?,
+			PRLINK_DURATION: get_env_parse::<i64>("SERVICE_PRLINK_DURATION")?,
 		})
 	}
 }

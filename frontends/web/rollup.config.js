@@ -34,4 +34,14 @@ export default [
 		},
 		plugins: [rollup_multi(), rollup_cjs(), rollup_re(), rollup_ts()],
 	},
+	{
+		input: "./pages/pwd-reset/bundle.ts",
+		output: {
+			file: "../../web-folder/js/pwd-reset.js",
+			format: "iife",
+			name: "pwd_reset",
+			sourcemap: true,
+		},
+		plugins: [rollup_cjs(), rollup_re(), rollup_ts()],
+	},
 ];

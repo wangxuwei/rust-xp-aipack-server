@@ -1,8 +1,9 @@
 import { position } from "@dom-native/draggable";
 import { getUserContext, logoff, UserContext } from "common/user-ctx.js";
+import { DgAlert } from "dialog/dg-alert";
 import { append, customElement, first, html, on, onEvent, push } from "dom-native";
+import { userDco } from "ts/dcos";
 import { BaseRouteView } from "./route/v-base-route";
-import { DgChangePwd } from "./user/dg-change-pwd";
 
 const tagNameByPath: { [name: string]: string } = {
 	"": "v-home",
@@ -56,10 +57,11 @@ export class MainView extends BaseRouteView {
 			});
 
 			on(menu, "pointerup", "li.do-change-pwd", async (evt) => {
-				const dialog = document.createElement("dg-change-pwd") as DgChangePwd;
 				const user = await getUserContext();
-				dialog.userId = user?.id;
+				await userDco.prlink(user?.id!);
+				const dialog = document.createElement("dg-alert") as DgAlert;
 				this.appendChild(dialog);
+				dialog.message = "Sent a reset link to your email account, please check.";
 			});
 		}
 	}

@@ -28,6 +28,7 @@ pub mod modql_utils;
 pub mod org;
 pub mod pack;
 pub mod pack_version;
+pub mod prlink;
 pub mod user;
 pub mod user_org;
 
@@ -35,6 +36,8 @@ pub use self::error::{Error, Result};
 
 use crate::model::store::dbx::Dbx;
 use crate::model::store::new_db_pool;
+use modql::filter::IntoSeaError;
+use std::str::FromStr;
 
 // endregion: --- Modules
 
@@ -67,3 +70,14 @@ impl ModelManager {
 }
 
 // endregion: --- ModelManager
+
+pub fn uuid_to_sea_value(
+	json_value: serde_json::Value,
+) -> modql::filter::SeaResult<sea_query::Value> {
+	let uuid_str = json_value
+		.as_str()
+		.ok_or(IntoSeaError::Custom("sea value convert".to_owned()))?;
+	let value = uuid::Uuid::from_str(uuid_str)
+		.map_err(|_| IntoSeaError::Custom("sea value convert to uuid".to_owned()))?;
+	Ok(value.into())
+}

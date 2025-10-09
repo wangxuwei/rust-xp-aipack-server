@@ -23,6 +23,17 @@ export class UserDco extends BaseDco<User, QueryOptions<User>> {
 		}
 	}
 
+	async prlink(user_id: number): Promise<void> {
+		let response: any = await webPost(`${apiPrx}/prlink`, {
+			body: { user_id },
+		});
+		if (response.error != null) {
+			throw response.error;
+		} else {
+			return deepFreeze(response.result);
+		}
+	}
+
 	async listAndCount(qo?: QueryOptions<User>): Promise<[User[], number]> {
 		const result = await rpc_invoke(`list_and_count_${this.plural}`, { ...qo });
 		if (result.data) {

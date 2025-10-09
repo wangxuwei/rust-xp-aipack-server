@@ -11,6 +11,8 @@ pub enum Error {
 	FailSpawnBlockForValidate,
 	FailSpawnBlockForHash,
 
+	FailRpLinkForValidate,
+
 	// -- Modules
 	#[from]
 	Scheme(scheme::Error),

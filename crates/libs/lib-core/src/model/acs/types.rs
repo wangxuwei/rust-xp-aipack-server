@@ -54,6 +54,8 @@ pub enum GlobalAccess {
 	#[sqlx(rename = "a_api")]
 	Api,
 
+	#[sqlx(rename = "a_pwd_reset")]
+	PwdReset,
 	#[sqlx(rename = "a_user_manage")]
 	UserManage,
 	#[sqlx(rename = "a_user_pwd_update")]

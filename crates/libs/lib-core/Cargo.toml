@@ -34,7 +34,7 @@ strum_macros = { workspace = true }
 # -- Tracing
 tracing = "0.1"
 # -- Others
-uuid = {version = "1", features = ["v4","fast-rng","serde"]}
+uuid = { workspace = true }
 time = { workspace = true }
 derive_more = { workspace = true }
 ts-rs = { version = "7.1.1", features=["uuid-impl", "serde-compat", "no-serde-warnings"]}

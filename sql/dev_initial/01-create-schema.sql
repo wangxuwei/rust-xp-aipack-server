@@ -157,3 +157,21 @@ ALTER TABLE pack_version ADD CONSTRAINT fk_pack_version_cid
 ALTER TABLE pack_version ADD CONSTRAINT fk_pack_version_mid
   FOREIGN KEY (mid) REFERENCES "user"(id)
   ON DELETE SET NULL;
+
+
+  
+CREATE TABLE "prlink" (
+  id bigserial PRIMARY KEY,
+
+  "user_id" bigint not null,
+  code uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),
+
+  cid bigint,
+  ctime TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  mid bigint,
+  mtime TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE prlink ADD CONSTRAINT fk_prlink_user_id FOREIGN KEY ("user_id") REFERENCES "user" (id) ON DELETE CASCADE;
+ALTER TABLE prlink ADD CONSTRAINT fk_prlink_mid FOREIGN KEY ("mid") REFERENCES "user" (id) ON DELETE SET NULL;
+ALTER TABLE prlink ADD CONSTRAINT fk_prlink_cid FOREIGN KEY ("cid") REFERENCES "user" (id) ON DELETE SET NULL;

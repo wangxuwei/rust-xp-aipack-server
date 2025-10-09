@@ -83,9 +83,20 @@ pub enum Error {
 	#[from]
 	Io(#[serde_as(as = "DisplayFromStr")] std::io::Error),
 
+	#[from]
+	TmplRender(#[serde_as(as = "DisplayFromStr")] handlebars::RenderError),
+	#[from]
+	Tmpl(#[serde_as(as = "DisplayFromStr")] handlebars::TemplateError),
+	#[from]
+	Axum(#[serde_as(as = "DisplayFromStr")] axum::http::Error),
+
 	FileDownload,
 	PackFileNotFound,
 	PackVersionAlreadyExists,
+
+	PrpMissing,
+	PrpInvalid,
+	PrpTimeout,
 
 	MissingRequiredField(String),
 }

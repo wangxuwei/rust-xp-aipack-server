@@ -4,15 +4,29 @@ const nested = (await import("postcss-nested")).default;
 
 const plugins = [prefixer, importer, nested];
 
-export default {
-	// required. Support single string, or array, will be processed in order
-	input: ["./pcss/main.pcss", "./src/**/*.pcss"],
+export default [
+	{
+		// required. Support single string, or array, will be processed in order
+		input: ["./pcss/main.pcss", "./src/**/*.pcss"],
 
-	// required. single css file supported for now.
-	output: "../../web-folder/css/all-bundle.css",
+		// required. single css file supported for now.
+		output: "../../web-folder/css/all-bundle.css",
 
-	watchPath: ["./**/*.pcss", "../_common/**/*.pcss"],
+		watchPath: ["./**/*.pcss", "../_common/**/*.pcss"],
 
-	// postcss processor arrays
-	plugins,
-};
+		// postcss processor arrays
+		plugins,
+	},
+	{
+		// required. Support single string, or array, will be processed in order
+		input: ["./pages/pwd-reset/**/*.pcss"],
+
+		// required. single css file supported for now.
+		output: "../../web-folder/css/pwd-reset.css",
+
+		watchPath: ["./pages/pwd-reset/**/*.pcss"],
+
+		// postcss processor arrays
+		plugins,
+	},
+];

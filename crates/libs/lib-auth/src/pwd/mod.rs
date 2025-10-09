@@ -17,6 +17,7 @@
 // region:    --- Modules;
 
 mod error;
+pub mod prlink;
 mod scheme;
 
 pub use self::error::{Error, Result};

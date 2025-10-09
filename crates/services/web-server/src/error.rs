@@ -11,6 +11,8 @@ pub type Result<T> = core::result::Result<T, Error>;
 pub enum Error {
 	// -- Modules
 	#[from]
+	Pwd(lib_auth::pwd::Error),
+	#[from]
 	Model(model::Error),
 	#[from]
 	Rpc(lib_rpc_core::Error),

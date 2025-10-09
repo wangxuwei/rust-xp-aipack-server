@@ -15,6 +15,7 @@ pub fn auth_config() -> &'static AuthConfig {
 pub struct AuthConfig {
 	// -- Crypt
 	pub PWD_KEY: Vec<u8>,
+	pub PRLINK_KEY: Vec<u8>,
 
 	pub TOKEN_KEY: Vec<u8>,
 	pub TOKEN_DURATION_SEC: f64,
@@ -25,6 +26,7 @@ impl AuthConfig {
 		Ok(AuthConfig {
 			// -- Crypt
 			PWD_KEY: get_env_b64u_as_u8s("SERVICE_PWD_KEY")?,
+			PRLINK_KEY: get_env_b64u_as_u8s("SERVICE_PRLINK_KEY")?,
 
 			TOKEN_KEY: get_env_b64u_as_u8s("SERVICE_TOKEN_KEY")?,
 			TOKEN_DURATION_SEC: get_env_parse("SERVICE_TOKEN_DURATION_SEC")?,

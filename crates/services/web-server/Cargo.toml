@@ -30,7 +30,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 rpc-router = { workspace = true }
 # -- Others
 time = { workspace = true }
-uuid = {version = "1", features = ["v4","fast-rng",]}
+uuid = { workspace = true }
 strum_macros = "0.27.2"
 derive_more = { workspace = true }
 
