@@ -89,6 +89,12 @@ pub enum Error {
 	Tmpl(#[serde_as(as = "DisplayFromStr")] handlebars::TemplateError),
 	#[from]
 	Axum(#[serde_as(as = "DisplayFromStr")] axum::http::Error),
+	#[from]
+	EmailAddress(#[serde_as(as = "DisplayFromStr")] lettre::address::AddressError),
+	#[from]
+	EmailSend(#[serde_as(as = "DisplayFromStr")] lettre::transport::smtp::Error),
+	#[from]
+	Email(#[serde_as(as = "DisplayFromStr")] lettre::error::Error),
 
 	FileDownload,
 	PackFileNotFound,

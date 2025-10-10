@@ -28,6 +28,9 @@ SERVICE_TOKEN_DURATION_SEC="1800" # 30 minutes
 SERVICE_PRLINK_KEY="9FoHBmkyxbgu_xFoQK7e0jz3RMNVJWgfvbVn712FBNH9LLaAWS3CS6Zpcg6RveiObvCUb6a2z-uAiLjhLh2igw"
 SERVICE_PRLINK_DURATION = "24" # 24 hours
 SERVICE_HOST = "http://localhost:8080"
+SERVICE_EMAIL_HOST = "localhost"
+SERVICE_EMAIL_PORT = "1025"
+SERVICE_EMAIL_FROM = "hello@localhost.com"
 ## -- ConfigMap
 
 # This will be relative to Cargo.toml

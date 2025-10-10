@@ -7,6 +7,8 @@ use axum::extract::{Query, State};
 use axum::http::header::CONTENT_TYPE;
 use axum::http::{Response, StatusCode};
 use axum::Json;
+use lettre::message::header::ContentType;
+use lettre::{Message, SmtpTransport, Transport};
 use lib_auth::pwd::prlink::{url_prparam, validate_prparam, PrlinkUserInfo};
 use lib_auth::pwd::{self, ContentToHash};
 use lib_core::ctx::Ctx;
@@ -14,6 +16,7 @@ use lib_core::model::prlink::{Prlink, PrlinkBmc, PrlinkForCreate};
 use lib_core::model::user::{User, UserBmc, UserForAuth, UserForLogin};
 use lib_core::model::ModelManager;
 use lib_utils::time::now_utc;
+use regex::Regex;
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::collections::HashMap;
@@ -165,7 +168,7 @@ pub async fn api_user_prlink(
 
 	// Return response
 	let url = format!("{}/pwd-reset?prp={prp}", config.HOST);
-	send_email(url.as_str()).await?;
+	send_email(url.as_str(), user.username.as_str()).await?;
 
 	Ok(Json(json!({
 		"result": {
@@ -288,8 +291,54 @@ async fn check_prp(mm: &ModelManager, prp: &str) -> Result<(UserForLogin, Prlink
 	Ok((user, prlink))
 }
 
-async fn send_email(url: &str) -> Result<()> {
-	// FIXME: for now just print here
-	println!("url: {url}");
+async fn send_email(url: &str, to: &str) -> Result<()> {
+	if !is_valid_email(to) {
+		return Err(Error::EmailAddress(
+			lettre::address::AddressError::InvalidUser,
+		));
+	}
+
+	// create email
+	// region:    --- tmpl
+	let mut handlebars = handlebars::Handlebars::new();
+	let config = rpc_config();
+	handlebars.register_template_file(
+		"email-tmpl",
+		format!("{}/email-tmpl.html", config.WEB_FOLDER),
+	)?;
+
+	let mut data = HashMap::new();
+	data.insert("url", url);
+	let html = handlebars.render("email-tmpl", &data)?;
+	// endregion: --- tmpl
+
+	let email = Message::builder()
+		.from(format!("From <{}>", config.EMAIL_FROM).parse()?)
+		.to(format!("To <{to}>").parse()?)
+		.subject("Reset password")
+		.multipart(
+			lettre::message::MultiPart::alternative().singlepart(
+				lettre::message::SinglePart::builder()
+					.content_type(ContentType::TEXT_HTML)
+					.body(html),
+			),
+		)?;
+
+	// create SMTP connector(connect to MailHog)
+	// skip TLS
+	let mailer = SmtpTransport::builder_dangerous(config.EMAIL_HOST.as_str())
+		// MailHog SMTP port
+		.port(config.EMAIL_PORT)
+		.build();
+
+	// send email
+	mailer.send(&email)?;
+
 	Ok(())
+}
+
+fn is_valid_email(email: &str) -> bool {
+	let email_regex =
+		Regex::new(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").unwrap();
+	email_regex.is_match(email)
 }

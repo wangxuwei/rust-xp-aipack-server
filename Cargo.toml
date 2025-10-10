@@ -45,3 +45,5 @@ tower-cookies = "0.11"
 time = {version = "0.3", features = ["formatting", "parsing", "serde"]}
 derive_more = {version = "1.0.0-beta", features = ["from", "display"] }
 uuid = {version = "1.18.1", features = ["v4", "v7","fast-rng", "serde"]}
+lettre = "0.10"
+regex = "1.11.3"

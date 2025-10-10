@@ -33,6 +33,8 @@ strum_macros = "0.26"
 derive_more = { workspace = true }
 modql = { workspace = true }
 handlebars = { workspace = true }
+lettre = { workspace = true }
+regex = { workspace = true }
 
 [lints]
 workspace = true
