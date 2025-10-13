@@ -5,7 +5,6 @@ use crate::model::acs::Ga;
 use crate::model::base::{self, DbBmc};
 use crate::model::modql_utils::time_to_sea_value;
 use crate::model::pack::PackBmc;
-use crate::model::Error;
 use crate::model::ModelManager;
 use crate::model::Result;
 use lib_utils::time::Rfc3339;
@@ -16,6 +15,7 @@ use modql::filter::{
 	FilterNodes, ListOptions, OpValsInt64, OpValsString, OpValsValue,
 };
 
+use crate::model::org::OrgBmc;
 use sea_query::enum_def;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
@@ -31,6 +31,7 @@ use ts_rs::TS;
 #[enum_def]
 pub struct PackVersion {
 	pub id: i64,
+	pub org_id: i64,
 	pub pack_id: i64,
 	pub version: String,
 	pub file_path: String,
@@ -51,6 +52,7 @@ pub struct PackVersion {
 #[derive(Fields, Serialize, Deserialize)]
 pub struct PackVersionForCreate {
 	pub pack_id: i64,
+	pub org_id: i64,
 	pub version: String,
 	pub file_path: String,
 	pub file_size: i64,
@@ -137,35 +139,54 @@ impl PackVersionBmc {
 	pub async fn save_pack_version(
 		ctx: &Ctx,
 		mm: &ModelManager,
+		org_name: String,
 		pack_name: String,
 		version: String,
-		changelog: Option<String>,
 		file_path: String,
 		file_size: i64,
 	) -> Result<PackVersion> {
-		let pack = PackBmc::ensure_pack(ctx, mm, pack_name).await?;
+		let org = OrgBmc::ensure_org(ctx, mm, org_name).await?;
+		let pack = PackBmc::ensure_pack(ctx, mm, org.id, pack_name).await?;
 
 		// Check if pack version exists for this pack and version
-		if (Self::get_pack_version(ctx, mm, pack.id, &version).await?).is_some() {
-			return Err(Error::PackVersionAlreadyExists {
-				pack_id: pack.id,
-				version: version.clone(),
-			});
-		};
+		let pack_version =
+			Self::get_pack_version(ctx, mm, pack.id, &version).await?;
 
-		// Create the pack version
-		let pack_version_id = Self::create(
-			ctx,
-			mm,
-			PackVersionForCreate {
-				pack_id: pack.id,
-				version,
-				file_path,
-				file_size,
-				changelog,
-			},
-		)
-		.await?;
+		let pack_version_id = match pack_version {
+			Some(pack_version) => {
+				// Update the pack version
+				Self::update(
+					ctx,
+					mm,
+					pack_version.id,
+					PackVersionForUpdate {
+						version: Some(version),
+						file_path: Some(file_path),
+						file_size: Some(file_size),
+						changelog: None,
+					},
+				)
+				.await?;
+				pack_version.id
+			}
+			None => {
+				// Create the pack version
+				let pack_version_id = Self::create(
+					ctx,
+					mm,
+					PackVersionForCreate {
+						org_id: org.id,
+						pack_id: pack.id,
+						version,
+						file_path,
+						file_size,
+						changelog: None,
+					},
+				)
+				.await?;
+				pack_version_id
+			}
+		};
 
 		Self::get(ctx, mm, pack_version_id).await
 	}
@@ -182,7 +203,7 @@ mod tests {
 
 	use super::*;
 	use crate::{
-		_dev_utils,
+		_dev_utils::{self, clean_orgs, seed_org},
 		model::pack::{PackBmc, PackForCreate},
 	};
 	use serial_test::serial;
@@ -193,17 +214,19 @@ mod tests {
 		// -- Setup & Fixtures
 		let mm = _dev_utils::init_test().await;
 		let ctx = Ctx::root_ctx(None);
+		let org_id = seed_org(&ctx, &mm, "test_org_pack_01").await?;
 
 		let pack_id = PackBmc::create(
 			&ctx,
 			&mm,
 			PackForCreate {
+				org_id,
 				name: "test_pack".to_string(),
 			},
 		)
 		.await?;
 		let fx_version = "1.0.0";
-		let fx_file_path = ".packs-data/packs/test.aip";
+		let fx_file_path = ".packs-data/packs/test.aipack";
 		let fx_file_size = 1024;
 
 		// -- Exec
@@ -211,6 +234,7 @@ mod tests {
 			&ctx,
 			&mm,
 			PackVersionForCreate {
+				org_id,
 				pack_id,
 				version: fx_version.to_string(),
 				file_path: fx_file_path.to_string(),
@@ -230,6 +254,7 @@ mod tests {
 		// -- Clean
 		PackVersionBmc::delete(&ctx, &mm, pack_version_id).await?;
 		PackBmc::delete(&ctx, &mm, pack_id).await?;
+		clean_orgs(&ctx, &mm, "test_org_pack_01").await?;
 
 		Ok(())
 	}

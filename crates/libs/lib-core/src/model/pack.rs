@@ -28,6 +28,7 @@ use ts_rs::TS;
 pub struct Pack {
 	pub id: i64,
 	pub name: String,
+	pub org_id: i64,
 
 	// -- Timestamps
 	pub cid: i64,
@@ -42,6 +43,7 @@ pub struct Pack {
 
 #[derive(Fields, Serialize, Deserialize)]
 pub struct PackForCreate {
+	pub org_id: i64,
 	pub name: String,
 }
 
@@ -101,6 +103,7 @@ impl PackBmc {
 	pub async fn ensure_pack(
 		ctx: &Ctx,
 		mm: &ModelManager,
+		org_id: i64,
 		pack_name: String,
 	) -> Result<Pack> {
 		// Check if pack exists by name
@@ -124,6 +127,7 @@ impl PackBmc {
 					mm,
 					PackForCreate {
 						name: pack_name.clone(),
+						org_id,
 					},
 				)
 				.await?;
@@ -145,7 +149,7 @@ mod tests {
 	type Result<T> = core::result::Result<T, Error>;
 
 	use super::*;
-	use crate::_dev_utils;
+	use crate::_dev_utils::{self, clean_orgs, seed_org};
 	use serial_test::serial;
 
 	#[serial]
@@ -155,12 +159,14 @@ mod tests {
 		let mm = _dev_utils::init_test().await;
 		let ctx = Ctx::root_ctx(None);
 		let fx_name = "test_pack";
+		let org_id = seed_org(&ctx, &mm, "test_org_pack_01").await?;
 
 		// -- Exec
 		let pack_id = PackBmc::create(
 			&ctx,
 			&mm,
 			PackForCreate {
+				org_id,
 				name: fx_name.to_string(),
 			},
 		)
@@ -172,6 +178,7 @@ mod tests {
 
 		// -- Clean
 		PackBmc::delete(&ctx, &mm, pack_id).await?;
+		clean_orgs(&ctx, &mm, "test_org_pack_01").await?;
 
 		Ok(())
 	}

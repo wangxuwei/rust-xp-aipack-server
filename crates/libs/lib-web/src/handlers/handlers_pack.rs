@@ -1,6 +1,7 @@
 use crate::config::rpc_config;
 use crate::error::{Error, Result};
 use crate::middleware::mw_auth::CtxW;
+use crate::utils::pack::parse_pack_file_name;
 use axum::extract::{Multipart, Path, State};
 use axum::response::Response;
 use axum::Json;
@@ -11,7 +12,6 @@ use serde_json::{json, Value};
 use std::path::Path as StdPath;
 use tokio::fs::{create_dir_all, File};
 use tokio::io::AsyncWriteExt;
-use uuid::Uuid;
 
 #[axum::debug_handler]
 pub async fn api_upload_pack_handler(
@@ -27,39 +27,32 @@ pub async fn api_upload_pack_handler(
 		create_dir_all(upload_dir).await?;
 	}
 
-	let mut pack_name = None;
-	let mut version = None;
-	let mut changelog = None;
+	let mut pack_data = None;
 	let mut file_content = None;
+	let mut file_name = None;
 
 	while let Ok(Some(field)) = multipart.next_field().await {
-		match field.name() {
-			Some("pack_name") => {
-				pack_name = field.text().await.ok();
-			}
-			Some("version") => {
-				version = field.text().await.ok();
-			}
-			Some("changelog") => {
-				changelog = field.text().await.ok();
-			}
-			Some("file") => {
-				file_content =
-					Some(field.bytes().await.map_err(|_| Error::PackFileNotFound)?);
-			}
-			_ => {}
+		if let Some("file") = field.name() {
+			file_name = Some(field.file_name().unwrap_or_default().to_string());
+			let parse_data =
+				parse_pack_file_name(&file_name.clone().unwrap_or_default())
+					.map_err(|_| Error::PackFileParse)?;
+			pack_data = Some(parse_data);
+
+			file_content =
+				Some(field.bytes().await.map_err(|_| Error::PackFileNotFound)?);
 		}
 	}
 
-	let pack_name =
-		pack_name.ok_or(Error::MissingRequiredField("pack_name".to_string()))?;
-	let version =
-		version.ok_or(Error::MissingRequiredField("version".to_string()))?;
+	let pack_data = pack_data.ok_or(Error::PackFileParse)?;
+
+	let pack_name = pack_data.name;
+	let version = pack_data.version;
+	let org = pack_data.namespace;
 	let content =
 		file_content.ok_or(Error::MissingRequiredField("file".to_string()))?;
 
-	let file_uuid = Uuid::new_v4();
-	let file_path_name = format!("{file_uuid}.aip");
+	let file_path_name = file_name.unwrap_or_default();
 	let file_path = upload_dir.join(&file_path_name);
 	let file_size = content.len() as i64;
 
@@ -70,9 +63,9 @@ pub async fn api_upload_pack_handler(
 	let pack_version = PackVersionBmc::save_pack_version(
 		&ctx,
 		&mm,
+		org,
 		pack_name,
 		version,
-		changelog,
 		file_path.to_string_lossy().to_string(),
 		file_size,
 	)
@@ -108,7 +101,7 @@ pub async fn api_download_pack_handler(
 		.header(
 			"Content-Disposition",
 			format!(
-				"attachment; filename=\"{}-{}.aip\"",
+				"attachment; filename=\"{}-{}.aipack\"",
 				pack.name, pack_version.version
 			),
 		)

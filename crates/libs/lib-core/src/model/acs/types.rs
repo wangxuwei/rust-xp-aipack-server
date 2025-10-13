@@ -60,6 +60,8 @@ pub enum GlobalAccess {
 	UserManage,
 	#[sqlx(rename = "a_user_pwd_update")]
 	UserPwdUpdate,
+	#[sqlx(rename = "a_org_create")]
+	OrgCreate,
 	#[sqlx(rename = "a_org_manage")]
 	OrgManage,
 	#[sqlx(rename = "a_pack_manage")]

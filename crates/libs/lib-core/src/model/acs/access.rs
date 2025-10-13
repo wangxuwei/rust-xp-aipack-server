@@ -43,8 +43,8 @@ pub async fn check_access(
 							None
 						}
 					});
-					if org_id.is_some() {
-						let org_id = org_id.unwrap();
+
+					if let Some(org_id) = org_id {
 						ctx.add_org_access_if_need(mm, org_id)
 							.await
 							.map_err(|_| Error::OrgAddRole)?;

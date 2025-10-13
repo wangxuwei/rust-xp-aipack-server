@@ -16,7 +16,7 @@ pub struct GlobalRoleConfig {
 impl GlobalRoleConfig {
 	fn new() -> Self {
 		let user: HashSet<GlobalAccess> =
-			HashSet::from([Ga::User, Ga::PackManage, Ga::PwdReset]);
+			HashSet::from([Ga::User, Ga::PackManage, Ga::PwdReset, Ga::OrgCreate]);
 
 		let admin: HashSet<GlobalAccess> =
 			GlobalAccess::iter().collect::<HashSet<_>>();

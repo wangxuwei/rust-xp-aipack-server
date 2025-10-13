@@ -9,6 +9,7 @@ use crate::model::ModelManager;
 use crate::model::Result;
 use lib_utils::time::Rfc3339;
 use modql::field::Fields;
+use modql::filter::OpValString;
 use modql::filter::{
 	FilterNodes, ListOptions, OpValsInt64, OpValsString, OpValsValue,
 };
@@ -136,9 +137,9 @@ impl DbBmc for OrgBmc {
 generate_common_bmc_fns!(
 	Bmc: OrgBmc,
 	Entity: Org,
-	ForCreate: OrgForCreate, CreatePrivileges: [Access::Global(Ga::OrgManage)],
+	ForCreate: OrgForCreate, CreatePrivileges: [Access::Global(Ga::OrgManage),Access::Global(Ga::OrgCreate)],
 	ForUpdate: OrgForUpdate, UpdatePrivileges: [Access::Global(Ga::OrgManage)],
-	Filter: OrgFilter, ListPrivileges: [Access::Global(Ga::OrgManage)],
+	Filter: OrgFilter, ListPrivileges: [Access::Global(Ga::OrgManage),Access::Global(Ga::OrgCreate)],
 	GetPrivileges: [Access::Global(Ga::OrgManage), Access::Org(Oa::OrgRename)],
 	DeletePrivileges: [Access::Global(Ga::OrgManage)]
 );
@@ -174,6 +175,44 @@ impl OrgBmc {
 			},
 		)
 		.await
+	}
+
+	#[privileges(Access::Global(Ga::OrgManage), Access::Global(Ga::OrgCreate))]
+	pub async fn ensure_org(
+		ctx: &Ctx,
+		mm: &ModelManager,
+		org_name: String,
+	) -> Result<Org> {
+		// Check if pack exists by name
+		let org = Self::first(
+			ctx,
+			mm,
+			Some(vec![OrgFilter {
+				name: Some(OpValString::Eq(org_name.clone()).into()),
+				..Default::default()
+			}]),
+			None,
+		)
+		.await?;
+
+		let org = match org {
+			Some(org) => org,
+			None => {
+				// Create new org
+				let org_id = Self::create(
+					ctx,
+					mm,
+					OrgForCreate {
+						name: org_name,
+						kind: OrgKind::Corporate,
+					},
+				)
+				.await?;
+				Self::get(ctx, mm, org_id).await?
+			}
+		};
+
+		Ok(org)
 	}
 }
 

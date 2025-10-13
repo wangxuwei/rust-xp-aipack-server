@@ -98,7 +98,7 @@ pub enum Error {
 
 	FileDownload,
 	PackFileNotFound,
-	PackVersionAlreadyExists,
+	PackFileParse,
 
 	PrpMissing,
 	PrpInvalid,
