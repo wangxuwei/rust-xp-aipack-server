@@ -5,6 +5,7 @@ use crate::utils::pack::parse_pack_file_name;
 use axum::extract::{Multipart, Path, State};
 use axum::response::Response;
 use axum::Json;
+use lib_core::model::org::OrgBmc;
 use lib_core::model::pack::PackBmc;
 use lib_core::model::pack_version::PackVersionBmc;
 use lib_core::model::ModelManager;
@@ -89,6 +90,7 @@ pub async fn api_download_pack_handler(
 	let ctx = ctx?.0;
 	let pack_version = PackVersionBmc::get(&ctx, &mm, id).await?;
 	let pack = PackBmc::get(&ctx, &mm, pack_version.pack_id).await?;
+	let org = OrgBmc::get(&ctx, &mm, pack.org_id).await?;
 
 	if !StdPath::new(&pack_version.file_path).exists() {
 		return Err(Error::PackFileNotFound);
@@ -101,8 +103,10 @@ pub async fn api_download_pack_handler(
 		.header(
 			"Content-Disposition",
 			format!(
-				"attachment; filename=\"{}-{}.aipack\"",
-				pack.name, pack_version.version
+				"attachment; filename=\"{}@{}-{}.aipack\"",
+				org.name.unwrap_or_default(),
+				pack.name,
+				pack_version.version
 			),
 		)
 		.body(axum::body::Body::from(content))
