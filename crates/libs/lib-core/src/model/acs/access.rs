@@ -4,6 +4,7 @@ use crate::{ctx::Ctx, model::ModelManager};
 use serde_json::{Map, Value};
 use sqlx::types::Json;
 
+#[derive(Debug)]
 pub struct MethodRef {
 	pub table: String,
 	pub method: String,
@@ -50,8 +51,8 @@ pub async fn check_access(
 							.map_err(|_| Error::OrgAddRole)?;
 						if ctx.has_org_access(org_id, oa) {
 							pass = true;
+							break;
 						}
-						break;
 					}
 				}
 				Access::Entity(ea) => {

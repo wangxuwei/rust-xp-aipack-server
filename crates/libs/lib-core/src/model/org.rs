@@ -5,6 +5,9 @@ use crate::model::acs::Ga;
 use crate::model::acs::Oa;
 use crate::model::base::{self, DbBmc};
 use crate::model::modql_utils::time_to_sea_value;
+use crate::model::user_org::ORoleName;
+use crate::model::user_org::UserOrgBmc;
+use crate::model::user_org::UserOrgForCreate;
 use crate::model::ModelManager;
 use crate::model::Result;
 use lib_utils::time::Rfc3339;
@@ -140,7 +143,7 @@ generate_common_bmc_fns!(
 	ForCreate: OrgForCreate, CreatePrivileges: [Access::Global(Ga::OrgManage),Access::Global(Ga::OrgCreate)],
 	ForUpdate: OrgForUpdate, UpdatePrivileges: [Access::Global(Ga::OrgManage)],
 	Filter: OrgFilter, ListPrivileges: [Access::Global(Ga::OrgManage),Access::Global(Ga::OrgCreate)],
-	GetPrivileges: [Access::Global(Ga::OrgManage), Access::Org(Oa::OrgRename)],
+	GetPrivileges: [Access::Global(Ga::OrgManage), Access::Org(Oa::OrgRename), Access::Global(Ga::OrgCreate)],
 	DeletePrivileges: [Access::Global(Ga::OrgManage)]
 );
 
@@ -208,6 +211,18 @@ impl OrgBmc {
 					},
 				)
 				.await?;
+
+				UserOrgBmc::create(
+					ctx,
+					mm,
+					UserOrgForCreate {
+						org_id,
+						user_id: ctx.user_id(),
+						role: ORoleName::Owner,
+					},
+				)
+				.await?;
+
 				Self::get(ctx, mm, org_id).await?
 			}
 		};

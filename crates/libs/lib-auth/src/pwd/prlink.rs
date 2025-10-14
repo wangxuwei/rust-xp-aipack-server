@@ -23,7 +23,6 @@ pub fn url_prparam(info: &PrlinkUserInfo) -> Result<String> {
 	let hash = hash_for_prlink(info)?;
 	// Create the signature data
 	let signature_data = format!("{}.{}", info.code, hash);
-	println!("sing {signature_data}");
 	// Format as _uuid_.__hash__
 	Ok(signature_data)
 }

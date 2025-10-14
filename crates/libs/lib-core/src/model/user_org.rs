@@ -1,4 +1,5 @@
 use crate::model::acs::prelude::*;
+use crate::model::acs::Ga;
 use crate::model::base::compute_list_options;
 use crate::{
 	ctx::Ctx,
@@ -110,7 +111,7 @@ impl DbBmc for UserOrgBmc {
 }
 
 impl UserOrgBmc {
-	#[privileges(Access::Org(Oa::UserManage))]
+	#[privileges(Access::Org(Oa::UserManage), Access::Global(Ga::OrgCreate))]
 	pub async fn create(
 		ctx: &Ctx,
 		mm: &ModelManager,
