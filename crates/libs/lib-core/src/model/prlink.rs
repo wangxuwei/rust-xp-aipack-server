@@ -27,15 +27,19 @@ use uuid::Uuid;
 #[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 #[enum_def]
 pub struct Prlink {
+	#[ts(type = "number")]
 	pub id: i64,
 	pub code: Uuid,
+	#[ts(type = "number")]
 	pub user_id: i64,
 
 	// -- Timestamps
+	#[ts(type = "number")]
 	pub cid: i64,
 	#[serde_as(as = "Rfc3339")]
 	#[ts(type = "string")]
 	pub ctime: OffsetDateTime,
+	#[ts(type = "number")]
 	pub mid: i64,
 	#[serde_as(as = "Rfc3339")]
 	#[ts(type = "string")]

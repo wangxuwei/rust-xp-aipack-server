@@ -30,19 +30,25 @@ use ts_rs::TS;
 #[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 #[enum_def]
 pub struct PackVersion {
+	#[ts(type = "number")]
 	pub id: i64,
+	#[ts(type = "number")]
 	pub org_id: i64,
+	#[ts(type = "number")]
 	pub pack_id: i64,
 	pub version: String,
 	pub file_path: String,
+	#[ts(type = "number")]
 	pub file_size: i64,
 	pub changelog: Option<String>,
 
 	// -- Timestamps
+	#[ts(type = "number")]
 	pub cid: i64,
 	#[serde_as(as = "Rfc3339")]
 	#[ts(type = "string")]
 	pub ctime: OffsetDateTime,
+	#[ts(type = "number")]
 	pub mid: i64,
 	#[serde_as(as = "Rfc3339")]
 	#[ts(type = "string")]

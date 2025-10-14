@@ -66,20 +66,25 @@ impl From<ORoleName> for sea_query::Value {
 #[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 #[enum_def]
 pub struct UserOrg {
+	#[ts(type = "number")]
 	pub id: i64,
 	pub role: ORoleName,
 
 	// -- FK
+	#[ts(type = "number")]
 	pub org_id: i64,
+	#[ts(type = "number")]
 	pub user_id: i64,
 
 	// -- Timestamps
 	// creator user_id and time
+	#[ts(type = "number")]
 	pub cid: i64,
 	#[serde_as(as = "Rfc3339")]
 	#[ts(type = "string")]
 	pub ctime: OffsetDateTime,
 	// last modifier user_id and time
+	#[ts(type = "number")]
 	pub mid: i64,
 	#[serde_as(as = "Rfc3339")]
 	#[ts(type = "string")]

@@ -76,6 +76,7 @@ impl Nullable for OrgKind {
 #[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 #[enum_def]
 pub struct Org {
+	#[ts(type = "number")]
 	pub id: i64,
 
 	// -- Properties
@@ -84,11 +85,13 @@ pub struct Org {
 
 	// -- Timestamps
 	// creator user_id and time
+	#[ts(type = "number")]
 	pub cid: i64,
 	#[serde_as(as = "Rfc3339")]
 	#[ts(type = "string")]
 	pub ctime: OffsetDateTime,
 	// last modifier user_id and time
+	#[ts(type = "number")]
 	pub mid: i64,
 	#[serde_as(as = "Rfc3339")]
 	#[ts(type = "string")]

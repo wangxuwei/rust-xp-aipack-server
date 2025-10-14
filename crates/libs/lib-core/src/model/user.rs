@@ -50,6 +50,7 @@ impl From<UserTyp> for sea_query::Value {
 #[derive(Clone, Fields, FromRow, Debug, Serialize, TS)]
 #[ts(export, export_to = "../../../frontends/web/src/bindings/")]
 pub struct User {
+	#[ts(type = "number")]
 	pub id: i64,
 	pub username: String,
 	pub typ: UserTyp,
