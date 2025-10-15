@@ -141,25 +141,25 @@ function _render(packs: Pack[]) {
 		.join("");
 
 	return `
-				<div class="ui-breadcrumbs">
-					<div class="breadcrumb-item">Packs</div>
-				</div>
-        <div class="header">
-            <button class="add default">Add New Pack</button>
-        </div>
-        <div class="table-container">
-            <div class="ui-table">
-                <div class="thead row">
-                    <v-table-cell sort-column="name">Pack</v-table-cell>
-                    <div class="cell">Actions</div>
-                </div>
-                <div class="tbody">
-                    ${rows}
-                </div>
-								<div class="tfoot">
-									<v-pagination></v-pagination>
-								</div>
-            </div>
-        </div>
+			<div class="ui-breadcrumbs">
+				<div class="breadcrumb-item">Packs</div>
+			</div>
+			<div class="header">
+					<button class="add default">Add New Pack</button>
+			</div>
+			<div class="table-container">
+					<div class="ui-table">
+							<div class="thead row">
+									<v-table-cell sort-column="name">Pack</v-table-cell>
+									<div class="cell">Actions</div>
+							</div>
+							<div class="tbody">
+									${rows}
+							</div>
+							<div class="tfoot">
+								<v-pagination></v-pagination>
+							</div>
+					</div>
+			</div>
     `;
 }

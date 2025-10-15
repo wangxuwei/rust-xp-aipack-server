@@ -1,6 +1,8 @@
 use crate::model::acs::prelude::*;
 use crate::model::acs::Ga;
 use crate::model::base::compute_list_options;
+use crate::model::org::Org;
+use crate::model::org::OrgBmc;
 use crate::{
 	ctx::Ctx,
 	model::{
@@ -63,7 +65,7 @@ impl From<ORoleName> for sea_query::Value {
 
 #[serde_as]
 #[derive(Debug, Clone, Fields, FromRow, Serialize, TS)]
-#[ts(export, export_to = "../../../frontends/web/src/bindings/")]
+#[ts(export, export_to = "../../../frontends/_common/src/bindings/")]
 #[enum_def]
 pub struct UserOrg {
 	#[ts(type = "number")]
@@ -175,6 +177,86 @@ impl UserOrgBmc {
 		list_options: Option<ListOptions>,
 	) -> Result<Vec<UserOrg>> {
 		base::list::<Self, _, _>(ctx, mm, filter, list_options).await
+	}
+
+	pub async fn get_default_org(
+		ctx: &Ctx,
+		mm: &ModelManager,
+		org_id: Option<i64>,
+	) -> Result<Option<Org>> {
+		if let Some(org_id) = org_id {
+			// When org_id exists, just get the org by id
+			let org = OrgBmc::get(ctx, mm, org_id).await?;
+			Ok(Some(org))
+		} else {
+			// When org_id doesn't exist, get the user's first organization record as default
+			let user_id = ctx.user_id();
+			let user_orgs = Self::list(
+				ctx,
+				mm,
+				Some(vec![UserOrgFilter {
+					user_id: Some(OpValInt64::Eq(user_id).into()),
+					org_id: None,
+				}]),
+				None,
+			)
+			.await?;
+
+			if let Some(first_user_org) = user_orgs.first() {
+				let org = OrgBmc::get(ctx, mm, first_user_org.org_id).await?;
+				Ok(Some(org))
+			} else {
+				Ok(None)
+			}
+		}
+	}
+	pub async fn get_orgs_by_user(
+		_ctx: &Ctx,
+		mm: &ModelManager,
+		user_id: i64,
+		list_options: Option<ListOptions>,
+	) -> Result<(Vec<Org>, i64)> {
+		// -- Build the query
+		let mut query = Query::select();
+
+		query
+			.from(Self::table_ref())
+			.inner_join(
+				UserIden::User,
+				Expr::col((UserOrgIden::Table, UserOrgIden::UserId))
+					.eq(Expr::col((UserIden::User, UserIden::Id))),
+			)
+			.inner_join(
+				OrgIden::Table,
+				Expr::col((UserOrgIden::Table, UserOrgIden::OrgId))
+					.eq(Expr::col((OrgIden::Table, OrgIden::Id))),
+			);
+
+		// condition from filter
+		let condition =
+			Condition::all().add(Expr::col(UserOrgIden::UserId).eq(user_id));
+		query.cond_where(condition.clone());
+
+		let mut list_query = query.clone();
+		list_query.columns(Org::sea_column_refs_with_rel(OrgIden::Table));
+
+		// list options
+		let list_options = compute_list_options(list_options)?;
+		list_options.apply_to_sea_query(&mut list_query);
+
+		let mut count_query = query.clone();
+		count_query.expr(Func::count(Expr::col((OrgIden::Table, OrgIden::Id))));
+
+		// -- Execute the query
+		let (sql, values) = list_query.build_sqlx(PostgresQueryBuilder);
+		let sqlx_query = sqlx::query_as_with::<_, Org, _>(&sql, values);
+		let entities = mm.dbx().fetch_all(sqlx_query).await?;
+
+		let (sql, values) = count_query.build_sqlx(PostgresQueryBuilder);
+		let sqlx_query = sqlx::query_as_with::<_, (i64,), _>(&sql, values);
+		let (count,) = mm.dbx().fetch_one(sqlx_query).await?;
+
+		Ok((entities, count))
 	}
 
 	pub async fn get_users_by_org(

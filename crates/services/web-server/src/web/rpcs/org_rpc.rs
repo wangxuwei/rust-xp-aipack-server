@@ -4,6 +4,7 @@ use lib_core::model::{
 	user_org::UserOrgBmc,
 };
 use lib_rpc_core::prelude::*;
+use lib_rpc_core::ParamsIdOptioned;
 use modql::filter::ListOptions;
 use rpc_router::IntoParams;
 use serde::Deserialize;
@@ -21,6 +22,8 @@ pub fn rpc_router_builder() -> RouterBuilder {
 		search_users_for_org,
 		add_users_to_org,
 		remove_users_from_org,
+		get_default_org,
+		get_orgs_by_user,
 	)
 }
 
@@ -55,6 +58,7 @@ pub struct ParamsUserOrg {
 	pub list_options: Option<ListOptions>,
 }
 impl IntoParams for ParamsUserOrg {}
+
 // endregion: --- Params
 
 // region:    --- RPC Functions
@@ -131,6 +135,25 @@ pub async fn list_and_count_orgs(
 	let result =
 		OrgBmc::list_and_count(&ctx, &mm, params.filters, params.list_options)
 			.await?;
+	Ok(result.into())
+}
+
+pub async fn get_default_org(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsIdOptioned,
+) -> Result<DataRpcResult<Option<Org>>> {
+	let org = UserOrgBmc::get_default_org(&ctx, &mm, params.id).await?;
+	Ok(org.into())
+}
+
+pub async fn get_orgs_by_user(
+	ctx: Ctx,
+	mm: ModelManager,
+	params: ParamsUserOrg,
+) -> Result<DataRpcResult<(Vec<Org>, i64)>> {
+	let ParamsUserOrg { id, list_options } = params;
+	let result = UserOrgBmc::get_orgs_by_user(&ctx, &mm, id, list_options).await?;
 	Ok(result.into())
 }
 // endregion: --- RPC Functions

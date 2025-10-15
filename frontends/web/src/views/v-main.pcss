@@ -9,8 +9,9 @@ v-main.ui-route {
 		grid-area: 1 / 1 / 2 / 3;
 		background: var(--bkg-header);
 		display: grid;
-		grid-template-columns: 4rem 8rem auto 14rem 1rem;
+		grid-template-columns: 4rem 8rem 1fr auto auto auto 1rem;
 		z-index: 100;
+		align-items: center;
 
 		& > d-ico {
 			justify-self: center;
@@ -33,10 +34,14 @@ v-main.ui-route {
 			}
 		}
 
+		& > v-org-selector {
+			grid-column: 5;
+		}
+
 		& > aside {
 			position: relative;
 			user-select: none;
-			grid-column: 4;
+			grid-column: 6;
 			display: flex;
 			flex-direction: row;
 			align-items: center;

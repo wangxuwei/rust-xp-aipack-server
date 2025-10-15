@@ -18,8 +18,26 @@ export class OrgDco extends BaseDco<Org, QueryOptions<Org>> {
 		}
 	}
 
+	async getDefaultOrg(id?: number): Promise<Org | undefined> {
+		const result = await rpc_invoke(`get_default_${this.cmd_suffix}`, { id });
+		if (result.data) {
+			return result.data;
+		} else {
+			throw result;
+		}
+	}
+
+	async getOrgsByUser(id: number, list_options?: ListOptions): Promise<[Org[], number]> {
+		const result = await rpc_invoke(`get_orgs_by_user`, { id, list_options });
+		if (result.data) {
+			return result.data;
+		} else {
+			throw result;
+		}
+	}
+
 	async renameOrg(id: number, name: string): Promise<void> {
-		const result = await rpc_invoke(`rename_org`, { id, name });
+		const result = await rpc_invoke(`rename_${this.cmd_suffix}`, { id, name });
 		if (typeof result.data != "undefined") {
 			dcoHub.pub(this.cmd_suffix, "rename", result.data);
 			return result.data;

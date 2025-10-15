@@ -1,9 +1,11 @@
 import { position } from "@dom-native/draggable";
 import { getUserContext, logoff, UserContext } from "common/user-ctx.js";
+import { getUserOrgContext } from "common/user-org-ctx";
 import { DgAlert } from "dialog/dg-alert";
 import { append, customElement, first, html, on, onEvent, push } from "dom-native";
-import { userDco } from "ts/dcos";
+import { orgDco, userDco } from "ts/dcos";
 import { BaseRouteView } from "./route/v-base-route";
+import { OrgSelector } from "./v-org-selector";
 
 const tagNameByPath: { [name: string]: string } = {
 	"": "v-home",
@@ -22,6 +24,9 @@ export class MainView extends BaseRouteView {
 	}
 	private get headerAsideEl(): HTMLElement {
 		return first(this, "header aside")!;
+	}
+	private get orgSelector(): OrgSelector {
+		return first(this, "v-org-selector") as OrgSelector;
 	}
 
 	protected get routeCtnEl(): HTMLElement {
@@ -76,12 +81,26 @@ export class MainView extends BaseRouteView {
 		return 0;
 	}
 
-	init() {
+	async init() {
 		super.init();
-		getUserContext().then((user: UserContext | null) => {
-			this.innerHTML = _render(user!.username);
-			this.routeRefresh();
-		});
+		const userPromise = getUserContext();
+		const orgPrmise = orgDco
+			.getDefaultOrg()
+			.then((defaultOrg) => {
+				if (defaultOrg) {
+					return getUserOrgContext(defaultOrg.id);
+				}
+				return null;
+			})
+			.catch(() => {
+				return null;
+			});
+
+		const [user, orgCtx] = await Promise.all([userPromise, orgPrmise]);
+		this.innerHTML = _render(user!.username);
+		const orgSelector = this.orgSelector;
+		orgSelector.selectedOrgId = orgCtx?.id!;
+		this.routeRefresh();
 	}
 }
 
@@ -92,6 +111,7 @@ function _render(username: string) {
 		<d-ico name="ico-menu">menu</d-ico>
 		<a href='/'><h3>AIPACK</h3></a>
 		<v-nav></v-nav>
+		<v-org-selector></v-org-selector>
 		<aside class="toogle-user-menu">
 			<c-ico>user</c-ico>
 			<div class="dx dx-name">${username}</div>

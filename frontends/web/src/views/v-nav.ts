@@ -1,5 +1,6 @@
 import { pathAt } from "common/route.js";
 import { hasAccess } from "common/user-ctx";
+import { hasOrgAccess } from "common/user-org-ctx";
 import { BaseViewElement } from "common/v-base.js";
 import { all, customElement, onHub } from "dom-native";
 
@@ -44,9 +45,11 @@ function _render() {
             <a class="nav-item" href="/users">Users</a>`;
 	if (hasAccess("Admin")) {
 		html += `
-            <a class="nav-item" href="/orgs">Organizations</a>
-            <a class="nav-item" href="/packs">Packs</a>`;
+            <a class="nav-item" href="/orgs">Organizations</a>`;
 	}
 
+	if (hasOrgAccess("User")) {
+		html += `<a class="nav-item" href="/packs">Packs</a>`;
+	}
 	return html;
 }

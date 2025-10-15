@@ -93,3 +93,18 @@ function _render(wksList: Wks[] = []) {
 - all views should be in views/, or views/subfolder../
 - the dcoHub event is for some objects change
 - if the pcss file name match a view for examples, v-users.pcss match the name v-users.ts, all css codes with pcss best practice will wrote in the pcss file, make sure when create a view component, create the pcss file
+
+
+
+### tips:
+when bind event for document use @onDoc instead of @onEvent
+like:
+```
+	@onDoc("click")
+	onDocumentClick(evt: Event) {
+		if (this.#isDropdownOpen && !this.contains(evt.target as Node)) {
+			this.#isDropdownOpen = false;
+			this.refresh();
+		}
+	}
+```

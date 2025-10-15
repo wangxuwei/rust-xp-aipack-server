@@ -37,6 +37,12 @@ pub struct ParamsIded {
 }
 impl IntoParams for ParamsIded {}
 
+#[derive(Deserialize)]
+pub struct ParamsIdOptioned {
+	pub id: Option<i64>,
+}
+impl IntoParams for ParamsIdOptioned {}
+
 /// Params structure for any RPC List call.
 #[serde_as]
 #[derive(Deserialize, Default)]

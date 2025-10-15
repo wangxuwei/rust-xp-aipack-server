@@ -21,6 +21,10 @@ export async function logoff() {
 	return r;
 }
 
+export function getCurrentUserCtx(): UserContext | null {
+	return _uc;
+}
+
 export async function getUserContext(): Promise<UserContext | null> {
 	const ucResult = await webGet(apiPrx + "/user-context");
 	_uc = ucResult?.result?.user;

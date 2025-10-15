@@ -11,10 +11,17 @@ export interface UserOrgContext {
 
 let _uoc: UserOrgContext | null;
 
-export async function getUserOrgContext(): Promise<UserOrgContext | null> {
-	const uocResult = await webGet(apiPrx + "/user-org-context");
+export async function getUserOrgContext(orgId: number): Promise<UserOrgContext | null> {
+	const uocResult = await webGet(apiPrx + "/user-org-context", {
+		params: { org_id: orgId },
+		headers: { "content-type": "application/json" },
+	});
 	_uoc = uocResult?.result?.org;
 	return uocResult && uocResult.result ? uocResult.result.org : null;
+}
+
+export function getCurrentOrgCtx(): UserOrgContext | null {
+	return _uoc;
 }
 
 export function hasOrgAccess(...accesses: OrgAccess[]): boolean {
