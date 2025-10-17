@@ -18,6 +18,7 @@ const _compCss = css`
 		display: grid;
 		grid-auto-flow: row;
 		grid-auto-rows: min-content; /* or max-content */
+		z-index: 100;
 	}
 
 	:host ::slotted(li) {

@@ -1,6 +1,8 @@
 import { position } from "@dom-native/draggable";
+import { getRouteOrgId, pathAt } from "common/route";
+import { ORG_BASE_PATHS, pathOrgedAt } from "common/route-orged.js";
 import { getUserContext, logoff, UserContext } from "common/user-ctx.js";
-import { getUserOrgContext } from "common/user-org-ctx";
+import { getCurrentOrgId, getUserOrgContext } from "common/user-org-ctx";
 import { DgAlert } from "dialog/dg-alert";
 import { append, customElement, first, html, on, onEvent, push } from "dom-native";
 import { orgDco, userDco } from "ts/dcos";
@@ -73,7 +75,8 @@ export class MainView extends BaseRouteView {
 	//#endregion ---------- /Element & Hub Events ----------
 
 	protected getTagByPath(urlPath: string): string {
-		return tagNameByPath[urlPath];
+		let urlLevelPath = pathOrgedAt(this.levelPath()) ?? "";
+		return tagNameByPath[urlLevelPath!];
 	}
 
 	public levelPath(): number {
@@ -85,7 +88,7 @@ export class MainView extends BaseRouteView {
 		super.init();
 		const userPromise = getUserContext();
 		const orgPrmise = orgDco
-			.getDefaultOrg()
+			.getDefaultOrg(getRouteOrgId()!)
 			.then((defaultOrg) => {
 				if (defaultOrg) {
 					return getUserOrgContext(defaultOrg.id);
@@ -98,9 +101,26 @@ export class MainView extends BaseRouteView {
 
 		const [user, orgCtx] = await Promise.all([userPromise, orgPrmise]);
 		this.innerHTML = _render(user!.username);
-		const orgSelector = this.orgSelector;
-		orgSelector.selectedOrgId = orgCtx?.id!;
-		this.routeRefresh();
+		if (!this.checkAndRedirectOrgScopedUrl()) {
+			const orgSelector = this.orgSelector;
+			orgSelector.selectedOrgId = orgCtx?.id!;
+			this.routeRefresh();
+		}
+	}
+
+	private checkAndRedirectOrgScopedUrl() {
+		const startPath = pathAt(0);
+		if (startPath && ORG_BASE_PATHS.includes(startPath)) {
+			const url = new URL(window.location.href);
+			const orgId = getCurrentOrgId();
+			if (orgId) {
+				window.location.href = "/" + orgId + url.pathname + url.search;
+			} else {
+				this.showNotFound();
+				return true;
+			}
+		}
+		return false;
 	}
 }
 

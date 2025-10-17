@@ -33,7 +33,7 @@ export class PackVersionsView extends BaseLeafRoute {
 	}
 
 	protected get leafLevel() {
-		return 2;
+		return 3;
 	}
 
 	//#region    ---------- Events ----------
@@ -86,7 +86,7 @@ export class PackVersionsView extends BaseLeafRoute {
 	//#region    ---------- Lifecycle ----------
 	init() {
 		super.init();
-		this.#packId = pathAsNum(2);
+		this.#packId = pathAsNum(3);
 		this.refresh();
 	}
 

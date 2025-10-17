@@ -1,7 +1,8 @@
-import { pathAt, paths } from "common/route.js";
+import { pathOrgedAt } from "common/route-orged";
+import { paths } from "common/route.js";
 import { BaseViewElement } from "common/v-base.js";
 import { first, onHub } from "dom-native";
-import { isNotEmpty } from "utils-min";
+import { asNum, isNotEmpty } from "utils-min";
 
 export abstract class BaseRouteView extends BaseViewElement {
 	public showNotFound() {
@@ -10,17 +11,21 @@ export abstract class BaseRouteView extends BaseViewElement {
 
 	//#region    ---------- Path ----------
 	// current paths
-	private currentPaths?: string[];
+	#currentPaths?: string[];
 
 	/** Returns the path at the index if it has changed from last called. */
 	hasPathChanged(idx: number) {
 		let changed = false;
 		let newPaths = paths();
 		// first init check, if not, should always change
-		if (this.currentPaths) {
+		if (this.#currentPaths) {
+			// for org route
+			let newPathsOrgRoute = asNum(newPaths[0]) ? 1 : 0;
+			let currentPathsOrgRoute = asNum(this.#currentPaths[0]) ? 1 : 0;
+
 			let startChangedIndex = -1;
 			for (let i = 0; i <= idx; i++) {
-				if (newPaths[i] != this.currentPaths[i]) {
+				if (newPaths[i + newPathsOrgRoute] != this.#currentPaths[i + currentPathsOrgRoute]) {
 					startChangedIndex = i;
 					break;
 				}
@@ -34,7 +39,7 @@ export abstract class BaseRouteView extends BaseViewElement {
 			changed = true;
 		}
 
-		this.currentPaths = newPaths;
+		this.#currentPaths = newPaths;
 		return changed;
 	}
 
@@ -64,7 +69,7 @@ export abstract class BaseRouteView extends BaseViewElement {
 
 	protected routeRefresh() {
 		if (this.hasPathChanged(this.levelPath())) {
-			const newPath = pathAt(this.levelPath());
+			const newPath = pathOrgedAt(this.levelPath());
 			const name = isNotEmpty(newPath) ? newPath : "";
 			let tagName = this.getTagByPath(name);
 			if (!tagName) {

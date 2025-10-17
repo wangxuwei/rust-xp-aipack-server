@@ -1,10 +1,18 @@
 import { deepFreeze } from "utils-min";
 import { apiPrx as defaultApiPrx } from "./conf";
+import { getCurrentOrgId } from "./user-org-ctx";
 import { randomString } from "./utils";
 import { webPost } from "./web-request";
 
-export async function rpc_invoke(method: string, params?: object, id?: any, apiPrx?: string): Promise<any> {
-	apiPrx = apiPrx ?? `${defaultApiPrx}/rpc`;
+export async function rpc_invoke(
+	method: string,
+	params?: object,
+	id?: any,
+	orgScoped?: boolean,
+	apiPrx?: string
+): Promise<any> {
+	let orgId = orgScoped ? "/" + getCurrentOrgId() : "";
+	apiPrx = apiPrx ?? `${defaultApiPrx}/rpc${orgId}`;
 	const data = { id: id ?? randomString(), method, params, jsonrpc: "2.0" };
 
 	const response: any = await webPost(`${apiPrx}`, { body: data });

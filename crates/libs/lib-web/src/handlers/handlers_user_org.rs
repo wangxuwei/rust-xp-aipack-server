@@ -2,6 +2,7 @@ use crate::error::Result;
 use crate::middleware::mw_auth::CtxW;
 use axum::extract::{Query, State};
 use axum::Json;
+use lib_core::model::org::OrgBmc;
 use lib_core::model::user_org::UserOrgBmc;
 use lib_core::model::ModelManager;
 use serde::Deserialize;
@@ -22,6 +23,7 @@ pub async fn api_user_org_handler(
 	let user_id = ctx.user_id();
 	let org_id = query.org_id;
 	let user_org = UserOrgBmc::get_by_user_org(&ctx, &mm, user_id, org_id).await?;
+	let org = OrgBmc::get(&ctx, &mm, org_id).await?;
 
 	ctx.add_org_access_if_need(&mm, org_id).await?;
 	let accesses = ctx.org_accesses(org_id);
@@ -30,6 +32,7 @@ pub async fn api_user_org_handler(
 		"result": {
 			"org": {
 				"id": org_id,
+				"name": org.name,
 				"role": user_org.role,
 				"accesses": accesses
 			}

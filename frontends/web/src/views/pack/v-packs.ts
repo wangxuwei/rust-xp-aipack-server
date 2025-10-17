@@ -1,4 +1,5 @@
 import { Pack } from "bindings/Pack.js";
+import { wrapOrgPath } from "common/route-orged.js";
 import { BaseViewElement } from "common/v-base.js";
 import { OnEvent, all, customElement, first, onEvent, onHub, setAttr } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
@@ -128,7 +129,7 @@ function _render(packs: Pack[]) {
 			(pack) => `
         <div class="row" data-id="${pack.id}">
             <div class="cell">
-							<a href="/packs/versions/${pack.id}">${pack.name}</a>				
+							<a href="${wrapOrgPath("/packs/versions/" + pack.id)}">${pack.name}</a>				
             </div>
             <div class="cell actions">
                 <button class="btn-upload default">Upload new version</button>

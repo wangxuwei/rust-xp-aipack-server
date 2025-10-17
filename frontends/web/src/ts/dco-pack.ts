@@ -10,7 +10,7 @@ export class PackDco extends BaseDco<Pack, QueryOptions<Pack>> {
 	}
 
 	async listAndCount(qo?: QueryOptions<Pack>): Promise<[Pack[], number]> {
-		const result = await rpc_invoke(`list_and_count_${this.plural}`, { ...qo });
+		const result = await rpc_invoke(`list_and_count_${this.plural}`, { ...qo }, undefined, this.orgScoped);
 		if (result.data) {
 			return result.data;
 		} else {
@@ -32,7 +32,7 @@ export class PackDco extends BaseDco<Pack, QueryOptions<Pack>> {
 		const params: any = qo ?? {};
 		params.filters = params.filters ?? {};
 		params.filters.pack_id = pack_id;
-		const result = await rpc_invoke(`list_pack_versions`, params);
+		const result = await rpc_invoke(`list_pack_versions`, params, undefined, this.orgScoped);
 		if (result.data) {
 			return result.data;
 		} else {
@@ -42,7 +42,7 @@ export class PackDco extends BaseDco<Pack, QueryOptions<Pack>> {
 
 	// Delete a specific pack version
 	async deletePackVersion(versionId: number): Promise<void> {
-		const result = await rpc_invoke(`delete_pack_version`, { id: versionId });
+		const result = await rpc_invoke(`delete_pack_version`, { id: versionId }, undefined, this.orgScoped);
 		if (result.data) {
 			return result.data;
 		} else {

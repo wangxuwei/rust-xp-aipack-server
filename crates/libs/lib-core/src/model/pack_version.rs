@@ -95,6 +95,10 @@ pub struct PackVersionBmc;
 
 impl DbBmc for PackVersionBmc {
 	const TABLE: &'static str = "pack_version";
+
+	fn has_scoped() -> bool {
+		true
+	}
 }
 
 generate_common_bmc_fns!(

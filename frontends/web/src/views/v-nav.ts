@@ -1,4 +1,4 @@
-import { pathAt } from "common/route.js";
+import { pathOrgedAt, wrapOrgPath } from "common/route-orged";
 import { hasAccess } from "common/user-ctx";
 import { hasOrgAccess } from "common/user-org-ctx";
 import { BaseViewElement } from "common/v-base.js";
@@ -23,15 +23,14 @@ export class NavView extends BaseViewElement {
 
 	async refresh() {
 		this.innerHTML = _render();
-		const idx = 0;
-		let urlName = pathAt(0) ?? "";
+		let urlName = pathOrgedAt(0) ?? "";
+		urlName = wrapOrgPath("/" + urlName);
 
 		for (const a of all(this, "a")) {
 			let href = a.getAttribute("href");
-			let linkName = href?.split("/")[1] ?? ""; // has an extra / at start
-			if (linkName === urlName) {
+			if (href == urlName) {
 				a.classList.add("sel");
-			} else if (a.classList.contains("sel")) {
+			} else {
 				a.classList.remove("sel");
 			}
 		}
@@ -49,7 +48,7 @@ function _render() {
 	}
 
 	if (hasOrgAccess("User")) {
-		html += `<a class="nav-item" href="/packs">Packs</a>`;
+		html += `<a class="nav-item" href="${wrapOrgPath("/packs")}">Packs</a>`;
 	}
 	return html;
 }

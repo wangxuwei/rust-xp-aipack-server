@@ -1,4 +1,5 @@
 import { Pack } from "bindings/Pack.js";
+import { getCurrentOrgId } from "common/user-org-ctx.js";
 import { adoptStyleSheets, css, customElement, onEvent, pull } from "dom-native";
 import { packDco } from "ts/dcos.js";
 import { showValidateError, validateValues } from "ts/validate.js";
@@ -39,6 +40,7 @@ export class DgPack extends DgDialog {
 				if (this.#packId) {
 					await packDco.update(this.#packId, formData);
 				} else {
+					formData.org_id = getCurrentOrgId();
 					await packDco.create(formData);
 				}
 				this.close();

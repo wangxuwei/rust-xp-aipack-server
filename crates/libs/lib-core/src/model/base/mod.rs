@@ -2,6 +2,7 @@
 
 mod crud_fns;
 mod macro_utils;
+mod scoped;
 mod utils;
 
 // -- Flatten hierarchy for user code.
@@ -65,6 +66,14 @@ pub trait DbBmc {
 	///
 	/// default: false
 	fn has_owner_id() -> bool {
+		false
+	}
+
+	/// Specifies if the entity table managed by this BMC
+	/// has an `org_id` column that needs to be set on create
+	///
+	/// default: false
+	fn has_scoped() -> bool {
 		false
 	}
 }

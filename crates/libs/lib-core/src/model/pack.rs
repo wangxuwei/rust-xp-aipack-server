@@ -77,6 +77,10 @@ pub struct PackBmc;
 
 impl DbBmc for PackBmc {
 	const TABLE: &'static str = "pack";
+
+	fn has_scoped() -> bool {
+		true
+	}
 }
 
 generate_common_bmc_fns!(

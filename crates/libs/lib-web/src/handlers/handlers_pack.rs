@@ -28,24 +28,27 @@ pub async fn api_upload_pack_handler(
 		create_dir_all(upload_dir).await?;
 	}
 
-	let mut pack_data = None;
 	let mut file_content = None;
 	let mut file_name = None;
 
 	while let Ok(Some(field)) = multipart.next_field().await {
-		if let Some("file") = field.name() {
-			file_name = Some(field.file_name().unwrap_or_default().to_string());
-			let parse_data =
-				parse_pack_file_name(&file_name.clone().unwrap_or_default())
-					.map_err(|_| Error::PackFileParse)?;
-			pack_data = Some(parse_data);
-
+		if let Some("file_name") = field.name() {
+			if file_name.is_none() {
+				file_name = field.text().await.ok();
+			}
+		} else if let Some("file") = field.name() {
+			if file_name.is_none() {
+				file_name = Some(field.file_name().unwrap_or_default().to_string());
+			}
 			file_content =
 				Some(field.bytes().await.map_err(|_| Error::PackFileNotFound)?);
 		}
 	}
 
-	let pack_data = pack_data.ok_or(Error::PackFileParse)?;
+	let pack_data = file_name
+		.clone()
+		.and_then(|file_name| parse_pack_file_name(&file_name).ok())
+		.ok_or(Error::PackFileParse)?;
 
 	let pack_name = pack_data.name;
 	let version = pack_data.version;
@@ -103,7 +106,7 @@ pub async fn api_download_pack_handler(
 		.header(
 			"Content-Disposition",
 			format!(
-				"attachment; filename=\"{}@{}-{}.aipack\"",
+				"attachment; filename=\"{}@{}-v{}.aipack\"",
 				org.name.unwrap_or_default(),
 				pack.name,
 				pack_version.version

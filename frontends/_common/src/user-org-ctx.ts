@@ -5,6 +5,7 @@ import { webGet } from "./web-request.js";
 
 export interface UserOrgContext {
 	id: number;
+	name: string;
 	role: ORoleName;
 	accesses: OrgAccess[];
 }
@@ -22,6 +23,10 @@ export async function getUserOrgContext(orgId: number): Promise<UserOrgContext |
 
 export function getCurrentOrgCtx(): UserOrgContext | null {
 	return _uoc;
+}
+
+export function getCurrentOrgId(): number | undefined {
+	return _uoc?.id;
 }
 
 export function hasOrgAccess(...accesses: OrgAccess[]): boolean {

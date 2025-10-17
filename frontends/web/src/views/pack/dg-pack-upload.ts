@@ -1,4 +1,5 @@
 import { Pack } from "bindings/Pack.js";
+import { getCurrentOrgCtx } from "common/user-org-ctx.js";
 import { adoptStyleSheets, css, customElement, onEvent, pull } from "dom-native";
 import { packDco } from "ts/dcos.js";
 import { showValidateError, validateValues } from "ts/validate.js";
@@ -35,10 +36,9 @@ export class DgPackUpload extends DgDialog {
 		const formData = pull(this);
 		const message = validateValues(this);
 		if (!message) {
-			formData.pack_name = this.#pack?.name;
-
+			const orgCtx = getCurrentOrgCtx();
+			formData.file_name = `${orgCtx?.name}@${this.#pack?.name}-v${formData.version}.aipack`;
 			const fileInput = this.querySelector('input[type="file"]') as HTMLInputElement;
-
 			const file = fileInput.files![0];
 			formData["file"] = file;
 
@@ -89,13 +89,9 @@ function _render(packName?: string) {
 					<d-input class="ui-form-val" type="version" name="version"  v-rules="required" placeholder="Enter version (e.g., 1.0.0)" value="" ></d-input>
 				</div>
 				<div class="ui-form-row">
-					<label class="ui-form-lbl">Changelog:</label>
-					<d-textarea class="ui-form-val" name="changelog"  v-rules="required" placeholder="Enter changelog notes"></d-textarea>
-				</div>
-				<div class="ui-form-row">
 					<label class="ui-form-lbl">File:</label>
 					<div class="file-input-container">
-						<input id="file-upload" type="file" name="file" v-rules="required" accept=".aip">
+						<input id="file-upload" type="file" name="file" v-rules="required" accept=".aipack">
 						<label for="file-upload" class="file-input-label">Choose File</label>
 						<span class="file-name"></span>
 					</div>

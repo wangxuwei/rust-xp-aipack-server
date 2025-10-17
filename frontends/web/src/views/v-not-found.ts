@@ -27,7 +27,7 @@ function _render() {
 		<div class="not-found-container">
 			<div class="not-found-box">
 				<c-ico src="#ico-info" class="info-icon"></c-ico>
-				<div class="not-found-text">The page not found.</div>
+				<div class="not-found-text">Page not found.</div>
 				<button class="btn-go-home prime">Go to home page</button>
 			</div>
 		</div>

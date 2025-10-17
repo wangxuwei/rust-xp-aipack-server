@@ -1,4 +1,5 @@
 use crate::ctx::Ctx;
+use crate::model::base::scoped::{scope_data, scope_for_query};
 use crate::model::base::{
 	prep_fields_for_create, prep_fields_for_update, CommonIden, DbBmc,
 	LIST_LIMIT_DEFAULT, LIST_LIMIT_MAX,
@@ -7,7 +8,7 @@ use crate::model::ModelManager;
 use crate::model::{Error, Result};
 use modql::field::HasSeaFields;
 use modql::filter::{FilterGroups, ListOptions};
-use sea_query::{Condition, Expr, PostgresQueryBuilder, Query};
+use sea_query::{Condition, DynIden, Expr, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::postgres::PgRow;
 use sqlx::FromRow;
@@ -23,6 +24,7 @@ where
 	// -- Extract fields (name / sea-query value expression)
 	let mut fields = data.not_none_sea_fields();
 	prep_fields_for_create::<MC>(&mut fields, user_id);
+	scope_data::<MC>(ctx, &mut fields)?;
 
 	// -- Build query
 	let (columns, sea_values) = fields.for_sea_insert();
@@ -61,6 +63,7 @@ where
 	for item in data {
 		let mut fields = item.not_none_sea_fields();
 		prep_fields_for_create::<MC>(&mut fields, user_id);
+		scope_data::<MC>(ctx, &mut fields)?;
 		let (columns, sea_values) = fields.for_sea_insert();
 
 		// Append values for each item
@@ -86,7 +89,7 @@ where
 	Ok(ids)
 }
 
-pub async fn get<MC, E>(_ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<E>
+pub async fn get<MC, E>(ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<E>
 where
 	MC: DbBmc,
 	E: for<'r> FromRow<'r, PgRow> + Unpin + Send,
@@ -98,6 +101,8 @@ where
 		.from(MC::table_ref())
 		.columns(E::sea_column_refs())
 		.and_where(Expr::col(CommonIden::Id).eq(id));
+
+	scope_for_query::<MC, _, DynIden>(ctx, &mut query, None)?;
 
 	// -- Exec query
 	let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
@@ -152,7 +157,7 @@ where
 }
 
 pub async fn list<MC, E, F>(
-	_ctx: &Ctx,
+	ctx: &Ctx,
 	mm: &ModelManager,
 	filter: Option<F>,
 	list_options: Option<ListOptions>,
@@ -176,6 +181,7 @@ where
 	// list options
 	let list_options = compute_list_options(list_options)?;
 	list_options.apply_to_sea_query(&mut query);
+	scope_for_query::<MC, _, DynIden>(ctx, &mut query, None)?;
 
 	// -- Execute the query
 	let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
@@ -187,7 +193,7 @@ where
 }
 
 pub async fn count<MC, F>(
-	_ctx: &Ctx,
+	ctx: &Ctx,
 	mm: &ModelManager,
 	filter: Option<F>,
 ) -> Result<i64>
@@ -208,6 +214,8 @@ where
 		let cond: Condition = filters.try_into()?;
 		query.cond_where(cond);
 	}
+
+	scope_for_query::<MC, _, DynIden>(ctx, &mut query, None)?;
 
 	let query_str = query.to_string(PostgresQueryBuilder);
 
@@ -234,6 +242,7 @@ where
 	// -- Prep Fields
 	let mut fields = data.not_none_sea_fields();
 	prep_fields_for_update::<MC>(&mut fields, ctx.user_id());
+	scope_data::<MC>(ctx, &mut fields)?;
 
 	// -- Build query
 	let fields = fields.for_sea_update();
@@ -259,7 +268,7 @@ where
 	}
 }
 
-pub async fn delete<MC>(_ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<()>
+pub async fn delete<MC>(ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<()>
 where
 	MC: DbBmc,
 {
@@ -269,6 +278,7 @@ where
 		.from_table(MC::table_ref())
 		.and_where(Expr::col(CommonIden::Id).eq(id));
 
+	scope_for_query::<MC, _, DynIden>(ctx, &mut query, None)?;
 	// -- Execute query
 	let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
 	let sqlx_query = sqlx::query_with(&sql, values);
@@ -286,7 +296,7 @@ where
 }
 
 pub async fn delete_many<MC>(
-	_ctx: &Ctx,
+	ctx: &Ctx,
 	mm: &ModelManager,
 	ids: Vec<i64>,
 ) -> Result<u64>
@@ -302,6 +312,8 @@ where
 	query
 		.from_table(MC::table_ref())
 		.and_where(Expr::col(CommonIden::Id).is_in(ids.clone()));
+
+	scope_for_query::<MC, _, DynIden>(ctx, &mut query, None)?;
 
 	// -- Execute query
 	let (sql, values) = query.build_sqlx(PostgresQueryBuilder);

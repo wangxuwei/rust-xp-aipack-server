@@ -25,14 +25,6 @@ use sqlx::FromRow;
 use ts_rs::TS;
 
 // region:    --- Org Types
-
-/// Trait to implement on entities that have a org_id
-/// This will allow Ctx to be upgraded with the corresponding org_id for
-/// future access control.
-pub trait OrgScoped {
-	fn org_id(&self) -> i64;
-}
-
 #[derive(
 	Debug,
 	Clone,

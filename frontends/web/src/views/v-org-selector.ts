@@ -1,6 +1,6 @@
 import { getCurrentUserCtx } from "common/user-ctx.js";
 import { BaseViewElement } from "common/v-base.js";
-import { customElement, onDoc, OnEvent, onEvent, trigger } from "dom-native";
+import { customElement, onDoc, OnEvent, onEvent } from "dom-native";
 import { orgDco } from "ts/dcos";
 import { isEmpty } from "utils-min";
 import { Org } from "../bindings/Org.js";
@@ -36,8 +36,7 @@ export class OrgSelector extends BaseViewElement {
 		const orgId = parseInt(itemEl.dataset.orgId || "");
 		this.#selectedOrgId = orgId;
 		this.classList.remove("show-dropdown");
-		this.refresh();
-		trigger(this, "change", { detail: this.#selectedOrgId });
+		window.location.href = "/" + orgId;
 	}
 
 	// Close dropdown when clicking outside
@@ -82,12 +81,13 @@ function _render(orgs: Org[], selectedId: number | null) {
 	const unnamedOrg = "Unnamed";
 	const selectedOrg = orgs.find((org) => org.id === selectedId);
 	const dropdownItems = orgs
-		.map(
-			(org) =>
-				`<div class="dropdown-item" data-org-id="${org.id}">
+		.map((org) => {
+			const selected = org.id == selectedOrg?.id;
+			return `<div class="dropdown-item ${selected ? "selected" : ""}" data-org-id="${org.id}">
 					${org.name || unnamedOrg}
-				</div>`
-		)
+					${selected ? "<c-ico src='#ico-tick-on'></c-ico>" : ""}
+				</div>`;
+		})
 		.join("");
 	return `
 		<label>Current org:</label>
