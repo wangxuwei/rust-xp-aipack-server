@@ -12,7 +12,7 @@ use uuid::Uuid;
 #[derive(Serialize)]
 pub struct PrlinkUserInfo {
 	pub code: Uuid,
-	pub user_id: i64,
+	pub user_uuid: Uuid,
 	pub ctime: OffsetDateTime,
 }
 
@@ -42,7 +42,7 @@ fn hash_for_prlink(info: &PrlinkUserInfo) -> Result<String> {
 		.map_err(|_| Error::FailSpawnBlockForHash)?;
 
 	// -- Add content.
-	let signature_data = format!("{}{}{}", info.code, info.user_id, info.ctime);
+	let signature_data = format!("{}{}{}", info.code, info.user_uuid, info.ctime);
 	hmac_sha512.update(signature_data.as_bytes());
 
 	// -- Finalize and b64u encode.

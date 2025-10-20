@@ -77,6 +77,7 @@ pub struct UserForUpdate {
 pub struct UserForLogin {
 	pub id: i64,
 	pub username: String,
+	pub uuid: Uuid,
 
 	// -- pwd and token info
 	pub pwd: Option<String>, // encrypted, #_scheme_id_#....

@@ -158,7 +158,7 @@ pub async fn api_user_prlink(
 	// Create PRLinkUserInfo
 	let prlink_user_info = PrlinkUserInfo {
 		code: prlink.code,
-		user_id: user.id,
+		user_uuid: user.uuid,
 		ctime: prlink.ctime,
 	};
 
@@ -283,7 +283,7 @@ async fn check_prp(mm: &ModelManager, prp: &str) -> Result<(UserForLogin, Prlink
 
 	let prlink_user_info = PrlinkUserInfo {
 		code: prlink.code,
-		user_id: user.id,
+		user_uuid: user.uuid,
 		ctime: prlink.ctime,
 	};
 
