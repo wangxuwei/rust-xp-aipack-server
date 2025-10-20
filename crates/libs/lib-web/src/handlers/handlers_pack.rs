@@ -52,9 +52,12 @@ pub async fn api_upload_pack_handler(
 
 	let pack_name = pack_data.name;
 	let version = pack_data.version;
-	let org = pack_data.namespace;
+	let org_name = pack_data.namespace;
 	let content =
 		file_content.ok_or(Error::MissingRequiredField("file".to_string()))?;
+
+	let org_entity = OrgBmc::ensure_org(&ctx, &mm, org_name).await?;
+	let ctx = ctx.add_org_id(org_entity.id);
 
 	let file_path_name = file_name.unwrap_or_default();
 	let file_path = upload_dir.join(&file_path_name);
@@ -67,7 +70,7 @@ pub async fn api_upload_pack_handler(
 	let pack_version = PackVersionBmc::save_pack_version(
 		&ctx,
 		&mm,
-		org,
+		org_entity.name.unwrap_or_default(),
 		pack_name,
 		version,
 		file_path.to_string_lossy().to_string(),

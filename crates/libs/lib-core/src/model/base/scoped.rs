@@ -81,8 +81,7 @@ where
 		let org_id = ctx.org_id();
 		if org_id.is_none() {
 			return Err(Error::AccessFail(
-				"Fail to scope query, require CTX to have .org_id, but not found in ctx"
-			.to_string()));
+				format!("Fail to scope query, require CTX to have .org_id for entity {}, but not found in ctx", MC::TABLE)));
 		}
 
 		let org_id = org_id.unwrap();
