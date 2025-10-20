@@ -14,7 +14,7 @@ import { DgOrg } from "./dg-org.js";
 @customElement("v-orgs")
 export class OrgsView extends BaseLeafRoute {
 	#pageIndex: number = 0;
-	#pageSize: number = 3;
+	#pageSize: number = 20;
 	#sortColumn = "id";
 	#sortType = "asc";
 

@@ -11,7 +11,7 @@ import { DgUser } from "./dg-user.js";
 @customElement("v-users")
 export class UsersView extends BaseLeafRoute {
 	#pageIndex: number = 0;
-	#pageSize: number = 3;
+	#pageSize: number = 20;
 	#sortColumn = "username";
 	#sortType = "id";
 

@@ -14,7 +14,7 @@ import { DgOrgUserAdd } from "./dg-org-user-add.js";
 @customElement("v-org-users")
 export class OrgUsersView extends BaseLeafRoute {
 	#pageIndex: number = 0;
-	#pageSize: number = 3;
+	#pageSize: number = 20;
 	#sortColumn = "id";
 	#sortType = "asc";
 	#orgId: number | null = null;

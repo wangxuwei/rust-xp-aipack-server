@@ -13,7 +13,7 @@ import { DgPack } from "./dg-pack.js";
 @customElement("v-packs")
 export class PacksView extends BaseViewElement {
 	#pageIndex: number = 0;
-	#pageSize: number = 3;
+	#pageSize: number = 20;
 	#sortColumn = "id";
 	#sortType = "asc";
 

@@ -18,7 +18,7 @@ import { DgPackUpload } from "./dg-pack-upload.js";
 @customElement("v-pack-versions")
 export class PackVersionsView extends BaseLeafRoute {
 	#pageIndex: number = 0;
-	#pageSize: number = 3;
+	#pageSize: number = 20;
 	#packId: number | null = null;
 	#sortColumn = "id";
 	#sortType = "asc";

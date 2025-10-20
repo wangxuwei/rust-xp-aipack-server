@@ -7,7 +7,7 @@ import { append, customElement, onEvent, OnEvent, trigger } from "dom-native";
  */
 @customElement("v-pagination")
 export class PaginationView extends BaseViewElement {
-	#pageSize: number = 3;
+	#pageSize: number = 20;
 	#pageIndex: any;
 	#count: number = 0;
 	#recordLabel: string = "record";
