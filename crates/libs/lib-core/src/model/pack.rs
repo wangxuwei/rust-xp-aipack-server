@@ -168,6 +168,7 @@ mod tests {
 		let ctx = Ctx::root_ctx(None);
 		let fx_name = "test_pack";
 		let org_id = seed_org(&ctx, &mm, "test_org_pack_01").await?;
+		let ctx = ctx.add_org_id(org_id);
 
 		// -- Exec
 		let pack_id = PackBmc::create(

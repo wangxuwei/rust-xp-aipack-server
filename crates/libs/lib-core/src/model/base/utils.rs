@@ -2,6 +2,7 @@ use crate::model::base::{CommonIden, DbBmc, TimestampIden};
 use lib_utils::time::now_utc;
 use modql::field::{SeaField, SeaFields};
 use sea_query::IntoIden;
+use uuid::Uuid;
 
 /// This method must be called when a model controller intends to create its entity.
 pub fn prep_fields_for_create<MC>(fields: &mut SeaFields, user_id: i64)
@@ -13,6 +14,9 @@ where
 	}
 	if MC::has_timestamps() {
 		add_timestamps_for_create(fields, user_id);
+	}
+	if MC::has_uuid() {
+		fields.push(SeaField::new(CommonIden::Uuid.into_iden(), Uuid::now_v7()));
 	}
 }
 

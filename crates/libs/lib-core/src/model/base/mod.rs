@@ -26,6 +26,7 @@ const LIST_LIMIT_MAX: i64 = 5000;
 #[derive(Iden)]
 pub enum CommonIden {
 	Id,
+	Uuid,
 	OwnerId,
 }
 
@@ -66,6 +67,14 @@ pub trait DbBmc {
 	///
 	/// default: false
 	fn has_owner_id() -> bool {
+		false
+	}
+
+	/// Specifies if the entity table managed by this BMC
+	/// has an `uuid` column that needs by uuid v7
+	///
+	/// default: false
+	fn has_uuid() -> bool {
 		false
 	}
 

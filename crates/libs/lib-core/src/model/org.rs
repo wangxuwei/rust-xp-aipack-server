@@ -22,6 +22,7 @@ use serde_with::serde_as;
 use sqlx::types::time::OffsetDateTime;
 use sqlx::FromRow;
 use ts_rs::TS;
+use uuid::Uuid;
 
 // region:    --- Org Types
 #[derive(
@@ -73,6 +74,7 @@ pub struct Org {
 	// -- Properties
 	pub name: Option<String>,
 	pub kind: OrgKind,
+	pub uuid: Uuid,
 
 	// -- Timestamps
 	// creator user_id and time
@@ -129,6 +131,10 @@ pub struct OrgBmc;
 
 impl DbBmc for OrgBmc {
 	const TABLE: &'static str = "org";
+
+	fn has_uuid() -> bool {
+		true
+	}
 }
 
 // This will generate the `impl OrgBmc {...}` with the default CRUD functions.

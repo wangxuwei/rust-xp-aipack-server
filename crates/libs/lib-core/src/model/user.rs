@@ -54,6 +54,7 @@ pub struct User {
 	pub id: i64,
 	pub username: String,
 	pub typ: UserTyp,
+	pub uuid: Uuid,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -135,6 +136,10 @@ pub struct UserBmc;
 
 impl DbBmc for UserBmc {
 	const TABLE: &'static str = "user";
+
+	fn has_uuid() -> bool {
+		true
+	}
 }
 
 impl UserBmc {

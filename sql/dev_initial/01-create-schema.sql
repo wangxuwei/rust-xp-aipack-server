@@ -16,6 +16,7 @@ CREATE TABLE "user" (
 
   username varchar(128) NOT NULL UNIQUE,
   typ user_typ NOT NULL DEFAULT 'User',
+  uuid uuid NOT NULL,
 
   -- access modifiers
   accesses user_access[],
@@ -50,6 +51,7 @@ CREATE TABLE org (
   -- Properties
   name varchar(256),
   kind org_kind NOT NULL default 'Personal',
+  uuid uuid NOT NULL,
 
   -- Timestamps
   cid bigint NOT NULL,

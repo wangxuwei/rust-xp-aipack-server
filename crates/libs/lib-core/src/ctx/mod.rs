@@ -42,7 +42,7 @@ impl Ctx {
 				id: 0,
 				typ,
 				username: "Sys".to_string(),
-				token_salt: Uuid::new_v4(),
+				token_salt: Uuid::now_v7(),
 				accesses: Some(accesses),
 			},
 			accesses_by_org_id: Arc::new(RwLock::new(HashMap::new())),
