@@ -37,4 +37,4 @@ SERVICE_EMAIL_FROM = "hello@localhost.com"
 # In deployed images, probably use absolute path.
 SERVICE_WEB_FOLDER="web-folder/"
 
-PACKS_UPLOAD_DIR = ".packs-data/packs"
+PACKS_STORE_DIR = "./.pack-store"

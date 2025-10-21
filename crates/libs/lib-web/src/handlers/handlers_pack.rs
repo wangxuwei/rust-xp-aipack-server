@@ -22,11 +22,7 @@ pub async fn api_upload_pack_handler(
 ) -> Result<Json<Value>> {
 	let ctx = ctx?.0;
 	let config = rpc_config();
-	let upload_dir = StdPath::new(&config.PACKS_UPLOAD_DIR);
-
-	if !upload_dir.exists() {
-		create_dir_all(upload_dir).await?;
-	}
+	let upload_dir = StdPath::new(&config.PACKS_STORE_DIR);
 
 	let mut file_content = None;
 	let mut file_name = None;
@@ -56,11 +52,21 @@ pub async fn api_upload_pack_handler(
 	let content =
 		file_content.ok_or(Error::MissingRequiredField("file".to_string()))?;
 
-	let org_entity = OrgBmc::ensure_org(&ctx, &mm, org_name).await?;
+	let org_entity = OrgBmc::ensure_org(&ctx, &mm, org_name.clone()).await?;
 	let ctx = ctx.add_org_id(org_entity.id);
 
+	let version_lbl = format!("v{}", version);
+	let upload_path = upload_dir
+		.join(org_name)
+		.join(&pack_name)
+		.join("stable")
+		.join(version_lbl);
+	if !upload_path.exists() {
+		create_dir_all(&upload_path).await?;
+	}
+
 	let file_path_name = file_name.unwrap_or_default();
-	let file_path = upload_dir.join(&file_path_name);
+	let file_path = upload_path.join(&file_path_name);
 	let file_size = content.len() as i64;
 
 	// Write file content
