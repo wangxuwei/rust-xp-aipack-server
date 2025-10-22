@@ -14,6 +14,7 @@ pub fn rpc_config() -> &'static RpcConfig {
 #[allow(non_snake_case)]
 pub struct RpcConfig {
 	pub PACKS_STORE_DIR: String,
+	pub STORE_DIR: String,
 	pub WEB_FOLDER: String,
 	pub HOST: String,
 	pub EMAIL_HOST: String,
@@ -26,6 +27,7 @@ impl RpcConfig {
 	fn load_from_env() -> lib_utils::envs::Result<RpcConfig> {
 		Ok(RpcConfig {
 			PACKS_STORE_DIR: get_env("PACKS_STORE_DIR")?,
+			STORE_DIR: get_env("STORE_DIR")?,
 			// -- Web
 			HOST: get_env("SERVICE_HOST")?,
 			EMAIL_HOST: get_env("SERVICE_EMAIL_HOST")?,

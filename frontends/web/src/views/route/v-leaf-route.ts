@@ -19,7 +19,6 @@ export abstract class BaseLeafRoute extends BaseViewElement {
 		const nextLevel = level + this.leafLevel;
 		const allPaths = paths();
 		if (allPaths.length >= nextLevel + 1) {
-			console.log(allPaths, nextLevel);
 			routeView.showNotFound();
 		}
 	}

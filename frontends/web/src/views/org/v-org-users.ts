@@ -2,7 +2,7 @@ import { pathAsNum } from "common/route.js";
 import { OnEvent, all, customElement, first, onEvent, onHub, setAttr } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
 import { TableCell } from "table/v-table-cell.js";
-import { getOrderBy } from "ts/app-helper.js";
+import { getOrderBy, getOrgAvatar, getUserAvatar } from "ts/app-helper.js";
 import { orgDco } from "ts/dcos.js";
 import { asNum, isEmpty } from "utils-min";
 import { Org } from "../../bindings/Org.js";
@@ -126,7 +126,10 @@ function _render(org: Org, users: User[]) {
 						(user) =>
 							`
 							<div class="row" data-id="${user.id}">
-								<div class="cell">${user.username}</div>
+								<div class="cell">
+									<c-avatar url="${getUserAvatar(user.uuid)}"></c-avatar>
+									${user.username}
+								</div>
 								<div class="cell actions">
 									<button class="btn-delete danger">Remove</button>
 								</div>
@@ -148,6 +151,9 @@ function _render(org: Org, users: User[]) {
 						<h3>Organization</h3>
 					</div>
 					<section>
+						<div class="org-profile">
+							<c-avatar url="${getOrgAvatar(org.uuid)}" default-icon="#ico-group"></c-avatar>
+						</div>
 						<div class="info-item">
 							<span class="label">Name:</span>
 							<span class="value">${org.name}</span>

@@ -96,8 +96,9 @@ pub enum Error {
 	#[from]
 	Email(#[serde_as(as = "DisplayFromStr")] lettre::error::Error),
 
+	FileTooLarge,
 	FileDownload,
-	PackFileNotFound,
+	FileNotFound,
 	PackFileParse,
 
 	PrpMissing,

@@ -4,6 +4,7 @@ import { webGet, webPost } from "./web-request.js";
 
 export interface UserContext {
 	id: number;
+	uuid: string;
 	name: string;
 	username: string;
 	accesses: GlobalAccess[];

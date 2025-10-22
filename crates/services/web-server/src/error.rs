@@ -16,6 +16,8 @@ pub enum Error {
 	Model(model::Error),
 	#[from]
 	Rpc(lib_rpc_core::Error),
+
+	FileTooLarge,
 }
 
 // region:    --- Error Boilerplate

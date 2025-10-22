@@ -40,6 +40,7 @@ impl Ctx {
 			org_id,
 			user: UserForAuth {
 				id: 0,
+				uuid: Uuid::now_v7(),
 				typ,
 				username: "Sys".to_string(),
 				token_salt: Uuid::now_v7(),

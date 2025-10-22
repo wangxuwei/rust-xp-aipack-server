@@ -32,7 +32,7 @@ export class DgOrgUserAdd extends DgDialog {
 		const users = await orgDco.searchUsersForOrg(this.#orgId!, detail.input);
 		detail.sendData(
 			users.map((u) => {
-				return { content: u.username, value: u.id.toString() };
+				return { content: `${u.username}`, value: u.id.toString() };
 			})
 		);
 	}

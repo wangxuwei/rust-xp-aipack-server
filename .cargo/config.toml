@@ -38,3 +38,4 @@ SERVICE_EMAIL_FROM = "hello@localhost.com"
 SERVICE_WEB_FOLDER="web-folder/"
 
 PACKS_STORE_DIR = "./.pack-store"
+STORE_DIR = "./.store"

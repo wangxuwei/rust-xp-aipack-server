@@ -1,0 +1,44 @@
+dg-image-crop {
+	.image-container {
+		position: relative;
+		background: #f5f5f5;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+	}
+
+	.image-container .img {
+		object-fit: contain;
+		img {
+			width: 100%;
+			height: 100%;
+		}
+		.do-upload {
+			width: 100%;
+			height: 100%;
+			cursor: pointer;
+		}
+	}
+
+	.crop-mask {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
+
+	.crop-circle {
+		position: absolute;
+		border: 1px dashed #fff;
+		border-radius: 50%;
+		cursor: move;
+		box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+	}
+	&.no-image {
+		.crop-mask {
+			display: none;
+		}
+	}
+}

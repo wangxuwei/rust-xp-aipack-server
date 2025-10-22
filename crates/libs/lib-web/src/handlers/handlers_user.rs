@@ -3,7 +3,7 @@ use crate::error::{Error, Result};
 use crate::middleware::mw_auth::CtxW;
 use crate::utils::token::{remove_token_cookie, set_token_cookie};
 use axum::body::Body;
-use axum::extract::{Query, State};
+use axum::extract::{Multipart, Query, State};
 use axum::http::header::CONTENT_TYPE;
 use axum::http::{Response, StatusCode};
 use axum::Json;
@@ -20,7 +20,10 @@ use regex::Regex;
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::collections::HashMap;
+use std::path::Path;
 use time::Duration;
+use tokio::fs::{create_dir_all, File};
+use tokio::io::AsyncWriteExt;
 use tower_cookies::Cookies;
 use uuid::Uuid;
 
@@ -41,6 +44,7 @@ pub async fn api_user_handler(
 				"result": {
 					"user": {
 						"id": user_id,
+						"uuid": user.uuid,
 						"username": user.username,
 						"role": user.typ,
 						"accesses": ctx.accesses()
@@ -250,6 +254,56 @@ pub async fn api_prp_reset_pwd(
 	Ok(Json(json!({
 		"result": {
 			"success": true
+		}
+	})))
+}
+
+pub async fn api_upload_avatar_handler(
+	State(mm): State<ModelManager>,
+	ctx: Result<CtxW>,
+	mut multipart: Multipart,
+) -> Result<Json<Value>> {
+	let ctx = ctx?.0;
+	let config = rpc_config();
+	let upload_dir = Path::new(&config.STORE_DIR);
+
+	let mut file_content = None;
+	let mut user_id = None;
+
+	while let Ok(Some(field)) = multipart.next_field().await {
+		if let Some("user_id") = field.name() {
+			user_id = field.text().await.ok().and_then(|f| f.parse::<i64>().ok());
+		} else if let Some("file") = field.name() {
+			file_content = Some(field.bytes().await.map_err(|e| {
+				println!("user {e:?}");
+				Error::FileNotFound
+			})?);
+		}
+	}
+
+	let content =
+		file_content.ok_or(Error::MissingRequiredField("file".to_string()))?;
+
+	let user_id =
+		user_id.ok_or(Error::MissingRequiredField("user_id".to_string()))?;
+	let user = UserBmc::get::<User>(&ctx, &mm, user_id).await?;
+
+	let upload_path = upload_dir.join("users").join(user.uuid.to_string());
+	if !upload_path.exists() {
+		create_dir_all(&upload_path).await?;
+	}
+
+	let file_path_name = "avatar.png";
+
+	let file_path = upload_path.join(file_path_name);
+	// Write file content
+	let mut file = File::create(&file_path).await?;
+	file.write_all(&content).await?;
+
+	Ok(Json(json!({
+		"result": {
+			"success": true,
+			"file_path": file_path
 		}
 	})))
 }

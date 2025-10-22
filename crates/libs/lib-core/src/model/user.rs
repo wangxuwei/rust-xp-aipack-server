@@ -88,6 +88,7 @@ pub struct UserForLogin {
 #[derive(Clone, FromRow, Fields, Debug)]
 pub struct UserForAuth {
 	pub id: i64,
+	pub uuid: Uuid,
 	pub typ: UserTyp,
 	pub username: String,
 

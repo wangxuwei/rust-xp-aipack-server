@@ -94,6 +94,11 @@ function _render(wksList: Wks[] = []) {
 - the dcoHub event is for some objects change
 - if the pcss file name match a view for examples, v-users.pcss match the name v-users.ts, all css codes with pcss best practice will wrote in the pcss file, make sure when create a view component, create the pcss file
 
+- when bind event, should always follow the rules the like onEvent, onHub
+- for the _render() should always define outside the view, and return html
+- the priviate methods should not startWith "#"
+- better to use "pointer" events than "mouse" events
+
 
 
 ### tips:
@@ -108,3 +113,5 @@ like:
 		}
 	}
 ```
+
+

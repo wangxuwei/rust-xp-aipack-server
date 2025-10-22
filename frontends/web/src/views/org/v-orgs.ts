@@ -1,9 +1,12 @@
 import { hasAccess } from "common/user-ctx.js";
 import { hasOrgAccess } from "common/user-org-ctx.js";
+import { randomString } from "common/utils.js";
+import { AvatarElement } from "components/c-avatar.js";
+import { DgImageCrop } from "dialog/dg_image_crop.js";
 import { OnEvent, all, customElement, first, onEvent, onHub, setAttr } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
 import { TableCell } from "table/v-table-cell.js";
-import { getOrderBy } from "ts/app-helper.js";
+import { getOrderBy, getOrgAvatar } from "ts/app-helper.js";
 import { orgDco } from "ts/dcos.js";
 import { asNum, isEmpty } from "utils-min";
 import { Org } from "../../bindings/Org.js";
@@ -27,6 +30,31 @@ export class OrgsView extends BaseLeafRoute {
 		return first(this, `v-table-cell[sort-column='${this.#sortColumn}']`) as TableCell;
 	}
 	//#region    ---------- Events ----------
+	@onEvent("click", ".btn-change-avatar")
+	onChangeAvatar(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const orgId = asNum(rowEl.dataset.id);
+		const uuid = rowEl.dataset.uuid;
+		if (!isEmpty(orgId)) {
+			const imageCropDialog = new DgImageCrop();
+			imageCropDialog.callback = async (blob: Blob | null) => {
+				if (blob) {
+					try {
+						const formData: any = {};
+						formData["org_id"] = orgId;
+						formData["file"] = blob;
+						await orgDco.uploadOrgAvatar(formData);
+						const avatarEl = first(rowEl, "c-avatar") as AvatarElement;
+						avatarEl.url = getOrgAvatar(uuid!) + "?t=" + randomString();
+					} catch (error: any) {
+						console.log(error);
+					}
+				}
+			};
+			document.body.appendChild(imageCropDialog);
+		}
+	}
+
 	@onEvent("click", ".btn-edit")
 	onEditClick(evt: MouseEvent & OnEvent) {
 		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
@@ -128,10 +156,14 @@ function _render(orgs: Org[]) {
 	const rows = orgs
 		.map((org) => {
 			let html = `
-			<div class="row" data-id="${org.id}">
-				<div class="cell"><a href="/orgs/users/${org.id}">${org.name}</a></div>
+			<div class="row" data-id="${org.id}" data-uuid="${org.uuid}">
+				<div class="cell">
+					<c-avatar url="${getOrgAvatar(org.uuid)}" default-icon="#ico-group"></c-avatar>
+					<a href="/orgs/users/${org.id}">${org.name}</a>
+				</div>
 				<div class="cell">${org.kind}</div>
 				<div class="cell actions">
+					<button class="btn-change-avatar prime">Change avatar</button>
 					<button class="btn-edit prime">Edit</button>`;
 			if (hasOrgAccess("OrgRename") || hasAccess("OrgManage")) {
 				html += `

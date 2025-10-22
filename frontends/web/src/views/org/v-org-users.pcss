@@ -18,6 +18,17 @@ v-org-users {
 		}
 	}
 
+	.org-profile {
+		display: flex;
+		margin-top: 1rem;
+		align-items: center;
+		justify-content: center;
+		c-avatar {
+			width: 5rem;
+			height: 5rem;
+		}
+	}
+
 	.users-table-section {
 		flex: 1;
 		display: flex;
@@ -32,6 +43,9 @@ v-org-users {
 			.ui-table {
 				.row {
 					grid-template-columns: 1fr 10rem;
+				}
+				c-avatar {
+					margin-right: 0.5rem;
 				}
 			}
 		}

@@ -1,4 +1,6 @@
+pub mod handlers_common;
 pub mod handlers_login;
+pub mod handlers_org;
 pub mod handlers_pack;
 pub mod handlers_rpc;
 pub mod handlers_user;

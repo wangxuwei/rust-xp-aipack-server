@@ -1,6 +1,6 @@
 import { apiPrx } from "common/conf";
 import { QueryOptions } from "common/query_options";
-import { rpc_invoke } from "common/rpc";
+import { request_upload, rpc_invoke } from "common/rpc";
 import { webPost } from "common/web-request";
 import { deepFreeze } from "utils-min";
 import { User } from "../bindings/User";
@@ -38,6 +38,15 @@ export class UserDco extends BaseDco<User, QueryOptions<User>> {
 		const result = await rpc_invoke(`list_and_count_${this.plural}`, { ...qo });
 		if (result.data) {
 			return result.data;
+		} else {
+			throw result;
+		}
+	}
+
+	async uploadUserAvatar(formData: any): Promise<any> {
+		const result = await request_upload(`upload_user_avatar`, formData);
+		if (result.success) {
+			return result.url;
 		} else {
 			throw result;
 		}

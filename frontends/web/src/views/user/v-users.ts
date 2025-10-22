@@ -1,7 +1,10 @@
+import { randomString } from "common/utils.js";
+import { AvatarElement } from "components/c-avatar.js";
+import { DgImageCrop } from "dialog/dg_image_crop.js";
 import { OnEvent, all, customElement, first, onEvent, onHub, setAttr } from "dom-native";
 import { PaginationView } from "pagination/v-pagination.js";
 import { TableCell } from "table/v-table-cell.js";
-import { getOrderBy } from "ts/app-helper.js";
+import { getOrderBy, getUserAvatar } from "ts/app-helper.js";
 import { userDco } from "ts/dcos.js";
 import { asNum, isEmpty } from "utils-min";
 import { User } from "../../bindings/User.js";
@@ -25,6 +28,31 @@ export class UsersView extends BaseLeafRoute {
 	}
 
 	//#region    ---------- Events ----------
+	@onEvent("click", ".btn-change-avatar")
+	onChangeAvatar(evt: MouseEvent & OnEvent) {
+		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
+		const userId = asNum(rowEl.dataset.id);
+		const uuid = rowEl.dataset.uuid;
+		if (!isEmpty(userId)) {
+			const imageCropDialog = new DgImageCrop();
+			imageCropDialog.callback = async (blob: Blob | null) => {
+				if (blob) {
+					try {
+						const formData: any = {};
+						formData["user_id"] = userId;
+						formData["file"] = blob;
+						await userDco.uploadUserAvatar(formData);
+						const avatarEl = first(rowEl, "c-avatar") as AvatarElement;
+						avatarEl.url = getUserAvatar(uuid!) + "?t=" + randomString();
+					} catch (error: any) {
+						console.log(error);
+					}
+				}
+			};
+			document.body.appendChild(imageCropDialog);
+		}
+	}
+
 	@onEvent("click", ".btn-edit")
 	onEditClick(evt: MouseEvent & OnEvent) {
 		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
@@ -110,9 +138,10 @@ function _render(users: User[]) {
 	const rows = users
 		.map(
 			(user) => `
-		<div class="row" data-id="${user.id}">
-			<div class="cell">${user.username}</div>
+		<div class="row" data-id="${user.id}" data-uuid="${user.uuid}">
+			<div class="cell"><c-avatar url="${getUserAvatar(user.uuid)}"></c-avatar>${user.username}</div>
 			<div class="cell actions">
+				<button class="btn-change-avatar prime">Change avatar</button>
 				<button class="btn-edit prime">Edit</button>
 				<button class="btn-delete danger">Delete</button>
 			</div>

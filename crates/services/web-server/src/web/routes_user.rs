@@ -6,6 +6,10 @@ use lib_web::handlers::handlers_user;
 // Axum router for '/api/user-context'
 pub fn routes(mm: ModelManager) -> Router {
 	Router::new()
+		.route(
+			"/api/upload_user_avatar",
+			post(handlers_user::api_upload_avatar_handler),
+		)
 		.route("/api/user-context", get(handlers_user::api_user_handler))
 		.route(
 			"/api/update-pwd",

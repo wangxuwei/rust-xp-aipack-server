@@ -1,10 +1,14 @@
 import { position } from "@dom-native/draggable";
 import { getRouteOrgId, pathAt } from "common/route";
 import { ORG_BASE_PATHS, pathOrgedAt } from "common/route-orged.js";
-import { getUserContext, logoff, UserContext } from "common/user-ctx.js";
+import { getCurrentUserCtx, getUserContext, logoff, UserContext } from "common/user-ctx.js";
 import { getCurrentOrgId, getUserOrgContext } from "common/user-org-ctx";
+import { randomString } from "common/utils";
+import { AvatarElement } from "components/c-avatar";
 import { DgAlert } from "dialog/dg-alert";
+import { DgImageCrop } from "dialog/dg_image_crop";
 import { append, customElement, first, html, on, onEvent, push } from "dom-native";
+import { getUserAvatar } from "ts/app-helper";
 import { orgDco, userDco } from "ts/dcos";
 import { BaseRouteView } from "./route/v-base-route";
 import { OrgSelector } from "./v-org-selector";
@@ -30,6 +34,9 @@ export class MainView extends BaseRouteView {
 	private get orgSelector(): OrgSelector {
 		return first(this, "v-org-selector") as OrgSelector;
 	}
+	private get profileAvatar(): AvatarElement {
+		return first(this.headerAsideEl, ".profile-avatar") as AvatarElement;
+	}
 
 	protected get routeCtnEl(): HTMLElement {
 		return this.mainEl;
@@ -50,6 +57,7 @@ export class MainView extends BaseRouteView {
 				document.body,
 				html(`
 			<c-menu id='user-menu-123'>
+				<li class="do-change-avatar">Change avatar</li>
 				<li class="do-change-pwd">Change password</li>
 				<li class="do-logoff">Logoff</li>
 			</c-menu>
@@ -69,6 +77,27 @@ export class MainView extends BaseRouteView {
 				const dialog = document.createElement("dg-alert") as DgAlert;
 				this.appendChild(dialog);
 				dialog.message = "Sent a reset link to your email account, please check.";
+			});
+
+			on(menu, "pointerup", "li.do-change-avatar", async (evt) => {
+				evt.stopPropagation();
+				const imageCropDialog = new DgImageCrop();
+				imageCropDialog.callback = async (blob: Blob | null) => {
+					if (blob) {
+						try {
+							const user = await getCurrentUserCtx();
+							const formData: any = {};
+							formData["user_id"] = user!.id.toString();
+							formData["file"] = blob;
+							await userDco.uploadUserAvatar(formData);
+							const avatarEl = this.profileAvatar;
+							avatarEl.url = getUserAvatar(user?.uuid!) + "?t=" + randomString();
+						} catch (error: any) {
+							console.log(error);
+						}
+					}
+				};
+				document.body.appendChild(imageCropDialog);
 			});
 		}
 	}
@@ -100,7 +129,7 @@ export class MainView extends BaseRouteView {
 			});
 
 		const [user, orgCtx] = await Promise.all([userPromise, orgPrmise]);
-		this.innerHTML = _render(user!.username);
+		this.innerHTML = _render(user!.username, getUserAvatar(user?.uuid!));
 		if (!this.checkAndRedirectOrgScopedUrl()) {
 			const orgSelector = this.orgSelector;
 			orgSelector.selectedOrgId = orgCtx?.id!;
@@ -125,7 +154,7 @@ export class MainView extends BaseRouteView {
 }
 
 //// HTML
-function _render(username: string) {
+function _render(username: string, avatar?: string) {
 	return `
 	<header>
 		<d-ico name="ico-menu">menu</d-ico>
@@ -133,7 +162,7 @@ function _render(username: string) {
 		<v-nav></v-nav>
 		<v-org-selector></v-org-selector>
 		<aside class="toogle-user-menu">
-			<c-ico>user</c-ico>
+			<c-avatar url="${avatar}" class="btn-change-avatar profile-avatar"></c-avatar>
 			<div class="dx dx-name">${username}</div>
 		</aside>
 	</header>

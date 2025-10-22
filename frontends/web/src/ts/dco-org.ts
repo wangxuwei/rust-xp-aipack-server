@@ -1,7 +1,7 @@
 import { Org } from "bindings/Org";
 import { User } from "bindings/User";
 import { ListOptions, QueryOptions } from "common/query_options";
-import { rpc_invoke } from "common/rpc";
+import { request_upload, rpc_invoke } from "common/rpc";
 import { BaseDco, dcoHub } from "./dco-base";
 
 export class OrgDco extends BaseDco<Org, QueryOptions<Org>> {
@@ -85,6 +85,15 @@ export class OrgDco extends BaseDco<Org, QueryOptions<Org>> {
 		if (result.data) {
 			dcoHub.pub(this.cmd_suffix, "remove_user", result.data);
 			return result.data;
+		} else {
+			throw result;
+		}
+	}
+
+	async uploadOrgAvatar(formData: any): Promise<any> {
+		const result = await request_upload(`upload_org_avatar`, formData);
+		if (result.success) {
+			return result.url;
 		} else {
 			throw result;
 		}

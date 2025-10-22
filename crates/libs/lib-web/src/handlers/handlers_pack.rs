@@ -37,7 +37,7 @@ pub async fn api_upload_pack_handler(
 				file_name = Some(field.file_name().unwrap_or_default().to_string());
 			}
 			file_content =
-				Some(field.bytes().await.map_err(|_| Error::PackFileNotFound)?);
+				Some(field.bytes().await.map_err(|_| Error::FileNotFound)?);
 		}
 	}
 
@@ -105,7 +105,7 @@ pub async fn api_download_pack_handler(
 	let org = OrgBmc::get(&ctx, &mm, pack.org_id).await?;
 
 	if !StdPath::new(&pack_version.file_path).exists() {
-		return Err(Error::PackFileNotFound);
+		return Err(Error::FileNotFound);
 	}
 
 	let content = tokio::fs::read(&pack_version.file_path).await?;

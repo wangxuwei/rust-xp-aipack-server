@@ -1,34 +1,35 @@
+import { BaseViewElement } from "common/v-base.js";
 import { customElement } from "dom-native";
-import { BaseLeafRoute } from "./route/v-leaf-route";
+import { DgImageCrop } from "../dialog/dg_image_crop.js";
 
 @customElement("v-home")
-export class HomeView extends BaseLeafRoute {
-	//#region    ---------- Events----------
-	//#endregion ---------- /Events----------
+export class HomeView extends BaseViewElement {
+	#imageCropDialog: DgImageCrop | null = null;
 
-	//#region    ---------- Hub Events ----------
-	//#endregion ---------- /Hub Events ----------
+	//#region    ---------- Events ----------
+	//#endregion ---------- /Events ----------
 
-	async init() {
+	//#region    ---------- Lifecycle ----------
+	init() {
 		super.init();
-
-		// BEST-PRATICE: init() should always attempt to draw the empty state without async when possible
-		//               Here we do this with `this.refresh([])` which will
-		this.refresh(); // this will execute in sync as it will not do any server request
+		this.refresh();
 	}
 
-	async refresh() {
+	refresh() {
 		this.innerHTML = _render();
 	}
+	//#endregion ---------- /Lifecycle ----------
+
+	//#region    ---------- Private Methods ----------
+	//#endregion ---------- /Private Methods ----------
 }
 
-//// HTMLs
-
 function _render() {
-	let html = `<header><h1>Home</h1></header>
-	<section>
-	`;
-	html += `</section>`;
-
-	return html;
+	return `
+    <div class="home-container">
+      <div class="section">
+        <h2>Welcome Home</h2>
+      </div>
+    </div>
+  `;
 }

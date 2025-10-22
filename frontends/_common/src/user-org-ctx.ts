@@ -5,6 +5,7 @@ import { webGet } from "./web-request.js";
 
 export interface UserOrgContext {
 	id: number;
+	uuid: string;
 	name: string;
 	role: ORoleName;
 	accesses: OrgAccess[];
