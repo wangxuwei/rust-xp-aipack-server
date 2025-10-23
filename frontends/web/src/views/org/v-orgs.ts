@@ -1,3 +1,4 @@
+import { AVATAR_IMAGE } from "common/conf.js";
 import { hasAccess } from "common/user-ctx.js";
 import { hasOrgAccess } from "common/user-org-ctx.js";
 import { randomString } from "common/utils.js";
@@ -35,6 +36,7 @@ export class OrgsView extends BaseLeafRoute {
 		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
 		const orgId = asNum(rowEl.dataset.id);
 		const uuid = rowEl.dataset.uuid;
+		const profile = rowEl.dataset.profile;
 		if (!isEmpty(orgId)) {
 			const imageCropDialog = new DgImageCrop();
 			imageCropDialog.callback = async (blob: Blob | null) => {
@@ -45,7 +47,7 @@ export class OrgsView extends BaseLeafRoute {
 						formData["file"] = blob;
 						await orgDco.uploadOrgAvatar(formData);
 						const avatarEl = first(rowEl, "c-avatar") as AvatarElement;
-						avatarEl.url = getOrgAvatar(uuid!) + "?t=" + randomString();
+						avatarEl.url = getOrgAvatar(uuid!, AVATAR_IMAGE) + "?t=" + randomString();
 					} catch (error: any) {
 						console.log(error);
 					}
@@ -156,7 +158,7 @@ function _render(orgs: Org[]) {
 	const rows = orgs
 		.map((org) => {
 			let html = `
-			<div class="row" data-id="${org.id}" data-uuid="${org.uuid}">
+			<div class="row" data-id="${org.id}" data-uuid="${org.uuid}" ${org.profile ? "data-profile=" + org.profile : ""}>
 				<div class="cell">
 					<c-avatar url="${getOrgAvatar(org.uuid)}" default-icon="#ico-group"></c-avatar>
 					<a href="/orgs/users/${org.id}">${org.name}</a>

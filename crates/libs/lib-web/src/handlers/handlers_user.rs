@@ -13,7 +13,9 @@ use lib_auth::pwd::prlink::{url_prparam, validate_prparam, PrlinkUserInfo};
 use lib_auth::pwd::{self, ContentToHash};
 use lib_core::ctx::Ctx;
 use lib_core::model::prlink::{Prlink, PrlinkBmc, PrlinkForCreate};
-use lib_core::model::user::{User, UserBmc, UserForAuth, UserForLogin};
+use lib_core::model::user::{
+	User, UserBmc, UserForAuth, UserForLogin, UserForUpdate,
+};
 use lib_core::model::ModelManager;
 use lib_utils::time::now_utc;
 use regex::Regex;
@@ -45,6 +47,7 @@ pub async fn api_user_handler(
 					"user": {
 						"id": user_id,
 						"uuid": user.uuid,
+						"profile": user.profile,
 						"username": user.username,
 						"role": user.typ,
 						"accesses": ctx.accesses()
@@ -299,6 +302,17 @@ pub async fn api_upload_avatar_handler(
 	// Write file content
 	let mut file = File::create(&file_path).await?;
 	file.write_all(&content).await?;
+
+	UserBmc::update(
+		&ctx,
+		&mm,
+		user_id,
+		UserForUpdate {
+			username: None,
+			profile: Some(file_path_name.to_string()),
+		},
+	)
+	.await?;
 
 	Ok(Json(json!({
 		"result": {

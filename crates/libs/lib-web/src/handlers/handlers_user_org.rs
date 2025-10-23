@@ -33,6 +33,7 @@ pub async fn api_user_org_handler(
 			"org": {
 				"id": org_id,
 				"uuid": org.uuid,
+				"profile": org.profile,
 				"name": org.name,
 				"role": user_org.role,
 				"accesses": accesses

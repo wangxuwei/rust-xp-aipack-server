@@ -75,6 +75,7 @@ pub struct Org {
 	pub name: Option<String>,
 	pub kind: OrgKind,
 	pub uuid: Uuid,
+	pub profile: Option<String>,
 
 	// -- Timestamps
 	// creator user_id and time
@@ -102,6 +103,7 @@ pub struct OrgForCreate {
 #[derive(Fields, Serialize, Deserialize, Default)]
 pub struct OrgForUpdate {
 	pub name: Option<String>,
+	pub profile: Option<String>,
 	#[field(cast_as = "org_kind")]
 	pub kind: Option<OrgKind>,
 }
@@ -176,6 +178,7 @@ impl OrgBmc {
 			OrgForUpdate {
 				name: Some(org_name.to_owned()),
 				kind: None,
+				profile: None,
 			},
 		)
 		.await

@@ -1,3 +1,4 @@
+import { AVATAR_IMAGE } from "common/conf.js";
 import { randomString } from "common/utils.js";
 import { AvatarElement } from "components/c-avatar.js";
 import { DgImageCrop } from "dialog/dg_image_crop.js";
@@ -33,6 +34,7 @@ export class UsersView extends BaseLeafRoute {
 		const rowEl = evt.selectTarget.closest(".row") as HTMLElement;
 		const userId = asNum(rowEl.dataset.id);
 		const uuid = rowEl.dataset.uuid;
+		let profile = rowEl.dataset.profile;
 		if (!isEmpty(userId)) {
 			const imageCropDialog = new DgImageCrop();
 			imageCropDialog.callback = async (blob: Blob | null) => {
@@ -43,7 +45,7 @@ export class UsersView extends BaseLeafRoute {
 						formData["file"] = blob;
 						await userDco.uploadUserAvatar(formData);
 						const avatarEl = first(rowEl, "c-avatar") as AvatarElement;
-						avatarEl.url = getUserAvatar(uuid!) + "?t=" + randomString();
+						avatarEl.url = getUserAvatar(uuid!, AVATAR_IMAGE) + "?t=" + randomString();
 					} catch (error: any) {
 						console.log(error);
 					}
@@ -138,8 +140,8 @@ function _render(users: User[]) {
 	const rows = users
 		.map(
 			(user) => `
-		<div class="row" data-id="${user.id}" data-uuid="${user.uuid}">
-			<div class="cell"><c-avatar url="${getUserAvatar(user.uuid)}"></c-avatar>${user.username}</div>
+		<div class="row" data-id="${user.id}" data-uuid="${user.uuid}" ${user.profile ? "data-profile=" + user.profile : ""}>
+			<div class="cell"><c-avatar url="${getUserAvatar(user.uuid, user.profile)}"></c-avatar>${user.username}</div>
 			<div class="cell actions">
 				<button class="btn-change-avatar prime">Change avatar</button>
 				<button class="btn-edit prime">Edit</button>

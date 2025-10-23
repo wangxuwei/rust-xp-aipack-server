@@ -1,4 +1,4 @@
-import { apiPrx } from "common/conf";
+import { apiPrx, AVATAR_IMAGE } from "common/conf";
 
 // get order format from sort type
 export function getOrderBy(sortColumn: string, sortType: string) {
@@ -6,10 +6,10 @@ export function getOrderBy(sortColumn: string, sortType: string) {
 	return `${orderType}${sortColumn}`;
 }
 
-export function getUserAvatar(uuid: string) {
-	return `${apiPrx}/avatar/users/${uuid}/avatar.jpeg`;
+export function getUserAvatar(uuid: string, profile?: string | null) {
+	return profile ? `${apiPrx}/avatar/users/${uuid}/${AVATAR_IMAGE}` : "";
 }
 
-export function getOrgAvatar(uuid: string) {
-	return `${apiPrx}/avatar/orgs/${uuid}/avatar.jpeg`;
+export function getOrgAvatar(uuid: string, profile?: string | null) {
+	return profile ? `${apiPrx}/avatar/orgs/${uuid}/${AVATAR_IMAGE}` : "";
 }

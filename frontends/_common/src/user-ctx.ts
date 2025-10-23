@@ -6,6 +6,7 @@ export interface UserContext {
 	id: number;
 	uuid: string;
 	name: string;
+	profile?: string;
 	username: string;
 	accesses: GlobalAccess[];
 }

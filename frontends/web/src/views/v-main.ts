@@ -1,4 +1,5 @@
 import { position } from "@dom-native/draggable";
+import { AVATAR_IMAGE } from "common/conf";
 import { getRouteOrgId, pathAt } from "common/route";
 import { ORG_BASE_PATHS, pathOrgedAt } from "common/route-orged.js";
 import { getCurrentUserCtx, getUserContext, logoff, UserContext } from "common/user-ctx.js";
@@ -91,7 +92,8 @@ export class MainView extends BaseRouteView {
 							formData["file"] = blob;
 							await userDco.uploadUserAvatar(formData);
 							const avatarEl = this.profileAvatar;
-							avatarEl.url = getUserAvatar(user?.uuid!) + "?t=" + randomString();
+							user!.profile = AVATAR_IMAGE;
+							avatarEl.url = getUserAvatar(user?.uuid!, user?.profile!) + "?t=" + randomString();
 						} catch (error: any) {
 							console.log(error);
 						}
@@ -129,7 +131,7 @@ export class MainView extends BaseRouteView {
 			});
 
 		const [user, orgCtx] = await Promise.all([userPromise, orgPrmise]);
-		this.innerHTML = _render(user!.username, getUserAvatar(user?.uuid!));
+		this.innerHTML = _render(user!.username, getUserAvatar(user?.uuid!, user?.profile));
 		if (!this.checkAndRedirectOrgScopedUrl()) {
 			const orgSelector = this.orgSelector;
 			orgSelector.selectedOrgId = orgCtx?.id!;

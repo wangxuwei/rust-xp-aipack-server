@@ -127,7 +127,7 @@ function _render(org: Org, users: User[]) {
 							`
 							<div class="row" data-id="${user.id}">
 								<div class="cell">
-									<c-avatar url="${getUserAvatar(user.uuid)}"></c-avatar>
+									<c-avatar url="${getUserAvatar(user.uuid, user.profile)}"></c-avatar>
 									${user.username}
 								</div>
 								<div class="cell actions">
@@ -152,7 +152,7 @@ function _render(org: Org, users: User[]) {
 					</div>
 					<section>
 						<div class="org-profile">
-							<c-avatar url="${getOrgAvatar(org.uuid)}" default-icon="#ico-group"></c-avatar>
+							<c-avatar url="${getOrgAvatar(org.uuid, org.profile)}" default-icon="#ico-group"></c-avatar>
 						</div>
 						<div class="info-item">
 							<span class="label">Name:</span>

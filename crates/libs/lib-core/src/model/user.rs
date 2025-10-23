@@ -55,6 +55,7 @@ pub struct User {
 	pub username: String,
 	pub typ: UserTyp,
 	pub uuid: Uuid,
+	pub profile: Option<String>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -71,6 +72,7 @@ pub struct UserForInsert {
 #[derive(Fields, Deserialize, Default)]
 pub struct UserForUpdate {
 	pub username: Option<String>,
+	pub profile: Option<String>,
 }
 
 #[derive(Clone, FromRow, Fields, Debug)]
@@ -91,6 +93,7 @@ pub struct UserForAuth {
 	pub uuid: Uuid,
 	pub typ: UserTyp,
 	pub username: String,
+	pub profile: Option<String>,
 
 	#[field(cast_as = "user_access[]")]
 	pub accesses: Option<Vec<GlobalAccess>>,

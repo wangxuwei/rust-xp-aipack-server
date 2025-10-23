@@ -7,6 +7,7 @@ export interface UserOrgContext {
 	id: number;
 	uuid: string;
 	name: string;
+	profile?: string;
 	role: ORoleName;
 	accesses: OrgAccess[];
 }

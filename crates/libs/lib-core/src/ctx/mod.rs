@@ -42,6 +42,7 @@ impl Ctx {
 				id: 0,
 				uuid: Uuid::now_v7(),
 				typ,
+				profile: None,
 				username: "Sys".to_string(),
 				token_salt: Uuid::now_v7(),
 				accesses: Some(accesses),

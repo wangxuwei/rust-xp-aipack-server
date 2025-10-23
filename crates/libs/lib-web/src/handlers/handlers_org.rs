@@ -3,7 +3,7 @@ use crate::error::{Error, Result};
 use crate::middleware::mw_auth::CtxW;
 use axum::extract::{Multipart, State};
 use axum::Json;
-use lib_core::model::org::OrgBmc;
+use lib_core::model::org::{OrgBmc, OrgForUpdate};
 use lib_core::model::ModelManager;
 use serde_json::{json, Value};
 use std::path::Path;
@@ -48,6 +48,18 @@ pub async fn api_upload_avatar_handler(
 	// Write file content
 	let mut file = File::create(&file_path).await?;
 	file.write_all(&content).await?;
+
+	OrgBmc::update(
+		&ctx,
+		&mm,
+		org_id,
+		OrgForUpdate {
+			profile: Some(file_path_name.to_string()),
+			name: None,
+			kind: None,
+		},
+	)
+	.await?;
 
 	Ok(Json(json!({
 		"result": {
