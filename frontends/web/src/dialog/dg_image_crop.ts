@@ -233,8 +233,8 @@ export class DgImageCrop extends DgDialog {
 						res(blob);
 					}
 				},
-				"image/png",
-				1
+				"image/jpeg",
+				0.8
 			);
 		});
 	}

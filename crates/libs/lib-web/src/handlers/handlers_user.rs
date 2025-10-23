@@ -293,7 +293,7 @@ pub async fn api_upload_avatar_handler(
 		create_dir_all(&upload_path).await?;
 	}
 
-	let file_path_name = "avatar.png";
+	let file_path_name = "avatar.jpeg";
 
 	let file_path = upload_path.join(file_path_name);
 	// Write file content

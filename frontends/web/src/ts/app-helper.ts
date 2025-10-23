@@ -7,9 +7,9 @@ export function getOrderBy(sortColumn: string, sortType: string) {
 }
 
 export function getUserAvatar(uuid: string) {
-	return `${apiPrx}/avatar/users/${uuid}/avatar.png`;
+	return `${apiPrx}/avatar/users/${uuid}/avatar.jpeg`;
 }
 
 export function getOrgAvatar(uuid: string) {
-	return `${apiPrx}/avatar/orgs/${uuid}/avatar.png`;
+	return `${apiPrx}/avatar/orgs/${uuid}/avatar.jpeg`;
 }
