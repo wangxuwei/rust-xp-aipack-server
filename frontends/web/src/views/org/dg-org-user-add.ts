@@ -1,5 +1,6 @@
 import { DgDialog } from "dialog/dg-dialog.js";
 import { adoptStyleSheets, css, customElement, OnEvent, onEvent, pull } from "dom-native";
+import { getUserAvatar } from "ts/app-helper";
 import { orgDco } from "ts/dcos";
 import { asNum, isNotEmpty } from "utils-min";
 
@@ -32,7 +33,10 @@ export class DgOrgUserAdd extends DgDialog {
 		const users = await orgDco.searchUsersForOrg(this.#orgId!, detail.input);
 		detail.sendData(
 			users.map((u) => {
-				return { content: `${u.username}`, value: u.id.toString() };
+				return {
+					content: `<c-avatar url="${getUserAvatar(u.uuid, u.profile)}" part="avatar"></c-avatar>${u.username}`,
+					value: u.id.toString(),
+				};
 			})
 		);
 	}
@@ -68,7 +72,7 @@ function _render() {
 			<div class="ui-form">
 				<div class="ui-form-row">
 					<label class="ui-form-lbl">Name:</label>
-					<c-search-select class="ui-form-val" name="userIds"  placeholder="Enter user name" ></c-search-select>
+					<c-search-select class="ui-form-val" name="userIds"  placeholder="Enter user name" popup-css="dg-org-user-add-popup"></c-search-select>
 				</div>
 			</div>
 		</div>

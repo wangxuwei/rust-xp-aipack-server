@@ -1,0 +1,25 @@
+dg-org-user-add {
+	c-search-select {
+		&::part(item) {
+			display: grid;
+			grid-template-columns: auto 1fr auto;
+			padding: 0;
+		}
+		&::part(avatar) {
+			width: 1.2rem;
+			height: 1.2rem;
+			margin: 0 0.2rem;
+		}
+	}
+}
+
+.dg-org-user-add-popup {
+	.option {
+		padding: 0.5rem 0.5rem;
+		display: flex;
+		align-items: center;
+		c-avatar {
+			margin-right: 0.5rem;
+		}
+	}
+}

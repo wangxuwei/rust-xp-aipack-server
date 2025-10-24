@@ -5,7 +5,7 @@ const _compCss = css`
 	:host {
 		display: inline-block;
 		min-width: 1rem;
-		min-width: 1rem;
+		min-height: 1rem;
 		border-radius: 50%;
 		overflow: hidden;
 		background: var(--clr-gray-200);
@@ -30,7 +30,7 @@ const _compCss = css`
 		height: 60%;
 	}
 	:host .default-icon c-ico::part(symbol) {
-		fill: var(--clr-gray-500);
+		fill: var(--clr-gray-600);
 	}
 `;
 

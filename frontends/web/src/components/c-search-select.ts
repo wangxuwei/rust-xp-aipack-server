@@ -30,7 +30,7 @@ const _compCss = css`
 			display: flex;
 			align-items: center;
 			border: 1px solid var(--d-field-bdr);
-			background-color: var(--clr-gray-200);
+			background-color: var(--clr-gray-100);
 			border-radius: 10px;
 			padding: 0 0.3rem 0 0.5rem;
 			margin-right: 0.5rem;
@@ -194,7 +194,7 @@ export class CSearchSelectElement extends BaseInputElement {
 		if (isNotEmpty(this.#value)) {
 			for (const opt of this.#value) {
 				itemsHtml += `
-          <div class="item">
+          <div class="item" part="item">
             ${opt.content}
             <c-ico src="#ico-close" class="ico-close"></c-ico>
           </div>
@@ -338,7 +338,7 @@ class SelectPopupElement extends BaseHTMLElement {
 					class: "option",
 					value: o.value || "",
 					$: {
-						textContent: o.content,
+						innerHTML: o.content,
 						_data: o,
 					},
 				})
