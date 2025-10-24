@@ -121,7 +121,7 @@ export class UsersView extends BaseLeafRoute {
 		all(this, "v-table-cell").forEach((cellEl) => {
 			setAttr(cellEl, "sort-type", null);
 		});
-		if (this.#sortType) {
+		if (this.#sortType && orderColumnEl) {
 			setAttr(orderColumnEl, "sort-type", this.#sortType);
 		}
 	}
